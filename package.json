@@ -1,0 +1,27 @@
+{
+  "name": "rss-feed-reader",
+  "version": "1.0.0",
+  "description": "A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)",
+  "scripts": {
+    "lint": "eslint js/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/georapbox/rss-feed-reader.git"
+  },
+  "keywords": [
+    "RSS feed reader"
+  ],
+  "author": {
+    "name": "George Raptis",
+    "email": "georapbox@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/georapbox/rss-feed-reader/issues"
+  },
+  "homepage": "https://github.com/georapbox/rss-feed-reader#readme",
+  "devDependencies": {
+    "eslint": "~8.17.0"
+  }
+}
