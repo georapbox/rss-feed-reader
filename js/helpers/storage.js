@@ -12,7 +12,21 @@ export const getFeeds = () => {
 };
 
 export const setFeeds = feeds => {
-  return storage.setItem(FEDDS_URLS_STORAGE_KEY, feeds);
+  let status = 'done';
+
+  storage.setItem(FEDDS_URLS_STORAGE_KEY, feeds, () => {
+    status = 'error';
+  });
+
+  if (status === 'done') {
+    document.dispatchEvent(new CustomEvent('feeds-updated', {
+      bubbles: true,
+      detail: {
+        type: 'bulk',
+        feeds
+      }
+    }));
+  }
 };
 
 export const saveFeed = feed => {
@@ -35,7 +49,10 @@ export const saveFeed = feed => {
   if (status === 'done') {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
-      detail: { feed }
+      detail: {
+        type: 'single',
+        feed
+      }
     }));
   }
 };
