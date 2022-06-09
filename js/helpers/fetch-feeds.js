@@ -7,7 +7,7 @@ export const fetchFeed = async url => {
 
   const data = await res.json();
 
-  console.log(data);
+  console.log(data); // FIXME Remove in production
 
   return data;
 };

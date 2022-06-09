@@ -1,29 +1,22 @@
-import { getFeeds, setFeeds, saveFeed, setFeedsOptionsStatus, getFeedsOptionsStatus } from './helpers/storage.js';
+import { getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus } from './helpers/storage.js';
 
 const editFeedsToggle = document.getElementById('editFeedsToggle');
 
-const handleFeedStatusChange = evt => {
-  if (evt.target.tagName === 'INPUT') {
-    const feedItem = evt.target.closest('li');
-    const feedUrl = feedItem.getAttribute('data-feedurl');
-    const feeds = getFeeds();
-    const foundFeed = feeds.find(f => f.url === feedUrl);
+const handleFeedActions = evt => {
+  const target = evt.target;
+  const [switchInput, deleteButton] = [target.closest('input'), target.closest('button')];
 
-    if (foundFeed) {
-      foundFeed.active = evt.target.checked;
-      saveFeed(foundFeed);
-    }
+  if (!switchInput && !deleteButton) {
+    return;
   }
-};
 
-const handleFeedDelete = evt => {
-  if (evt.target.tagName === 'BUTTON' || evt.target.tagName === 'IMG') {
-    const feedItem = evt.target.closest('li');
-    const feedUrl = feedItem.getAttribute('data-feedurl');
-    const feeds = getFeeds();
-    const filteredFeeds = feeds.filter(f => f.url !== feedUrl);
+  const feedItem = target.closest('li');
+  const feedUrl = feedItem.getAttribute('data-feedurl');
 
-    setFeeds(filteredFeeds);
+  if (switchInput) {
+    saveFeed({ url: feedUrl, active: target.checked });
+  } else if (deleteButton) {
+    deleteFeed(feedUrl);
   }
 };
 
@@ -32,10 +25,8 @@ export const renderFeedsOptions = () => {
   const feedsList = document.getElementById('feedsList');
   const feeds = getFeeds();
 
-  feedsList.removeEventListener('change', handleFeedStatusChange);
-  feedsList.addEventListener('change', handleFeedStatusChange);
-  feedsList.removeEventListener('click', handleFeedDelete);
-  feedsList.addEventListener('click', handleFeedDelete);
+  feedsList.removeEventListener('click', handleFeedActions);
+  feedsList.addEventListener('click', handleFeedActions);
 
   editFeedsContainer.classList.toggle('d-none', feeds.length === 0);
 
@@ -46,15 +37,15 @@ export const renderFeedsOptions = () => {
     textContainer.className = 'text-truncate';
     textContainer.textContent = feed.url;
 
-    const checkbox = document.createElement('input');
-    checkbox.className = 'form-check-input';
-    checkbox.type = 'checkbox';
-    checkbox.role = 'switch';
-    checkbox.checked = feed.active;
+    const switchInput = document.createElement('input');
+    switchInput.className = 'form-check-input';
+    switchInput.type = 'switchInput';
+    switchInput.role = 'switch';
+    switchInput.checked = feed.active;
 
     const checkboxContainer = document.createElement('div');
     checkboxContainer.className = 'form-check form-switch';
-    checkboxContainer.appendChild(checkbox);
+    checkboxContainer.appendChild(switchInput);
 
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';

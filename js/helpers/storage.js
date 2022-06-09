@@ -12,33 +12,18 @@ export const getFeeds = () => {
   return storage.getItem(FEDDS_URLS_KEY) || [];
 };
 
-export const setFeeds = feeds => {
-  let status = 'done';
-
-  storage.setItem(FEDDS_URLS_KEY, feeds, () => {
-    status = 'error';
-  });
-
-  if (status === 'done') {
-    document.dispatchEvent(new CustomEvent('feeds-updated', {
-      bubbles: true,
-      detail: {
-        type: 'bulk',
-        feeds
-      }
-    }));
-  }
-};
-
 export const saveFeed = feed => {
   const feeds = getFeeds();
   const foundFeed = feeds.find(f => f.url === feed.url);
+  let action = '';
 
   if (foundFeed) {
     foundFeed.url = feed.url;
     foundFeed.active = feed.active;
+    action = 'edit';
   } else {
     feeds.push(feed);
+    action = 'add';
   }
 
   let status = 'done';
@@ -50,9 +35,26 @@ export const saveFeed = feed => {
   if (status === 'done') {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
+      detail: { action, feed }
+    }));
+  }
+};
+
+export const deleteFeed = feedUrl => {
+  let status = 'done';
+  const feeds = getFeeds();
+  const filteredFeeds = feeds.filter(f => f.url !== feedUrl);
+
+  storage.setItem(FEDDS_URLS_KEY, filteredFeeds, () => {
+    status = 'error';
+  });
+
+  if (status === 'done') {
+    document.dispatchEvent(new CustomEvent('feeds-updated', {
+      bubbles: true,
       detail: {
-        type: 'single',
-        feed
+        action: 'delete',
+        feed: { url: feedUrl }
       }
     }));
   }
