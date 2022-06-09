@@ -1,4 +1,6 @@
-import { getFeeds, setFeeds, saveFeed } from './helpers/storage.js';
+import { getFeeds, setFeeds, saveFeed, setFeedsOptionsStatus, getFeedsOptionsStatus } from './helpers/storage.js';
+
+const editFeedsToggle = document.getElementById('editFeedsToggle');
 
 const handleFeedStatusChange = evt => {
   if (evt.target.tagName === 'INPUT') {
@@ -75,3 +77,9 @@ export const renderFeedsOptions = () => {
     feedsList.appendChild(listItem);
   });
 };
+
+editFeedsToggle.open = getFeedsOptionsStatus();
+
+editFeedsToggle.addEventListener('toggle', evt => {
+  setFeedsOptionsStatus(evt.target.open);
+});

@@ -1,6 +1,7 @@
 import WebStorage from '../../node_modules/@georapbox/web-storage/dist/WebStorage.esm.js';
 
-const FEDDS_URLS_STORAGE_KEY = 'feeds';
+const FEDDS_URLS_KEY = 'feeds';
+const FEEDS_OPTIONS_STATUS_KEY = 'feeds_options_status';
 
 export const storage = WebStorage.createInstance({
   driver: 'localStorage',
@@ -8,13 +9,13 @@ export const storage = WebStorage.createInstance({
 });
 
 export const getFeeds = () => {
-  return storage.getItem(FEDDS_URLS_STORAGE_KEY) || [];
+  return storage.getItem(FEDDS_URLS_KEY) || [];
 };
 
 export const setFeeds = feeds => {
   let status = 'done';
 
-  storage.setItem(FEDDS_URLS_STORAGE_KEY, feeds, () => {
+  storage.setItem(FEDDS_URLS_KEY, feeds, () => {
     status = 'error';
   });
 
@@ -42,7 +43,7 @@ export const saveFeed = feed => {
 
   let status = 'done';
 
-  storage.setItem(FEDDS_URLS_STORAGE_KEY, feeds, () => {
+  storage.setItem(FEDDS_URLS_KEY, feeds, () => {
     status = 'error';
   });
 
@@ -55,4 +56,12 @@ export const saveFeed = feed => {
       }
     }));
   }
+};
+
+export const getFeedsOptionsStatus = () => {
+  return storage.getItem(FEEDS_OPTIONS_STATUS_KEY);
+};
+
+export const setFeedsOptionsStatus = value => {
+  storage.setItem(FEEDS_OPTIONS_STATUS_KEY, value);
 };
