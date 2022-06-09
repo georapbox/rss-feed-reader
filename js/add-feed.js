@@ -1,14 +1,10 @@
-import { setFeedUrls } from './feeds-urls-storage.js';
+import { saveFeed } from './helpers/storage.js';
 
 const form = document.forms['addFeedForm'];
 
 form.addEventListener('submit', evt => {
   evt.preventDefault();
-
   const input = evt.target['feed-url'];
-  const isSaved = setFeedUrls(input.value);
-
-  if (isSaved) {
-    input.value = '';
-  }
+  saveFeed({ url: input.value, active: true });
+  input.value = '';
 });

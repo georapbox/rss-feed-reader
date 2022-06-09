@@ -1,4 +1,4 @@
-import { getFeedsUrls } from './feeds-urls-storage.js';
+import { getFeeds } from './helpers/storage.js';
 import { fetchFeed } from './helpers/fetch-feeds.js';
 
 const feedsReaderTemplate = (data, item) => {
@@ -19,28 +19,31 @@ const feedsReaderTemplate = (data, item) => {
           </div>
         </div>
 
-        ${item.description}
+        <div class="feed-description-viewer">
+          ${item.description}
+        </div>
       </div>
     </div>
   `;
 };
 
-const renderFeeds = () => {
-  const feedsUrls = getFeedsUrls().asArray();
+export const renderFeedReader = () => {
+  const feedsViewer = document.getElementById('feedsViewer');
 
-  feedsUrls.forEach(async url => {
-    try {
-      const data = await fetchFeed(url);
+  feedsViewer.innerHTML = '';
 
-      data.items.forEach(item => {
-        const content = document.getElementById('feedsContent');
-        content.insertAdjacentHTML('beforeend', feedsReaderTemplate(data, item));
-      });
-    } catch (error) {
-      // TODO Improve error handling
-      console.error(error);
+  getFeeds().forEach(async feed => {
+    if (feed.active) {
+      try {
+        const data = await fetchFeed(feed.url);
+
+        data.items.forEach(item => {
+          feedsViewer.insertAdjacentHTML('beforeend', feedsReaderTemplate(data, item));
+        });
+      } catch (error) {
+        // TODO Improve error handling
+        console.error(error);
+      }
     }
   });
 };
-
-renderFeeds();

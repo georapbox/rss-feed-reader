@@ -1,11 +1,12 @@
-import './feed-reader.js';
 import './add-feed.js';
-import { createFeedsList } from './feeds-list.js';
+import { renderFeedReader } from './feed-reader.js';
+import { renderFeedsOptions } from './edit-feeds.js';
 
-createFeedsList();
+renderFeedsOptions();
+renderFeedReader();
 
-document.addEventListener('feed-added', evt => {
-  console.log('New feed added', evt.detail.feedUrl);
-  // document.querySelector('details').open = true;
-  createFeedsList();
+document.addEventListener('feeds-updated', evt => {
+  console.log('Feeds updated', evt.detail.feed);
+  renderFeedsOptions();
+  renderFeedReader();
 });

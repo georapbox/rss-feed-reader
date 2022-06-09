@@ -23,5 +23,8 @@
   "homepage": "https://github.com/georapbox/rss-feed-reader#readme",
   "devDependencies": {
     "eslint": "~8.17.0"
+  },
+  "dependencies": {
+    "@georapbox/web-storage": "~2.1.0"
   }
 }

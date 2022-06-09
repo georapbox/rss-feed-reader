@@ -1,3 +1,8 @@
 img[src=""] {
   display: none;
 }
+
+.feed-description-viewer img {
+  max-width: 100%;
+  height: auto;
+}
