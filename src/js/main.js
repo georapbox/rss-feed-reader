@@ -4,6 +4,8 @@ import './add-feed.js';
 import { renderFeedReader } from './feed-reader.js';
 import { renderFeeds, addFeed, removeFeed, updateFeedStatus } from './feeds-list.js';
 
+const reloadInfo = document.getElementById('reloadInfo');
+
 renderFeeds();
 renderFeedReader();
 
@@ -20,7 +22,5 @@ document.addEventListener('feeds-updated', evt => {
     addFeed(evt.detail.feed);
   }
 
-  document.querySelector('.alert-info').classList.remove('d-none');
-
-  // renderFeedReader(); // TODO Prompt user to manually reload feeds to avoid unnecessary requests
+  reloadInfo.classList.remove('d-none');
 });
