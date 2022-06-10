@@ -5,9 +5,5 @@ export const fetchFeed = async url => {
     throw new Error('Error fetching data');
   }
 
-  const data = await res.json();
-
-  console.log(data); // FIXME Remove in production
-
-  return data;
+  return await res.json();
 };

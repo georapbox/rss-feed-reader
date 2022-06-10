@@ -1,4 +1,4 @@
-import WebStorage from '../../node_modules/@georapbox/web-storage/dist/WebStorage.esm.js';
+import WebStorage from '@georapbox/web-storage';
 
 const FEDDS_URLS_KEY = 'feeds';
 const FEEDS_OPTIONS_STATUS_KEY = 'feeds_options_status';
