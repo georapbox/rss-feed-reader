@@ -1,0 +1,69 @@
+:root {
+  --bg-color: var(--bs-light);
+  --text-color: #303942;
+  --focus-ring-color: rgb(49 132 253 / 50%);
+  --focus-ring-shadow: var(--focus-ring-color) 0px 0px 0px 0.2rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #202125;
+    --text-color: var(--bs-light);
+    --primary-color: #8ab4f8;
+    --primary-color-hover: hsl(217deg 90% 70%);
+    --card-bg-color: #31333b;
+    --focus-ring-color: rgb(161 181 209 / 50%);
+    --focus-ring-shadow: var(--focus-ring-color) 0px 0px 0px 0.2rem;
+  }
+
+  a {
+    color: var(--primary-color);
+  }
+
+  a:hover {
+    color: var(--primary-color-hover);
+  }
+
+  .card,
+  .list-group-item {
+    background-color: var(--card-bg-color);
+    color: var(--text-color)
+  }
+
+  .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #121212;
+  }
+
+  .btn-primary:hover,
+  .btn-primary:focus {
+    background-color: var(--primary-color-hover);
+    border-color: var(--primary-color-hover);
+    color: #121212;
+  }
+
+  .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  .form-control,
+  .form-control:focus {
+    background-color: #34363b;
+    border-color: #51555c;
+    color: var(--text-color);
+  }
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+
+.btn:focus,
+.form-control:focus,
+.form-check-input:focus {
+  box-shadow: var(--focus-ring-shadow);
+}

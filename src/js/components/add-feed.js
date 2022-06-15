@@ -12,8 +12,7 @@ template.innerHTML = /* html */`
 
   <form name="addFeedForm" autocomplete="off" class="d-flex">
     <div class="form-group" style="flex: 1;">
-      <!-- FIXME Remove default value in production -->
-      <input type="url" name="feed-url" class="form-control" value="https://blog.google/products/chrome/rss" placeholder="Enter a feed URL, eg https://hacks.mozilla.org/feed/" required>
+      <input type="url" name="feed-url" class="form-control" placeholder="Enter a feed URL in XML format, eg https://hacks.mozilla.org/feed/" required>
     </div>
     <div class="ms-1">
       <input type="submit" value="Add feed" class="btn btn-primary">

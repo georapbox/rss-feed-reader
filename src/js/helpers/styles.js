@@ -1,6 +1,7 @@
 import bootstrapStyleSheet from 'url:bootstrap/dist/css/bootstrap.css';
+import mainStyleSheet from 'url:../../../src/css/main.css';
 
-const styleURLs = [bootstrapStyleSheet];
+const styleURLs = [bootstrapStyleSheet, mainStyleSheet];
 
 const styleSheets = [];
 
