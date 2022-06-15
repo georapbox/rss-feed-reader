@@ -9,7 +9,7 @@ template.innerHTML = /* html */`
     }
   </style>
 
-  <div class="d-flex justify-content-center align-items-center flex-column text-center m-3 m-md-4 py-2">
+  <div class="d-flex justify-content-center align-items-center flex-column text-center mx-3 my-5">
     <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="60" height="60" fill="currentColor">
       <title>RSS</title>
       <path d="M108.56 342.78a60.34 60.34 0 1060.56 60.44 60.63 60.63 0 00-60.56-60.44z"/>
