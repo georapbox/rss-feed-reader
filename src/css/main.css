@@ -54,6 +54,10 @@
     border-color: #51555c;
     color: var(--text-color);
   }
+
+  .text-danger {
+    color: #e05260 !important;
+  }
 }
 
 body {
