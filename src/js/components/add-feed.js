@@ -52,7 +52,7 @@ class AddFeed extends HTMLElement {
       return alert(`Feed URL "${value}" already exists.`);
     }
 
-    saveFeed({ url: input.value, active: false }); // FIXME Change "active" to true
+    saveFeed({ url: value, active: false }); // FIXME Change "active" to true
 
     input.value = '';
   }
