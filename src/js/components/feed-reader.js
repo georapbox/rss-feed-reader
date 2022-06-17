@@ -58,7 +58,7 @@ class FeedReader extends HTMLElement {
 
   _feedsReaderTemplate(data, item) {
     return /* html */`
-      <div class="card mb-4 shadow border-0">
+      <div class="card mb-4">
         <div class="card-body">
           <div class="d-block d-md-flex align-items-start flex-wrap">
             <img src="${item.thumbnail}" alt="${item.title}" class="me-3 mb-3 rounded" width="150">
