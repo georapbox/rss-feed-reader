@@ -6,7 +6,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --body-bg: var(--bs-dark);
-    --body-color: var(--bs-gray-300);
+    --body-color: var(--bs-gray-100);
     --primary-color: var(--bs-info);
     --primary-color-hover: #31d2f2;
     --focus-ring: rgb(13 202 240 / 50%) 0px 0px 0px 0.2rem;
