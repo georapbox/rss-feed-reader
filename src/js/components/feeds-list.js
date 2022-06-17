@@ -97,7 +97,7 @@ class FeedsList extends HTMLElement {
 
   _toggleFeedsVisibility() {
     const feeds = getFeeds();
-    this.classList.toggle('d-none', feeds.length === 0);
+    this.$editFeedsToggle.classList.toggle('d-none', feeds.length === 0);
   }
 
   _addFeed(feed) {
