@@ -21,23 +21,33 @@
   }
 
   .card,
-  .list-group-item {
+  .list-group-item,
+  .modal-content {
     background-color: var(--bs-gray-800);
     color: var(--body-color);
     border-color: var(--bs-gray-700);
   }
 
-  .btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: #121212;
+  .modal-header {
+    border-color: var(--bs-gray-700);
   }
 
-  .btn-primary:hover,
-  .btn-primary:focus {
+  .btn,
+  .btn:hover {
+    color: var(--body-color);
+  }
+
+  .btn.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: var(--bs-dark);
+  }
+
+  .btn.btn-primary:hover,
+  .btn.btn-primary:focus {
     background-color: var(--primary-color-hover);
     border-color: var(--primary-color-hover);
-    color: #121212;
+    color: var(--bs-dark);
   }
 
   .form-check-input {

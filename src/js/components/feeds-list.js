@@ -1,5 +1,6 @@
 import { styleSheets } from '../helpers/styles';
 import { getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus } from '../helpers/storage.js';
+import './export-feeds';
 
 const template = document.createElement('template');
 
@@ -12,6 +13,10 @@ template.innerHTML = /* html */`
 
   <details id="editFeedsToggle">
     <summary>Edit feeds</summary>
+    <div class="mb-3">
+      <export-feeds></export-feeds>
+    </div>
+
     <ul class="list-group mt-1" id="feedsList"></ul>
   </details>
 
