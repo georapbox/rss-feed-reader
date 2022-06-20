@@ -18,6 +18,8 @@ template.innerHTML = /* html */`
       <input type="submit" value="Add feed" class="btn btn-primary">
     </div>
   </form>
+
+  <em style="font-size: 0.75rem;">Add multiple URLs separated with tilde (~).</em>
 `;
 
 class AddFeed extends HTMLElement {
@@ -48,11 +50,11 @@ class AddFeed extends HTMLElement {
     const input = evt.target['feed-url'];
     const { value } = input;
 
-    if (getFeeds().find(f => f.url === value)) {
-      return alert(`Feed URL "${value}" already exists.`);
-    }
-
-    saveFeed({ url: value, active: false }); // FIXME Change "active" to true
+    value.split('~').forEach(v => {
+      if (!getFeeds().find(f => f.url === v)) {
+        saveFeed({ url: v, active: false }); // FIXME Change "active" to true
+      }
+    });
 
     input.value = '';
   }
