@@ -79,6 +79,10 @@
   .text-danger {
     color: #e05260 !important;
   }
+
+  code {
+    color: #ff70b7;
+  }
 }
 
 body {

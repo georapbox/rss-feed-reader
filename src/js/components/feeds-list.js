@@ -1,6 +1,6 @@
 import { styleSheets } from '../helpers/styles';
 import { getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus } from '../helpers/storage.js';
-import './export-feeds';
+import './export-feeds.js';
 
 const template = document.createElement('template');
 
@@ -13,11 +13,10 @@ template.innerHTML = /* html */`
 
   <details id="editFeedsToggle">
     <summary>Edit feeds</summary>
-    <div class="mb-3">
-      <export-feeds></export-feeds>
-    </div>
 
     <ul class="list-group mt-1" id="feedsList"></ul>
+
+    <export-feeds class="mt-2"></export-feeds>
   </details>
 
   <div class="alert alert-info d-flex align-items-center mt-3 mb-1 d-none" role="alert" id="reloadInfo">
@@ -41,9 +40,9 @@ class FeedsList extends HTMLElement {
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
 
-    this.$editFeedsToggle = this.shadowRoot.getElementById('editFeedsToggle');
-    this.$feedsList = this.shadowRoot.getElementById('feedsList');
-    this.$reloadInfo = this.shadowRoot.getElementById('reloadInfo');
+    this.$editFeedsToggleEl = this.shadowRoot.getElementById('editFeedsToggle');
+    this.$feedsListEl = this.shadowRoot.getElementById('feedsList');
+    this.$reloadInfoEl = this.shadowRoot.getElementById('reloadInfo');
 
     this._handleFeedsUpdatedEvent = this._handleFeedsUpdatedEvent.bind(this);
   }
@@ -53,33 +52,37 @@ class FeedsList extends HTMLElement {
 
     this._toggleFeedsVisibility();
 
-    this.$editFeedsToggle.open = ['open', null].includes(getFeedsOptionsStatus());
+    this.$editFeedsToggleEl.open = ['open', null].includes(getFeedsOptionsStatus());
 
-    this.$editFeedsToggle.addEventListener('toggle', this._onEditFeedsToggle);
-    this.$feedsList.addEventListener('click', this._handleFeedActions);
+    this.$editFeedsToggleEl.addEventListener('toggle', this._onEditFeedsToggle);
+    this.$feedsListEl.addEventListener('click', this._handleFeedActions);
     document.addEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
   }
 
   disconnectedCallback() {
-    this.$editFeedsToggle.removeEventListener('toggle', this._onEditFeedsToggle);
-    this.$feedsList.removeEventListener('click', this._handleFeedActions);
+    this.$editFeedsToggleEl.removeEventListener('toggle', this._onEditFeedsToggle);
+    this.$feedsListEl.removeEventListener('click', this._handleFeedActions);
     document.removeEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
   }
 
   _handleFeedsUpdatedEvent(evt) {
+    const $exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
+
     if (evt.detail.action === 'edit') {
       this._updateFeedStatus(evt.detail.feed);
     }
 
     if (evt.detail.action === 'delete') {
+      $exportFeedsEl.open = false;
       this._removeFeed(evt.detail.feed);
     }
 
     if (evt.detail.action === 'add') {
+      $exportFeedsEl.open = false;
       this._addFeed(evt.detail.feed);
     }
 
-    this.$reloadInfo.classList.remove('d-none');
+    this.$reloadInfoEl.classList.remove('d-none');
   }
 
   _handleFeedActions(evt) {
@@ -102,7 +105,7 @@ class FeedsList extends HTMLElement {
 
   _toggleFeedsVisibility() {
     const feeds = getFeeds();
-    this.$editFeedsToggle.classList.toggle('d-none', feeds.length === 0);
+    this.$editFeedsToggleEl.classList.toggle('d-none', feeds.length === 0);
   }
 
   _addFeed(feed) {
@@ -139,13 +142,13 @@ class FeedsList extends HTMLElement {
     listItem.appendChild(textContainer);
     listItem.appendChild(optionsContainer);
 
-    this.$feedsList.appendChild(listItem);
+    this.$feedsListEl.appendChild(listItem);
 
     this._toggleFeedsVisibility();
   }
 
   _updateFeedStatus(feed) {
-    const listItem = this.$feedsList.querySelector(`[data-feedurl="${feed.url}"]`);
+    const listItem = this.$feedsListEl.querySelector(`[data-feedurl="${feed.url}"]`);
 
     if (listItem) {
       const switchInput = listItem.querySelector('input[type="checkbox"]');
@@ -154,7 +157,7 @@ class FeedsList extends HTMLElement {
   }
 
   _removeFeed(feed) {
-    const listItem = this.$feedsList.querySelector(`[data-feedurl="${feed.url}"]`);
+    const listItem = this.$feedsListEl.querySelector(`[data-feedurl="${feed.url}"]`);
     listItem && listItem.remove();
     this._toggleFeedsVisibility();
   }
