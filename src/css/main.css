@@ -32,9 +32,9 @@
     border-color: var(--bs-gray-700);
   }
 
-  .btn,
-  .btn:hover {
-    color: var(--body-color);
+  .btn.btn-default,
+  .btn.btn-default:hover {
+    color: var(--body-color) !important;
   }
 
   .btn.btn-primary {

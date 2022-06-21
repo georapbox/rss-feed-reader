@@ -1,5 +1,5 @@
 import { styleSheets } from '../helpers/styles';
-import { getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus } from '../helpers/storage.js';
+import { getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus, setShowThumbs, getShowThumbs } from '../helpers/storage.js';
 import './export-feeds.js';
 
 const template = document.createElement('template');
@@ -14,17 +14,24 @@ template.innerHTML = /* html */`
   <details id="editFeedsToggle">
     <summary>Edit feeds</summary>
 
+    <div class="form-check my-2">
+      <input class="form-check-input" type="checkbox" id="showThumbsCheckbox" checked>
+      <label class="form-check-label" for="showThumbsCheckbox">
+        Show thumbnails
+      </label>
+    </div>
+
     <ul class="list-group mt-1" id="feedsList"></ul>
 
     <export-feeds class="mt-2"></export-feeds>
   </details>
 
-  <div class="alert alert-info d-flex align-items-center mt-3 mb-1 d-none" role="alert" id="reloadInfo">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle-fill me-2" viewBox="0 0 16 16">
+  <div class="alert alert-info py-2 text-center rounded-0 position-fixed top-0 start-0 w-100 d-none" role="alert" id="reloadInfo">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" style="min-width: 16px;" fill="currentColor" class="bi bi-info-circle-fill me-2" viewBox="0 0 16 16">
       <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
     </svg>
     <span>
-      There have been changes in the feeds list. <a href="/" class="alert-link">Reload</a>
+      <a href="/" class="alert-link">Reload</a> the page to update feeds.
     </span>
   </div>
 `;
@@ -40,11 +47,13 @@ class FeedsList extends HTMLElement {
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
 
-    this.$editFeedsToggleEl = this.shadowRoot.getElementById('editFeedsToggle');
-    this.$feedsListEl = this.shadowRoot.getElementById('feedsList');
-    this.$reloadInfoEl = this.shadowRoot.getElementById('reloadInfo');
+    this.editFeedsToggleEl = this.shadowRoot.getElementById('editFeedsToggle');
+    this.feedsListEl = this.shadowRoot.getElementById('feedsList');
+    this.reloadInfoEl = this.shadowRoot.getElementById('reloadInfo');
+    this.showThumbsCheckbox = this.shadowRoot.getElementById('showThumbsCheckbox');
 
     this._handleFeedsUpdatedEvent = this._handleFeedsUpdatedEvent.bind(this);
+    this._handleShowThumbs = this._handleShowThumbs.bind(this);
   }
 
   connectedCallback() {
@@ -52,37 +61,41 @@ class FeedsList extends HTMLElement {
 
     this._toggleFeedsVisibility();
 
-    this.$editFeedsToggleEl.open = ['open', null].includes(getFeedsOptionsStatus());
+    this.editFeedsToggleEl.open = ['open', null].includes(getFeedsOptionsStatus());
 
-    this.$editFeedsToggleEl.addEventListener('toggle', this._onEditFeedsToggle);
-    this.$feedsListEl.addEventListener('click', this._handleFeedActions);
+    this.editFeedsToggleEl.addEventListener('toggle', this._onEditFeedsToggle);
+    this.feedsListEl.addEventListener('click', this._handleFeedActions);
     document.addEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
+
+    this.showThumbsCheckbox.checked = getShowThumbs();
+    this.showThumbsCheckbox.addEventListener('change', this._handleShowThumbs);
   }
 
   disconnectedCallback() {
-    this.$editFeedsToggleEl.removeEventListener('toggle', this._onEditFeedsToggle);
-    this.$feedsListEl.removeEventListener('click', this._handleFeedActions);
+    this.editFeedsToggleEl.removeEventListener('toggle', this._onEditFeedsToggle);
+    this.feedsListEl.removeEventListener('click', this._handleFeedActions);
+    this.showThumbsCheckbox.removeEventListener('change', this._handleShowThumbs);
     document.removeEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
   }
 
   _handleFeedsUpdatedEvent(evt) {
-    const $exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
+    const exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
 
     if (evt.detail.action === 'edit') {
       this._updateFeedStatus(evt.detail.feed);
     }
 
     if (evt.detail.action === 'delete') {
-      $exportFeedsEl.open = false;
+      exportFeedsEl.open = false;
       this._removeFeed(evt.detail.feed);
     }
 
     if (evt.detail.action === 'add') {
-      $exportFeedsEl.open = false;
+      exportFeedsEl.open = false;
       this._addFeed(evt.detail.feed);
     }
 
-    this.$reloadInfoEl.classList.remove('d-none');
+    this.reloadInfoEl.classList.remove('d-none');
   }
 
   _handleFeedActions(evt) {
@@ -103,9 +116,14 @@ class FeedsList extends HTMLElement {
     }
   }
 
+  _handleShowThumbs(evt) {
+    setShowThumbs(evt.target.checked);
+    this.reloadInfoEl.classList.remove('d-none');
+  }
+
   _toggleFeedsVisibility() {
     const feeds = getFeeds();
-    this.$editFeedsToggleEl.classList.toggle('d-none', feeds.length === 0);
+    this.editFeedsToggleEl.classList.toggle('d-none', feeds.length === 0);
   }
 
   _addFeed(feed) {
@@ -142,13 +160,13 @@ class FeedsList extends HTMLElement {
     listItem.appendChild(textContainer);
     listItem.appendChild(optionsContainer);
 
-    this.$feedsListEl.appendChild(listItem);
+    this.feedsListEl.appendChild(listItem);
 
     this._toggleFeedsVisibility();
   }
 
   _updateFeedStatus(feed) {
-    const listItem = this.$feedsListEl.querySelector(`[data-feedurl="${feed.url}"]`);
+    const listItem = this.feedsListEl.querySelector(`[data-feedurl="${feed.url}"]`);
 
     if (listItem) {
       const switchInput = listItem.querySelector('input[type="checkbox"]');
@@ -157,7 +175,7 @@ class FeedsList extends HTMLElement {
   }
 
   _removeFeed(feed) {
-    const listItem = this.$feedsListEl.querySelector(`[data-feedurl="${feed.url}"]`);
+    const listItem = this.feedsListEl.querySelector(`[data-feedurl="${feed.url}"]`);
     listItem && listItem.remove();
     this._toggleFeedsVisibility();
   }

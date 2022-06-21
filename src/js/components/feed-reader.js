@@ -1,5 +1,5 @@
 import { styleSheets } from '../helpers/styles';
-import { getFeeds } from '../helpers/storage.js';
+import { getFeeds, getShowThumbs } from '../helpers/storage.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
 
 const template = document.createElement('template');
@@ -57,20 +57,24 @@ class FeedReader extends HTMLElement {
   }
 
   _feedsReaderTemplate(data, item) {
+    const thumbnail = getShowThumbs() ? `<img src="${item.thumbnail}" alt="${item.title}" class="me-3 mb-3 rounded" width="150">` : '';
+
     return /* html */`
       <div class="card mb-4">
         <div class="card-body">
           <div class="d-block d-md-flex align-items-start flex-wrap">
-            <img src="${item.thumbnail}" alt="${item.title}" class="me-3 mb-3 rounded" width="150">
+            ${thumbnail}
 
             <div style="flex: 1;">
               <a href="${item.link}" target="_blank" rel="noreferrer noopener" class="text-decoration-none">
                 <h5 class="card-title">${item.title}</h5>
               </a>
 
-              <p class="mb-0 "><strong>From:</strong> ${data.feed.title}</p>
-              <p class="mb-0 "><strong>Author:</strong> ${item.author || '-'}</p>
-              <p class=""><strong>Published Date:</strong> ${item.pubDate}</p>
+              <div style="font-size: 0.9375rem;">
+                <p class="mb-0"><strong>From:</strong> ${data.feed.title}</p>
+                <p class="mb-0"><strong>Author:</strong> ${item.author || '-'}</p>
+                <p><strong>Published:</strong> ${item.pubDate}</p>
+              </div>
             </div>
           </div>
 
