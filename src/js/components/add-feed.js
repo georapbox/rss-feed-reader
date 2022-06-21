@@ -33,15 +33,15 @@ class AddFeed extends HTMLElement {
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
 
-    this.$form = this.shadowRoot.querySelector('form[name="addFeedForm"]');
+    this.formEl = this.shadowRoot.querySelector('form[name="addFeedForm"]');
   }
 
   connectedCallback() {
-    this.$form.addEventListener('submit', this._handleFormSubmission);
+    this.formEl.addEventListener('submit', this._handleFormSubmission);
   }
 
   disconnectedCallback() {
-    this.$form.addEventListener('submit', this._handleFormSubmission);
+    this.formEl.addEventListener('submit', this._handleFormSubmission);
   }
 
   _handleFormSubmission(evt) {
@@ -50,9 +50,18 @@ class AddFeed extends HTMLElement {
     const input = evt.target['feed-url'];
     const { value } = input;
 
-    value.split('~').forEach(v => {
-      if (!getFeeds().find(f => f.url === v)) {
-        saveFeed({ url: v, active: false }); // FIXME Change "active" to true
+    value.split('~').forEach(url => {
+      const urlExists = Boolean(getFeeds().find(feed => feed.url === url));
+      let isValidUrl = true;
+
+      try {
+        new URL(url);
+      } catch {
+        isValidUrl = false;
+      }
+
+      if (!urlExists && isValidUrl) {
+        saveFeed({ url, active: true });
       }
     });
 
