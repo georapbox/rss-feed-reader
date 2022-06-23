@@ -8,7 +8,7 @@
     "clean": "rimraf docs",
     "generateSW": "workbox generateSW",
     "start": "parcel",
-    "build:parcel": "parcel build --dist-dir=docs",
+    "build:parcel": "parcel build --dist-dir=docs --public-url=./",
     "build": "npm-run-all clean build:parcel",
     "postbuild": "npm run generateSW"
   },
