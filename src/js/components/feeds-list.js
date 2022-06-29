@@ -155,7 +155,7 @@ class FeedsList extends HTMLElement {
     optionsContainer.appendChild(deleteButton);
 
     const listItem = document.createElement('li');
-    listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+    listItem.className = 'list-group-item d-flex justify-content-between align-items-center gap-1';
     listItem.setAttribute('data-feedurl', feed.url);
     listItem.appendChild(textContainer);
     listItem.appendChild(optionsContainer);

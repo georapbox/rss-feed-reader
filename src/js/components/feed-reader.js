@@ -46,9 +46,20 @@ class FeedReader extends HTMLElement {
         try {
           const data = await fetchFeed(feed.url);
 
+          const details = document.createElement('details');
+          details.open = true;
+
+          const summary = document.createElement('summary');
+          summary.className = 'mb-2';
+          summary.textContent = data.feed.title || feed.url;
+
+          details.appendChild(summary);
+
           data.items.forEach(item => {
-            feedsViewer.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(data, item));
+            details.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(data, item));
           });
+
+          feedsViewer.appendChild(details);
         } catch (error) {
           // TODO Improve error handling
           console.error(error);

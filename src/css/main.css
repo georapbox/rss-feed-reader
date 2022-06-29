@@ -80,6 +80,10 @@
     color: #e05260 !important;
   }
 
+  .text-primary {
+    color: var(--primary-color) !important;
+  }
+
   code {
     color: #ff70b7;
   }
