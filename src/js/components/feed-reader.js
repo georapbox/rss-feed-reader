@@ -14,7 +14,8 @@ template.innerHTML = /* html */`
       display: none;
     }
 
-    .feed-description-viewer img {
+    .feed-description-viewer img,
+    .feed-description-viewer video {
       max-width: 100%;
       height: auto;
     }
