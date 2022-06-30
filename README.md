@@ -2,6 +2,8 @@
 
 A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)
 
+[Demo](georapbox.github.io/rss-feed-reader/)
+
 ## Why?
 
 No particular reason, just for fun!
@@ -16,10 +18,7 @@ No particular reason, just for fun!
 
 - [RSS 2 JSON API](https://rss2json.com/) (used to convert feeds from XML to JSON format)
 - Custom Elements aka Web components
-
-## TODO
-
-- [ ] Progressive Web App (PWA)
+- Progressive Web App (PWA)
 
 ## License
 
