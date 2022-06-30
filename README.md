@@ -2,7 +2,7 @@
 
 A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)
 
-[Demo](georapbox.github.io/rss-feed-reader/)
+[Demo](https://georapbox.github.io/rss-feed-reader/)
 
 ## Why?
 
