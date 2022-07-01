@@ -1,6 +1,15 @@
 {
   "short_name": "RSS Feed Reader",
   "name": "RSS Feed Reader",
+  "description": "A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)",
+  "categories": ["RSS", "Feeds", "News"],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/screenshot.png",
+      "type": "image/png",
+      "sizes": "800x800"
+    }
+  ],
   "icons": [
     {
       "src":"assets/app-icons/android/192.png",
