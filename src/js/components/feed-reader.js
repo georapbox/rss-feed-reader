@@ -39,10 +39,13 @@ class FeedReader extends HTMLElement {
   connectedCallback() {
     const feedsViewer = this.shadowRoot.getElementById('feedsViewer');
 
-    feedsViewer.innerHTML = '';
-
     getFeeds().forEach(async feed => {
       if (feed.active) {
+        feedsViewer.innerHTML += /* html */`
+          <skeleton-placeholder effect="fade" class="mb-2" style="max-width: 300px;"></skeleton-placeholder>
+          <skeleton-placeholder effect="fade" class="mb-4" style="height: 80px;"></skeleton-placeholder>
+        `;
+
         try {
           const data = await fetchFeed(feed.url);
 
@@ -63,6 +66,8 @@ class FeedReader extends HTMLElement {
         } catch (error) {
           // TODO Improve error handling
           console.error(error);
+        } finally {
+          [...feedsViewer.querySelectorAll('skeleton-placeholder')].forEach(el => el.remove());
         }
       }
     });
