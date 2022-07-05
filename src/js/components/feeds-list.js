@@ -112,7 +112,9 @@ class FeedsList extends HTMLElement {
     if (switchInput) {
       saveFeed({ url: feedUrl, active: target.checked });
     } else if (deleteButton) {
-      deleteFeed(feedUrl);
+      if (window.confirm(`Are you sure you want to delete feed "${feedUrl}"?`)) {
+        deleteFeed(feedUrl);
+      }
     }
   }
 
