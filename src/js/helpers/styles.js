@@ -16,7 +16,7 @@ for (let i = 0; i < styleURLs.length; i += 1) {
   }));
 
   for (let i = 0; i < styles.length; i += 1) {
-    styleSheets[i].replace(styles[i]);
+    await styleSheets[i].replace(styles[i]);
   }
 
   document.body.style.visibility = 'visible';
