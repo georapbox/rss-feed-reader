@@ -27,6 +27,10 @@ template.innerHTML = /* html */`
     details[open] summary {
       padding-bottom: 0.5rem;
     }
+
+    details:not([open]):last-child summary {
+      margin-bottom: 1rem;
+    }
   </style>
 
   <div id="feedsViewer"></div>
