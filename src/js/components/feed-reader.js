@@ -19,6 +19,14 @@ template.innerHTML = /* html */`
       max-width: 100%;
       height: auto;
     }
+
+    summary {
+      padding-top: 0.5rem;
+    }
+
+    details[open] summary {
+      padding-bottom: 0.5rem;
+    }
   </style>
 
   <div id="feedsViewer"></div>
@@ -42,7 +50,7 @@ class FeedReader extends HTMLElement {
     getFeeds().forEach(async feed => {
       if (feed.active) {
         feedsViewer.innerHTML += /* html */`
-          <skeleton-placeholder effect="fade" class="mb-2" style="max-width: 300px;"></skeleton-placeholder>
+          <skeleton-placeholder effect="fade" class="my-2" style="max-width: 300px; height: 22px;"></skeleton-placeholder>
           <skeleton-placeholder effect="fade" class="mb-4" style="height: 80px;"></skeleton-placeholder>
         `;
 
@@ -53,7 +61,6 @@ class FeedReader extends HTMLElement {
           details.open = true;
 
           const summary = document.createElement('summary');
-          summary.className = 'mb-2';
           summary.textContent = data.feed.title || feed.url;
 
           details.appendChild(summary);
