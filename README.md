@@ -20,6 +20,10 @@ No particular reason, just for fun!
 - Custom Elements aka Web components
 - Progressive Web App (PWA)
 
+## RSS feeds collection
+
+Here's a great [collection of RSS feeds](https://github.com/simevidas/web-dev-feeds) for web developers by [@simevidas](https://github.com/simevidas).
+
 ## License
 
 [The MIT License (MIT)](https://georapbox.mit-license.org/@2022)
