@@ -52,6 +52,7 @@ class FeedsList extends HTMLElement {
     this.reloadInfoEl = this.shadowRoot.getElementById('reloadInfo');
     this.showThumbsCheckbox = this.shadowRoot.getElementById('showThumbsCheckbox');
 
+    this._hadnleFeedError = this._hadnleFeedError.bind(this);
     this._handleFeedsUpdatedEvent = this._handleFeedsUpdatedEvent.bind(this);
     this._handleShowThumbs = this._handleShowThumbs.bind(this);
   }
@@ -65,6 +66,7 @@ class FeedsList extends HTMLElement {
 
     this.editFeedsToggleEl.addEventListener('toggle', this._onEditFeedsToggle);
     this.feedsListEl.addEventListener('click', this._handleFeedActions);
+    document.addEventListener('feed-error', this._hadnleFeedError);
     document.addEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
 
     this.showThumbsCheckbox.checked = getShowThumbs();
@@ -75,7 +77,21 @@ class FeedsList extends HTMLElement {
     this.editFeedsToggleEl.removeEventListener('toggle', this._onEditFeedsToggle);
     this.feedsListEl.removeEventListener('click', this._handleFeedActions);
     this.showThumbsCheckbox.removeEventListener('change', this._handleShowThumbs);
+    document.removeEventListener('feed-error', this._hadnleFeedError);
     document.removeEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
+  }
+
+  _hadnleFeedError(evt) {
+    const feedListElement = this.shadowRoot.querySelectorAll('.list-group-item')[evt.detail.feedIndex];
+
+    if (feedListElement) {
+      feedListElement.innerHTML += /* html */`
+        <div class="text-danger text-truncate">
+          <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="16" height="16"><title>Warning</title><path d="M85.57 446.25h340.86a32 32 0 0028.17-47.17L284.18 82.58c-12.09-22.44-44.27-22.44-56.36 0L57.4 399.08a32 32 0 0028.17 47.17z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M250.26 195.39l5.74 122 5.73-121.95a5.74 5.74 0 00-5.79-6h0a5.74 5.74 0 00-5.68 5.95z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M256 397.25a20 20 0 1120-20 20 20 0 01-20 20z"/></svg>
+          <small>Error fetching feed</small>
+        </div>
+      `;
+    }
   }
 
   _handleFeedsUpdatedEvent(evt) {
@@ -157,10 +173,16 @@ class FeedsList extends HTMLElement {
     optionsContainer.appendChild(deleteButton);
 
     const listItem = document.createElement('li');
-    listItem.className = 'list-group-item d-flex justify-content-between align-items-center gap-1';
+    listItem.className = 'list-group-item';
     listItem.setAttribute('data-feedurl', feed.url);
-    listItem.appendChild(textContainer);
-    listItem.appendChild(optionsContainer);
+
+    const listItemContent = document.createElement('div');
+    listItemContent.className = 'd-flex justify-content-between align-items-center gap-1';
+
+    listItemContent.appendChild(textContainer);
+    listItemContent.appendChild(optionsContainer);
+
+    listItem.appendChild(listItemContent);
 
     this.feedsListEl.appendChild(listItem);
 

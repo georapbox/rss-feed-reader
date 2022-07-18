@@ -51,7 +51,7 @@ class FeedReader extends HTMLElement {
   connectedCallback() {
     const feedsViewer = this.shadowRoot.getElementById('feedsViewer');
 
-    getFeeds().forEach(async feed => {
+    getFeeds().forEach(async (feed, feedIndex) => {
       if (feed.active) {
         feedsViewer.innerHTML += /* html */`
           <skeleton-placeholder effect="fade" class="my-2" style="max-width: 300px; height: 22px;"></skeleton-placeholder>
@@ -75,8 +75,13 @@ class FeedReader extends HTMLElement {
 
           feedsViewer.appendChild(details);
         } catch (error) {
-          // TODO Improve error handling
           console.error(error);
+
+          this.dispatchEvent(new CustomEvent('feed-error', {
+            bubbles: true,
+            composed: true,
+            detail: { error, feedIndex }
+          }));
         } finally {
           [...feedsViewer.querySelectorAll('skeleton-placeholder')].forEach(el => el.remove());
         }
