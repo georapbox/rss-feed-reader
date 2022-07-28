@@ -28,7 +28,7 @@ template.innerHTML = /* html */`
       padding-bottom: 0.5rem;
     }
 
-    details:not([open]):last-child summary {
+    details:not([open]):not(.card details):last-child summary {
       margin-bottom: 1rem;
     }
   </style>
@@ -111,9 +111,12 @@ class FeedReader extends HTMLElement {
             </div>
           </div>
 
-          <div class="feed-description-viewer">
-            ${item.description}
-          </div>
+          <details>
+            <summary>Show article</summary>
+            <div class="feed-description-viewer">
+              ${item.description}
+            </div>
+          </details>
         </div>
       </div>
     `;
