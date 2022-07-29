@@ -3,6 +3,7 @@ import WebStorage from '@georapbox/web-storage';
 const FEDDS_URLS_KEY = 'feeds';
 const FEEDS_OPTIONS_STATUS_KEY = 'feeds_options_status';
 const SHOW_THUMBS_KEY = 'show_thumbs';
+const EXPAND_ARTICLES_KEY = 'expand_articles';
 
 export const storage = WebStorage.createInstance({
   driver: 'localStorage',
@@ -75,4 +76,12 @@ export const getShowThumbs = () => {
 
 export const setShowThumbs = value => {
   return storage.setItem(SHOW_THUMBS_KEY, value);
+};
+
+export const getExpandArticles = () => {
+  return storage.getItem(EXPAND_ARTICLES_KEY);
+};
+
+export const setExpandArticles = value => {
+  return storage.setItem(EXPAND_ARTICLES_KEY, value);
 };

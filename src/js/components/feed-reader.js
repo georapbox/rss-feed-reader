@@ -1,5 +1,5 @@
 import { styleSheets } from '../helpers/styles';
-import { getFeeds, getShowThumbs } from '../helpers/storage.js';
+import { getFeeds, getShowThumbs, getExpandArticles } from '../helpers/storage.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
 
 const template = document.createElement('template');
@@ -111,8 +111,8 @@ class FeedReader extends HTMLElement {
             </div>
           </div>
 
-          <details>
-            <summary>Show article</summary>
+          <details ${getExpandArticles() ? 'open' : ''}>
+            <summary>Article</summary>
             <div class="feed-description-viewer">
               ${item.description}
             </div>

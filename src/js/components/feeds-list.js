@@ -1,5 +1,8 @@
 import { styleSheets } from '../helpers/styles';
-import { getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus, setShowThumbs, getShowThumbs } from '../helpers/storage.js';
+import {
+  getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus,
+  setShowThumbs, getShowThumbs, setExpandArticles, getExpandArticles
+} from '../helpers/storage.js';
 import './export-feeds.js';
 
 const template = document.createElement('template');
@@ -14,11 +17,20 @@ template.innerHTML = /* html */`
   <details id="editFeedsToggle">
     <summary>Edit feeds</summary>
 
-    <div class="form-check my-2">
-      <input class="form-check-input" type="checkbox" id="showThumbsCheckbox" checked>
-      <label class="form-check-label" for="showThumbsCheckbox">
-        Show thumbnails
-      </label>
+    <div class="d-flex flex-wrap gap-2 gap-sm-4 my-2">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="showThumbsCheckbox">
+        <label class="form-check-label" for="showThumbsCheckbox">
+          Show thumbnails
+        </label>
+      </div>
+
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="expandArticlesCheckbox">
+        <label class="form-check-label" for="expandArticlesCheckbox">
+          Expand articles by default
+        </label>
+      </div>
     </div>
 
     <ul class="list-group mt-1" id="feedsList"></ul>
@@ -51,10 +63,12 @@ class FeedsList extends HTMLElement {
     this.feedsListEl = this.shadowRoot.getElementById('feedsList');
     this.reloadInfoEl = this.shadowRoot.getElementById('reloadInfo');
     this.showThumbsCheckbox = this.shadowRoot.getElementById('showThumbsCheckbox');
+    this.expandArticlesCheckbox = this.shadowRoot.getElementById('expandArticlesCheckbox');
 
     this._hadnleFeedError = this._hadnleFeedError.bind(this);
     this._handleFeedsUpdatedEvent = this._handleFeedsUpdatedEvent.bind(this);
     this._handleShowThumbs = this._handleShowThumbs.bind(this);
+    this._handleExpandArticles = this._handleExpandArticles.bind(this);
   }
 
   connectedCallback() {
@@ -71,12 +85,16 @@ class FeedsList extends HTMLElement {
 
     this.showThumbsCheckbox.checked = getShowThumbs();
     this.showThumbsCheckbox.addEventListener('change', this._handleShowThumbs);
+
+    this.expandArticlesCheckbox.checked = getExpandArticles();
+    this.expandArticlesCheckbox.addEventListener('change', this._handleExpandArticles);
   }
 
   disconnectedCallback() {
     this.editFeedsToggleEl.removeEventListener('toggle', this._onEditFeedsToggle);
     this.feedsListEl.removeEventListener('click', this._handleFeedActions);
     this.showThumbsCheckbox.removeEventListener('change', this._handleShowThumbs);
+    this.expandArticlesCheckbox.removeEventListener('change', this._handleExpandArticles);
     document.removeEventListener('feed-error', this._hadnleFeedError);
     document.removeEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
   }
@@ -136,6 +154,11 @@ class FeedsList extends HTMLElement {
 
   _handleShowThumbs(evt) {
     setShowThumbs(evt.target.checked);
+    this.reloadInfoEl.classList.remove('d-none');
+  }
+
+  _handleExpandArticles(evt) {
+    setExpandArticles(evt.target.checked);
     this.reloadInfoEl.classList.remove('d-none');
   }
 
