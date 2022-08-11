@@ -169,11 +169,14 @@ class FeedsList extends HTMLElement {
   }
 
   _addFeed(feed) {
-    const textContainer = document.createElement('span');
+    const textContainer = document.createElement('label');
     textContainer.className = 'text-truncate';
+    textContainer.style.flex = '1';
     textContainer.textContent = feed.url;
+    textContainer.htmlFor = feed.url;
 
     const switchInput = document.createElement('input');
+    switchInput.id = feed.url;
     switchInput.className = 'form-check-input';
     switchInput.type = 'checkbox';
     switchInput.role = 'switch';
