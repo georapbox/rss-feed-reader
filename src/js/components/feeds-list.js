@@ -144,7 +144,8 @@ class FeedsList extends HTMLElement {
     const feedUrl = feedItem.getAttribute('data-feedurl');
 
     if (switchInput) {
-      saveFeed({ url: feedUrl, active: target.checked });
+      switchInput.setAttribute('aria-label', switchInput.checked ? 'Active' : 'Inactive');
+      saveFeed({ url: feedUrl, active: switchInput.checked });
     } else if (deleteButton) {
       if (window.confirm(`Are you sure you want to delete feed "${feedUrl}"?`)) {
         deleteFeed(feedUrl);
@@ -176,7 +177,7 @@ class FeedsList extends HTMLElement {
     switchInput.className = 'form-check-input';
     switchInput.type = 'checkbox';
     switchInput.role = 'switch';
-    switchInput.setAttribute('aria-label', 'Active');
+    switchInput.setAttribute('aria-label', feed.active ? 'Active' : 'Inactive');
     switchInput.toggleAttribute('checked', feed.active);
 
     const checkboxContainer = document.createElement('div');
