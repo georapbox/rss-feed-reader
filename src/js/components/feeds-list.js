@@ -1,3 +1,4 @@
+import Sortable from 'sortablejs';
 import { styleSheets } from '../helpers/styles';
 import {
   getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus,
@@ -11,6 +12,16 @@ template.innerHTML = /* html */`
   <style>
     :host {
       display: block;
+    }
+
+    .sort-handler {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 35px;
+      height: 100%;
+      cursor: grab;
+      margin-left: -1rem;
     }
   </style>
 
@@ -88,6 +99,11 @@ class FeedsList extends HTMLElement {
 
     this.expandArticlesCheckbox.checked = getExpandArticles();
     this.expandArticlesCheckbox.addEventListener('change', this._handleExpandArticles);
+
+    new Sortable(this.feedsListEl, {
+      animation: 150,
+      handle: '.sort-handler'
+    });
   }
 
   disconnectedCallback() {
@@ -200,12 +216,23 @@ class FeedsList extends HTMLElement {
     optionsContainer.appendChild(deleteButton);
 
     const listItem = document.createElement('li');
-    listItem.className = 'list-group-item';
+    listItem.className = 'list-group-item py-0';
+    listItem.style.height = '48px';
     listItem.setAttribute('data-feedurl', feed.url);
 
     const listItemContent = document.createElement('div');
     listItemContent.className = 'd-flex justify-content-between align-items-center gap-1';
+    listItemContent.style.height = '100%';
 
+    const sortHandler = document.createElement('div');
+    sortHandler.className = 'sort-handler text-primary opacity-75';
+    sortHandler.innerHTML = /* html */`
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-grip-vertical" viewBox="0 0 16 16">
+        <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+      </svg>
+    `;
+
+    listItemContent.appendChild(sortHandler);
     listItemContent.appendChild(textContainer);
     listItemContent.appendChild(optionsContainer);
 
