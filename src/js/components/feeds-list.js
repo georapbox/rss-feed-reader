@@ -1,7 +1,8 @@
-import Sortable from 'sortablejs';
+// import Sortable from 'sortablejs';
+import Sortable from 'sortablejs/modular/sortable.core.esm.js';
 import { styleSheets } from '../helpers/styles';
 import {
-  getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus,
+  getFeeds, setFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus,
   setShowThumbs, getShowThumbs, setExpandArticles, getExpandArticles
 } from '../helpers/storage.js';
 import './export-feeds.js';
@@ -102,7 +103,17 @@ class FeedsList extends HTMLElement {
 
     new Sortable(this.feedsListEl, {
       animation: 150,
-      handle: '.sort-handler'
+      handle: '.sort-handler',
+      onEnd: evt => {
+        const feeds = Array.prototype.map.call(evt.to.querySelectorAll('li'), (el) => {
+          return {
+            url: el.getAttribute('data-feedurl'),
+            active: el.hasAttribute('data-active')
+          };
+        });
+
+        setFeeds(feeds);
+      }
     });
   }
 
@@ -219,6 +230,7 @@ class FeedsList extends HTMLElement {
     listItem.className = 'list-group-item py-0';
     listItem.style.height = '48px';
     listItem.setAttribute('data-feedurl', feed.url);
+    feed.active && listItem.setAttribute('data-active', '');
 
     const listItemContent = document.createElement('div');
     listItemContent.className = 'd-flex justify-content-between align-items-center gap-1';
@@ -249,6 +261,7 @@ class FeedsList extends HTMLElement {
     if (listItem) {
       const switchInput = listItem.querySelector('input[type="checkbox"]');
       switchInput && switchInput.toggleAttribute('checked', feed.active);
+      listItem.toggleAttribute('data-active', feed.active);
     }
   }
 

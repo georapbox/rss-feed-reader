@@ -14,7 +14,28 @@ export const getFeeds = () => {
   return storage.getItem(FEDDS_URLS_KEY) || [];
 };
 
-export const saveFeed = feed => {
+export const setFeeds = (feeds, shouldDispatchEvent = true) => {
+  if (!Array.isArray(feeds)) {
+    return;
+  }
+
+  let status = 'done';
+
+  storage.setItem(FEDDS_URLS_KEY, feeds, () => {
+    status = 'error';
+  });
+
+  if (status === 'done' && shouldDispatchEvent) {
+    document.dispatchEvent(new CustomEvent('feeds-updated', {
+      bubbles: true,
+      detail: {
+        action: 'set',
+        feeds }
+    }));
+  }
+};
+
+export const saveFeed = (feed, shouldDispatchEvent = true) => {
   const feeds = getFeeds();
   const foundFeed = feeds.find(f => f.url === feed.url);
   let action = '';
@@ -34,7 +55,7 @@ export const saveFeed = feed => {
     status = 'error';
   });
 
-  if (status === 'done') {
+  if (status === 'done' && shouldDispatchEvent) {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
       detail: { action, feed }
@@ -42,7 +63,7 @@ export const saveFeed = feed => {
   }
 };
 
-export const deleteFeed = feedUrl => {
+export const deleteFeed = (feedUrl, shouldDispatchEvent = true) => {
   let status = 'done';
   const feeds = getFeeds();
   const filteredFeeds = feeds.filter(f => f.url !== feedUrl);
@@ -51,7 +72,7 @@ export const deleteFeed = feedUrl => {
     status = 'error';
   });
 
-  if (status === 'done') {
+  if (status === 'done' && shouldDispatchEvent) {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
       detail: {
