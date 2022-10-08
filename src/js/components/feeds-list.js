@@ -19,8 +19,8 @@ template.innerHTML = /* html */`
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 35px;
-      height: 100%;
+      width: 36px;
+      height: 36px;
       cursor: grab;
       margin-left: -1rem;
     }
@@ -131,7 +131,7 @@ class FeedsList extends HTMLElement {
 
     if (feedListElement) {
       feedListElement.innerHTML += /* html */`
-        <div class="text-danger text-truncate">
+        <div class="text-danger text-truncate ms-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="16" height="16"><title>Warning</title><path d="M85.57 446.25h340.86a32 32 0 0028.17-47.17L284.18 82.58c-12.09-22.44-44.27-22.44-56.36 0L57.4 399.08a32 32 0 0028.17 47.17z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M250.26 195.39l5.74 122 5.73-121.95a5.74 5.74 0 00-5.79-6h0a5.74 5.74 0 00-5.68 5.95z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M256 397.25a20 20 0 1120-20 20 20 0 01-20 20z"/></svg>
           <small>Error fetching feed</small>
         </div>
@@ -227,14 +227,12 @@ class FeedsList extends HTMLElement {
     optionsContainer.appendChild(deleteButton);
 
     const listItem = document.createElement('li');
-    listItem.className = 'list-group-item py-0';
-    listItem.style.height = '48px';
+    listItem.className = 'list-group-item';
     listItem.setAttribute('data-feedurl', feed.url);
     feed.active && listItem.setAttribute('data-active', '');
 
     const listItemContent = document.createElement('div');
     listItemContent.className = 'd-flex justify-content-between align-items-center gap-1';
-    listItemContent.style.height = '100%';
 
     const sortHandler = document.createElement('div');
     sortHandler.className = 'sort-handler text-primary opacity-75';
