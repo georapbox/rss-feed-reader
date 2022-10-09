@@ -1,6 +1,8 @@
+// import Sortable from 'sortablejs';
+import Sortable from 'sortablejs/modular/sortable.core.esm.js';
 import { styleSheets } from '../helpers/styles';
 import {
-  getFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus,
+  getFeeds, setFeeds, saveFeed, deleteFeed, setFeedsOptionsStatus, getFeedsOptionsStatus,
   setShowThumbs, getShowThumbs, setExpandArticles, getExpandArticles
 } from '../helpers/storage.js';
 import './export-feeds.js';
@@ -11,6 +13,16 @@ template.innerHTML = /* html */`
   <style>
     :host {
       display: block;
+    }
+
+    .sort-handler {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 36px;
+      height: 36px;
+      cursor: grab;
+      margin-left: -1rem;
     }
   </style>
 
@@ -88,6 +100,21 @@ class FeedsList extends HTMLElement {
 
     this.expandArticlesCheckbox.checked = getExpandArticles();
     this.expandArticlesCheckbox.addEventListener('change', this._handleExpandArticles);
+
+    new Sortable(this.feedsListEl, {
+      animation: 150,
+      handle: '.sort-handler',
+      onEnd: evt => {
+        const feeds = Array.prototype.map.call(evt.to.querySelectorAll('li'), (el) => {
+          return {
+            url: el.getAttribute('data-feedurl'),
+            active: el.hasAttribute('data-active')
+          };
+        });
+
+        setFeeds(feeds);
+      }
+    });
   }
 
   disconnectedCallback() {
@@ -104,7 +131,7 @@ class FeedsList extends HTMLElement {
 
     if (feedListElement) {
       feedListElement.innerHTML += /* html */`
-        <div class="text-danger text-truncate">
+        <div class="text-danger text-truncate ms-4">
           <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="16" height="16"><title>Warning</title><path d="M85.57 446.25h340.86a32 32 0 0028.17-47.17L284.18 82.58c-12.09-22.44-44.27-22.44-56.36 0L57.4 399.08a32 32 0 0028.17 47.17z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M250.26 195.39l5.74 122 5.73-121.95a5.74 5.74 0 00-5.79-6h0a5.74 5.74 0 00-5.68 5.95z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path d="M256 397.25a20 20 0 1120-20 20 20 0 01-20 20z"/></svg>
           <small>Error fetching feed</small>
         </div>
@@ -192,7 +219,11 @@ class FeedsList extends HTMLElement {
     deleteButton.title = 'Delete feed';
     deleteButton.className = 'btn btn-link text-danger p-1';
     deleteButton.style.lineHeight = '1';
-    deleteButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16"><path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/></svg>';
+    deleteButton.innerHTML = /* html */`
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+        <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
+      </svg>
+    `;
 
     const optionsContainer = document.createElement('div');
     optionsContainer.className = 'd-flex align-items-center gap-1';
@@ -202,10 +233,20 @@ class FeedsList extends HTMLElement {
     const listItem = document.createElement('li');
     listItem.className = 'list-group-item';
     listItem.setAttribute('data-feedurl', feed.url);
+    feed.active && listItem.setAttribute('data-active', '');
 
     const listItemContent = document.createElement('div');
     listItemContent.className = 'd-flex justify-content-between align-items-center gap-1';
 
+    const sortHandler = document.createElement('div');
+    sortHandler.className = 'sort-handler';
+    sortHandler.innerHTML = /* html */`
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-grip-vertical" viewBox="0 0 16 16">
+        <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+      </svg>
+    `;
+
+    listItemContent.appendChild(sortHandler);
     listItemContent.appendChild(textContainer);
     listItemContent.appendChild(optionsContainer);
 
@@ -222,6 +263,7 @@ class FeedsList extends HTMLElement {
     if (listItem) {
       const switchInput = listItem.querySelector('input[type="checkbox"]');
       switchInput && switchInput.toggleAttribute('checked', feed.active);
+      listItem.toggleAttribute('data-active', feed.active);
     }
   }
 
