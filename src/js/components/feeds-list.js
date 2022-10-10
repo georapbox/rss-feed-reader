@@ -10,23 +10,27 @@ template.innerHTML = /* html */`
   <style>
     :host {
       display: block;
+      --list-item-height: 50px;
     }
 
     .sort-handler {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 36px;
-      height: 36px;
+      width: 45px;
+      height: var(--list-item-height);
       cursor: grab;
-      margin-left: -1rem;
+    }
+
+    .delete-button {
+      width: 45px;
+      height: var(--list-item-height);
     }
   </style>
 
 
 <div id="feedsContainer">
   <ul class="list-group" id="feedsList"></ul>
-
   <export-feeds class="mt-2"></export-feeds>
 </div>
 
@@ -123,17 +127,21 @@ class FeedsList extends HTMLElement {
 
   _addFeed(feed) {
     const link = document.createElement('a');
-    link.className = 'text-truncate text-decoration-none';
+    link.className = 'text-decoration-none d-flex align-items-center h-100';
     link.style.flex = '1';
+    link.style.minWidth = 0;
     link.style.color = 'inherit';
-    link.textContent = feed.url;
     link.href = feed.url;
     link.setAttribute('data-url', feed.url);
+
+    const linkContent = document.createElement('div');
+    linkContent.className = 'text-truncate';
+    linkContent.textContent = feed.url;
 
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';
     deleteButton.title = 'Delete feed';
-    deleteButton.className = 'btn btn-link text-danger p-1';
+    deleteButton.className = 'delete-button btn btn-link text-danger p-0';
     deleteButton.style.lineHeight = '1';
     deleteButton.innerHTML = /* html */`
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
@@ -141,16 +149,10 @@ class FeedsList extends HTMLElement {
       </svg>
     `;
 
-    const optionsContainer = document.createElement('div');
-    optionsContainer.className = 'd-flex align-items-center gap-1';
-    optionsContainer.appendChild(deleteButton);
-
     const listItem = document.createElement('li');
-    listItem.className = 'list-group-item';
+    listItem.className = 'list-group-item p-0 d-flex justify-content-between align-items-center';
+    listItem.style.height = 'var(--list-item-height)';
     listItem.setAttribute('data-feedurl', feed.url);
-
-    const listItemContent = document.createElement('div');
-    listItemContent.className = 'd-flex justify-content-between align-items-center gap-1';
 
     const sortHandler = document.createElement('div');
     sortHandler.className = 'sort-handler';
@@ -160,11 +162,10 @@ class FeedsList extends HTMLElement {
       </svg>
     `;
 
-    listItemContent.appendChild(sortHandler);
-    listItemContent.appendChild(link);
-    listItemContent.appendChild(optionsContainer);
-
-    listItem.appendChild(listItemContent);
+    link.appendChild(linkContent);
+    listItem.appendChild(sortHandler);
+    listItem.appendChild(link);
+    listItem.appendChild(deleteButton);
 
     this.feedsListEl.appendChild(listItem);
 
