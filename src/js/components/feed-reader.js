@@ -1,5 +1,5 @@
 import { styleSheets } from '../helpers/styles';
-import { getFeeds, getShowThumbs, getExpandArticles } from '../helpers/storage.js';
+import { getFeeds } from '../helpers/storage.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
 
 const template = document.createElement('template');
@@ -31,9 +31,42 @@ template.innerHTML = /* html */`
     details:not([open]):not(.card details):last-child summary {
       margin-bottom: 1rem;
     }
+
+    .title-skeleton {
+      width: 200px;
+      height: 30px;
+    }
+
+    dialog,
+    .modal-header,
+    .modal-body {
+      background-color: var(--body-bg);
+    }
   </style>
 
-  <div id="feedsViewer"></div>
+  <dialog class="w-100 h-100 mw-100 mh-100 p-0 border-0">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="modal-header border-0 px-0">
+            <h1 class="modal-title h4">
+              <skeleton-placeholder effect="wave" class="title-skeleton"></skeleton-placeholder>
+            </h1>
+
+            <form method="dialog">
+              <button value="cancel" class="btn bg-transparent" style="color: inherit;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                </svg>
+              </button>
+            </form>
+          </div>
+
+          <div id="feedsViewer"></div>
+        </div>
+      </div>
+    </div>
+  </dialog>
 `;
 
 class FeedReader extends HTMLElement {
@@ -45,59 +78,86 @@ class FeedReader extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
+    this.dialog = this.shadowRoot.querySelector('dialog');
+    this.dialogTitle = this.dialog.querySelector('.modal-title');
+    this.feedsViewer = this.shadowRoot.getElementById('feedsViewer');
+
+    this._handleDialogOpen = this._handleDialogOpen.bind(this);
+    this._handleDialogClose = this._handleDialogClose.bind(this);
+
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
   connectedCallback() {
-    const feedsViewer = this.shadowRoot.getElementById('feedsViewer');
+    document.addEventListener('display-feed', this._handleDialogOpen);
+    this.dialog.addEventListener('close', this._handleDialogClose);
+  }
 
-    getFeeds().forEach(async (feed, feedIndex) => {
-      if (feed.active) {
-        feedsViewer.innerHTML += /* html */`
-          <skeleton-placeholder effect="fade" class="my-2" style="max-width: 300px; height: 22px;"></skeleton-placeholder>
-          <skeleton-placeholder effect="fade" class="mb-4" style="height: 80px;"></skeleton-placeholder>
+  disconnectedCallback() {
+    this.dialog.removeEventListener('close', this._handleDialogClose);
+    document.removeEventListener('display-feed', this._handleDialogOpen);
+  }
+
+  _handleDialogClose() {
+    document.body.classList.remove('overflow-hidden');
+
+    this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
+
+    this.dialogTitle.innerHTML = /* html */`
+      <skeleton-placeholder effect="wave" class="title-skeleton"></skeleton-placeholder>
+    `;
+  }
+
+  _handleDialogOpen(evt) {
+    document.body.classList.add('overflow-hidden');
+    this.dialog.showModal();
+    this._renderFeed(evt.detail.feedUrl);
+  }
+
+  async _renderFeed(feedUrl) {
+    const feeds = getFeeds();
+    const feed = feeds.find(item => item.url === feedUrl);
+
+    if (feed) {
+      this.feedsViewer.innerHTML = /* html */`
+        <skeleton-placeholder effect="wave" class="mb-4">
+          <div class="p-3">
+            <skeleton-placeholder effect="none" class="mb-3" style="--color: #b1bac3; height: 25px; max-width: 200px;"></skeleton-placeholder>
+            <skeleton-placeholder effect="none" class="mb-1" style="--color: #b1bac3; max-width: 400px;"></skeleton-placeholder>
+            <skeleton-placeholder effect="none" class="mb-1" style="--color: #b1bac3; max-width: 400px;"></skeleton-placeholder>
+            <skeleton-placeholder effect="none" class="mb-1" style="--color: #b1bac3; max-width: 400px;"></skeleton-placeholder>
+            <skeleton-placeholder effect="none" class="mt-3" style="--color: #b1bac3; max-width: 150px;"></skeleton-placeholder>
+          </div>
+        </skeleton-placeholder>
+      `;
+
+      try {
+        const data = await fetchFeed(feed.url);
+
+        this.dialogTitle.textContent = data.feed.title || feed.url;
+
+        data.items.forEach(item => {
+          this.feedsViewer.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(data, item));
+        });
+      } catch (error) {
+        console.error(error);
+
+        this.dialogTitle.textContent = '';
+
+        this.feedsViewer.innerHTML = /* html */`
+          <div class="alert alert-danger">Error fetching feed.</div>
         `;
-
-        try {
-          const data = await fetchFeed(feed.url);
-
-          const details = document.createElement('details');
-          details.open = true;
-
-          const summary = document.createElement('summary');
-          summary.textContent = data.feed.title || feed.url;
-
-          details.appendChild(summary);
-
-          data.items.forEach(item => {
-            details.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(data, item));
-          });
-
-          feedsViewer.appendChild(details);
-        } catch (error) {
-          console.error(error);
-
-          this.dispatchEvent(new CustomEvent('feed-error', {
-            bubbles: true,
-            composed: true,
-            detail: { error, feedIndex }
-          }));
-        } finally {
-          [...feedsViewer.querySelectorAll('skeleton-placeholder')].forEach(el => el.remove());
-        }
+      } finally {
+        [...this.feedsViewer.querySelectorAll('skeleton-placeholder')].forEach(el => el.remove());
       }
-    });
+    }
   }
 
   _feedsReaderTemplate(data, item) {
-    const thumbnail = getShowThumbs() ? `<img src="${item.thumbnail}" alt="${item.title}" class="me-3 mb-3 rounded" width="150">` : '';
-
     return /* html */`
       <div class="card mb-4">
         <div class="card-body">
           <div class="d-block d-md-flex align-items-start flex-wrap">
-            ${thumbnail}
-
             <div style="flex: 1;">
               <a href="${item.link}" target="_blank" rel="noreferrer noopener" class="text-decoration-none">
                 <h5 class="card-title">${item.title}</h5>
@@ -111,7 +171,7 @@ class FeedReader extends HTMLElement {
             </div>
           </div>
 
-          <details ${getExpandArticles() ? 'open' : ''}>
+          <details>
             <summary>Article</summary>
             <div class="feed-description-viewer">
               ${item.description}

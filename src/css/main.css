@@ -50,15 +50,6 @@
     color: var(--bs-dark);
   }
 
-  .form-check-input {
-    background-color: var(--bs-gray-400);
-  }
-
-  .form-check-input:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-  }
-
   .form-control,
   .form-control:focus {
     background-color: var(--bs-gray-800);
@@ -71,8 +62,7 @@
   }
 
   .btn:focus,
-  .form-control:focus,
-  .form-check-input:focus {
+  .form-control:focus {
     box-shadow: var(--focus-ring);
   }
 
