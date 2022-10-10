@@ -61,7 +61,7 @@ class AddFeed extends HTMLElement {
       }
 
       if (!urlExists && isValidUrl) {
-        saveFeed({ url, active: true });
+        saveFeed({ url });
       }
     });
 

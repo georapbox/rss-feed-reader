@@ -1,9 +1,6 @@
 import WebStorage from '@georapbox/web-storage';
 
 const FEDDS_URLS_KEY = 'feeds';
-const FEEDS_OPTIONS_STATUS_KEY = 'feeds_options_status';
-const SHOW_THUMBS_KEY = 'show_thumbs';
-const EXPAND_ARTICLES_KEY = 'expand_articles';
 
 export const storage = WebStorage.createInstance({
   driver: 'localStorage',
@@ -30,7 +27,8 @@ export const setFeeds = (feeds, shouldDispatchEvent = true) => {
       bubbles: true,
       detail: {
         action: 'set',
-        feeds }
+        feeds
+      }
     }));
   }
 };
@@ -42,7 +40,6 @@ export const saveFeed = (feed, shouldDispatchEvent = true) => {
 
   if (foundFeed) {
     foundFeed.url = feed.url;
-    foundFeed.active = feed.active;
     action = 'edit';
   } else {
     feeds.push(feed);
@@ -58,7 +55,10 @@ export const saveFeed = (feed, shouldDispatchEvent = true) => {
   if (status === 'done' && shouldDispatchEvent) {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
-      detail: { action, feed }
+      detail: {
+        action,
+        feed
+      }
     }));
   }
 };
@@ -77,32 +77,10 @@ export const deleteFeed = (feedUrl, shouldDispatchEvent = true) => {
       bubbles: true,
       detail: {
         action: 'delete',
-        feed: { url: feedUrl }
+        feed: {
+          url: feedUrl
+        }
       }
     }));
   }
-};
-
-export const getFeedsOptionsStatus = () => {
-  return storage.getItem(FEEDS_OPTIONS_STATUS_KEY);
-};
-
-export const setFeedsOptionsStatus = value => {
-  storage.setItem(FEEDS_OPTIONS_STATUS_KEY, value);
-};
-
-export const getShowThumbs = () => {
-  return storage.getItem(SHOW_THUMBS_KEY);
-};
-
-export const setShowThumbs = value => {
-  return storage.setItem(SHOW_THUMBS_KEY, value);
-};
-
-export const getExpandArticles = () => {
-  return storage.getItem(EXPAND_ARTICLES_KEY);
-};
-
-export const setExpandArticles = value => {
-  return storage.setItem(EXPAND_ARTICLES_KEY, value);
 };

@@ -1,5 +1,5 @@
 import { styleSheets } from '../helpers/styles';
-import { getFeeds, getShowThumbs, getExpandArticles } from '../helpers/storage.js';
+import { getFeeds } from '../helpers/storage.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
 
 const template = document.createElement('template');
@@ -31,9 +31,42 @@ template.innerHTML = /* html */`
     details:not([open]):not(.card details):last-child summary {
       margin-bottom: 1rem;
     }
+
+    dialog,
+    .modal-header,
+    .modal-body {
+      background-color: var(--body-bg);
+    }
   </style>
 
-  <div id="feedsViewer"></div>
+  <dialog class="w-100 h-100 mw-100 mh-100 p-0 border-0">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="modal-header border-0 px-0">
+            <h2 class="modal-title h4"></h2>
+
+            <button type="button" id="closeDialog" class="btn bg-transparent" style="color: inherit;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="spinner" class="d-none">
+            <div id="spinner" class="d-flex align-items-center justify-content-center gap-2">
+              <div class="spinner-grow" style="color: var(--primary-color);" role="status"></div>
+              <span class="fs-5">Loading...</span>
+            </div>
+          </div>
+
+          <div id="error" class="alert alert-danger d-none">Error fetching feed.</div>
+
+          <div id="feedsViewer"></div>
+        </div>
+      </div>
+    </div>
+  </dialog>
 `;
 
 class FeedReader extends HTMLElement {
@@ -45,59 +78,102 @@ class FeedReader extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
+    this._loading = false;
+
+    this.spinnerEl = this.shadowRoot.getElementById('spinner');
+    this.dialog = this.shadowRoot.querySelector('dialog');
+    this.dialogTitle = this.dialog.querySelector('.modal-title');
+    this.feedsViewer = this.shadowRoot.getElementById('feedsViewer');
+    this.errorEl = this.shadowRoot.getElementById('error');
+    this.closeDialogBtn = this.shadowRoot.getElementById('closeDialog');
+
+    this._onDialogOpen = this._onDialogOpen.bind(this);
+    this._onDialogClose = this._onDialogClose.bind(this);
+    this._onDialogCancel = this._onDialogCancel.bind(this);
+    this._closeDialog = this._closeDialog.bind(this);
+
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
   connectedCallback() {
-    const feedsViewer = this.shadowRoot.getElementById('feedsViewer');
+    document.addEventListener('display-feed', this._onDialogOpen);
+    this.dialog.addEventListener('cancel', this._onDialogCancel);
+    this.dialog.addEventListener('close', this._onDialogClose);
+    this.closeDialogBtn.addEventListener('click', this._closeDialog);
+  }
 
-    getFeeds().forEach(async (feed, feedIndex) => {
-      if (feed.active) {
-        feedsViewer.innerHTML += /* html */`
-          <skeleton-placeholder effect="fade" class="my-2" style="max-width: 300px; height: 22px;"></skeleton-placeholder>
-          <skeleton-placeholder effect="fade" class="mb-4" style="height: 80px;"></skeleton-placeholder>
-        `;
+  disconnectedCallback() {
+    document.removeEventListener('display-feed', this._onDialogOpen);
+    this.dialog.removeEventListener('cancel', this._onDialogCancel);
+    this.dialog.removeEventListener('close', this._onDialogClose);
+    this.closeDialogBtn.removeEventListener('click', this._closeDialog);
+  }
 
-        try {
-          const data = await fetchFeed(feed.url);
+  _closeDialog() {
+    if (this._loading) {
+      return;
+    }
 
-          const details = document.createElement('details');
-          details.open = true;
+    this.dialog.close();
+  }
 
-          const summary = document.createElement('summary');
-          summary.textContent = data.feed.title || feed.url;
+  _onDialogCancel(evt) {
+    if (this._loading) {
+      evt.preventDefault();
+    }
+  }
 
-          details.appendChild(summary);
+  _onDialogClose() {
+    document.body.classList.remove('overflow-hidden');
+    this._resetDialogContent();
+  }
 
-          data.items.forEach(item => {
-            details.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(data, item));
-          });
+  _onDialogOpen(evt) {
+    document.body.classList.add('overflow-hidden');
+    this.dialog.showModal();
+    this._renderFeed(evt.detail.feedUrl);
+  }
 
-          feedsViewer.appendChild(details);
-        } catch (error) {
-          console.error(error);
+  _resetDialogContent() {
+    this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
+    this.dialogTitle.textContent = '';
+    this.spinnerEl.classList.add('d-none');
+    this.errorEl.classList.add('d-none');
+  }
 
-          this.dispatchEvent(new CustomEvent('feed-error', {
-            bubbles: true,
-            composed: true,
-            detail: { error, feedIndex }
-          }));
-        } finally {
-          [...feedsViewer.querySelectorAll('skeleton-placeholder')].forEach(el => el.remove());
-        }
+  async _renderFeed(feedUrl) {
+    const feeds = getFeeds();
+    const feed = feeds.find(item => item.url === feedUrl);
+
+    if (feed) {
+      this._loading = true;
+
+      this.spinnerEl.classList.remove('d-none');
+
+      try {
+        const data = await fetchFeed(feed.url);
+
+        this.dialogTitle.textContent = data.feed.title || feed.url;
+
+        data.items.forEach(item => {
+          this.feedsViewer.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(data, item));
+        });
+      } catch (error) {
+        console.error(error);
+        this.dialogTitle.textContent = '';
+        this.errorEl.classList.remove('d-none');
+      } finally {
+        this.spinnerEl.classList.add('d-none');
+        this._loading = false;
       }
-    });
+    }
   }
 
   _feedsReaderTemplate(data, item) {
-    const thumbnail = getShowThumbs() ? `<img src="${item.thumbnail}" alt="${item.title}" class="me-3 mb-3 rounded" width="150">` : '';
-
     return /* html */`
       <div class="card mb-4">
         <div class="card-body">
           <div class="d-block d-md-flex align-items-start flex-wrap">
-            ${thumbnail}
-
             <div style="flex: 1;">
               <a href="${item.link}" target="_blank" rel="noreferrer noopener" class="text-decoration-none">
                 <h5 class="card-title">${item.title}</h5>
@@ -111,7 +187,7 @@ class FeedReader extends HTMLElement {
             </div>
           </div>
 
-          <details ${getExpandArticles() ? 'open' : ''}>
+          <details>
             <summary>Article</summary>
             <div class="feed-description-viewer">
               ${item.description}
