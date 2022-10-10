@@ -39,7 +39,6 @@
   },
   "dependencies": {
     "@georapbox/clipboard-copy-element": "~1.0.0",
-    "@georapbox/skeleton-placeholder-element": "~1.1.0",
     "@georapbox/web-share-element": "~2.1.2",
     "@georapbox/web-storage": "~2.1.0",
     "bootstrap": "~5.1.3",

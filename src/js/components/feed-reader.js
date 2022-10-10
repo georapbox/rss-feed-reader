@@ -32,11 +32,6 @@ template.innerHTML = /* html */`
       margin-bottom: 1rem;
     }
 
-    .title-skeleton {
-      width: 200px;
-      height: 30px;
-    }
-
     dialog,
     .modal-header,
     .modal-body {
@@ -49,18 +44,23 @@ template.innerHTML = /* html */`
       <div class="row">
         <div class="col">
           <div class="modal-header border-0 px-0">
-            <h1 class="modal-title h4">
-              <skeleton-placeholder effect="wave" class="title-skeleton"></skeleton-placeholder>
-            </h1>
+            <h2 class="modal-title h4"></h2>
 
-            <form method="dialog">
-              <button value="cancel" class="btn bg-transparent" style="color: inherit;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                </svg>
-              </button>
-            </form>
+            <button type="button" id="closeDialog" class="btn bg-transparent" style="color: inherit;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+              </svg>
+            </button>
           </div>
+
+          <div id="spinner" class="d-none">
+            <div id="spinner" class="d-flex align-items-center justify-content-center gap-2">
+              <div class="spinner-grow" style="color: var(--primary-color);" role="status"></div>
+              <span class="fs-5">Loading...</span>
+            </div>
+          </div>
+
+          <div id="error" class="alert alert-danger d-none">Error fetching feed.</div>
 
           <div id="feedsViewer"></div>
         </div>
@@ -78,40 +78,67 @@ class FeedReader extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
+    this._loading = false;
+
+    this.spinnerEl = this.shadowRoot.getElementById('spinner');
     this.dialog = this.shadowRoot.querySelector('dialog');
     this.dialogTitle = this.dialog.querySelector('.modal-title');
     this.feedsViewer = this.shadowRoot.getElementById('feedsViewer');
+    this.errorEl = this.shadowRoot.getElementById('error');
+    this.closeDialogBtn = this.shadowRoot.getElementById('closeDialog');
 
-    this._handleDialogOpen = this._handleDialogOpen.bind(this);
-    this._handleDialogClose = this._handleDialogClose.bind(this);
+    this._onDialogOpen = this._onDialogOpen.bind(this);
+    this._onDialogClose = this._onDialogClose.bind(this);
+    this._onDialogCancel = this._onDialogCancel.bind(this);
+    this._closeDialog = this._closeDialog.bind(this);
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
   connectedCallback() {
-    document.addEventListener('display-feed', this._handleDialogOpen);
-    this.dialog.addEventListener('close', this._handleDialogClose);
+    document.addEventListener('display-feed', this._onDialogOpen);
+    this.dialog.addEventListener('cancel', this._onDialogCancel);
+    this.dialog.addEventListener('close', this._onDialogClose);
+    this.closeDialogBtn.addEventListener('click', this._closeDialog);
   }
 
   disconnectedCallback() {
-    this.dialog.removeEventListener('close', this._handleDialogClose);
-    document.removeEventListener('display-feed', this._handleDialogOpen);
+    document.removeEventListener('display-feed', this._onDialogOpen);
+    this.dialog.removeEventListener('cancel', this._onDialogCancel);
+    this.dialog.removeEventListener('close', this._onDialogClose);
+    this.closeDialogBtn.removeEventListener('click', this._closeDialog);
   }
 
-  _handleDialogClose() {
+  _closeDialog() {
+    if (this._loading) {
+      return;
+    }
+
+    this.dialog.close();
+  }
+
+  _onDialogCancel(evt) {
+    if (this._loading) {
+      evt.preventDefault();
+    }
+  }
+
+  _onDialogClose() {
     document.body.classList.remove('overflow-hidden');
-
-    this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
-
-    this.dialogTitle.innerHTML = /* html */`
-      <skeleton-placeholder effect="wave" class="title-skeleton"></skeleton-placeholder>
-    `;
+    this._resetDialogContent();
   }
 
-  _handleDialogOpen(evt) {
+  _onDialogOpen(evt) {
     document.body.classList.add('overflow-hidden');
     this.dialog.showModal();
     this._renderFeed(evt.detail.feedUrl);
+  }
+
+  _resetDialogContent() {
+    this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
+    this.dialogTitle.textContent = '';
+    this.spinnerEl.classList.add('d-none');
+    this.errorEl.classList.add('d-none');
   }
 
   async _renderFeed(feedUrl) {
@@ -119,17 +146,9 @@ class FeedReader extends HTMLElement {
     const feed = feeds.find(item => item.url === feedUrl);
 
     if (feed) {
-      this.feedsViewer.innerHTML = /* html */`
-        <skeleton-placeholder effect="wave" class="mb-4">
-          <div class="p-3">
-            <skeleton-placeholder effect="none" class="mb-3" style="--color: #b1bac3; height: 25px; max-width: 200px;"></skeleton-placeholder>
-            <skeleton-placeholder effect="none" class="mb-1" style="--color: #b1bac3; max-width: 400px;"></skeleton-placeholder>
-            <skeleton-placeholder effect="none" class="mb-1" style="--color: #b1bac3; max-width: 400px;"></skeleton-placeholder>
-            <skeleton-placeholder effect="none" class="mb-1" style="--color: #b1bac3; max-width: 400px;"></skeleton-placeholder>
-            <skeleton-placeholder effect="none" class="mt-3" style="--color: #b1bac3; max-width: 150px;"></skeleton-placeholder>
-          </div>
-        </skeleton-placeholder>
-      `;
+      this._loading = true;
+
+      this.spinnerEl.classList.remove('d-none');
 
       try {
         const data = await fetchFeed(feed.url);
@@ -141,14 +160,11 @@ class FeedReader extends HTMLElement {
         });
       } catch (error) {
         console.error(error);
-
         this.dialogTitle.textContent = '';
-
-        this.feedsViewer.innerHTML = /* html */`
-          <div class="alert alert-danger">Error fetching feed.</div>
-        `;
+        this.errorEl.classList.remove('d-none');
       } finally {
-        [...this.feedsViewer.querySelectorAll('skeleton-placeholder')].forEach(el => el.remove());
+        this.spinnerEl.classList.add('d-none');
+        this._loading = false;
       }
     }
   }
