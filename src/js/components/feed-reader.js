@@ -46,7 +46,7 @@ template.innerHTML = /* html */`
           <div class="modal-header border-0 px-0">
             <h2 class="modal-title h4"></h2>
 
-            <button type="button" id="closeDialog" class="btn bg-transparent" style="color: inherit;">
+            <button type="button" id="closeDialogBtn" class="btn bg-transparent" style="color: inherit;">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
                 <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
               </svg>
@@ -54,8 +54,8 @@ template.innerHTML = /* html */`
           </div>
 
           <div id="spinner" class="d-none">
-            <div id="spinner" class="d-flex align-items-center justify-content-center gap-2">
-              <div class="spinner-grow" style="color: var(--primary-color);" role="status"></div>
+            <div class="d-flex align-items-center justify-content-center gap-2">
+              <div class="spinner-border" style="color: var(--primary-color);" role="status"></div>
               <span class="fs-5">Loading...</span>
             </div>
           </div>
@@ -82,10 +82,10 @@ class FeedReader extends HTMLElement {
 
     this.spinnerEl = this.shadowRoot.getElementById('spinner');
     this.dialog = this.shadowRoot.querySelector('dialog');
-    this.dialogTitle = this.dialog.querySelector('.modal-title');
+    this.modalTitle = this.dialog.querySelector('.modal-title');
     this.feedsViewer = this.shadowRoot.getElementById('feedsViewer');
     this.errorEl = this.shadowRoot.getElementById('error');
-    this.closeDialogBtn = this.shadowRoot.getElementById('closeDialog');
+    this.closeDialogBtn = this.shadowRoot.getElementById('closeDialogBtn');
 
     this._onDialogOpen = this._onDialogOpen.bind(this);
     this._onDialogClose = this._onDialogClose.bind(this);
@@ -136,7 +136,7 @@ class FeedReader extends HTMLElement {
 
   _resetDialogContent() {
     this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
-    this.dialogTitle.textContent = '';
+    this.modalTitle.textContent = '';
     this.spinnerEl.classList.add('d-none');
     this.errorEl.classList.add('d-none');
   }
@@ -149,21 +149,23 @@ class FeedReader extends HTMLElement {
       this._loading = true;
 
       this.spinnerEl.classList.remove('d-none');
+      this.closeDialogBtn.classList.add('d-none');
 
       try {
         const data = await fetchFeed(feed.url);
 
-        this.dialogTitle.textContent = data.feed.title || feed.url;
+        this.modalTitle.textContent = data.feed.title || feed.url;
 
         data.items.forEach(item => {
           this.feedsViewer.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(data, item));
         });
       } catch (error) {
         console.error(error);
-        this.dialogTitle.textContent = '';
+        this.modalTitle.textContent = '';
         this.errorEl.classList.remove('d-none');
       } finally {
         this.spinnerEl.classList.add('d-none');
+        this.closeDialogBtn.classList.remove('d-none');
         this._loading = false;
       }
     }
