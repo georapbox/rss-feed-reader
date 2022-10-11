@@ -28,12 +28,13 @@ template.innerHTML = /* html */`
     }
   </style>
 
+  <div id="feedsContainer">
+      <div class="d-flex justify-content-end">
+        <export-feeds class="mb-2"></export-feeds>
+      </div>
 
-<div id="feedsContainer">
-  <ul class="list-group" id="feedsList"></ul>
-  <export-feeds class="mt-2"></export-feeds>
-</div>
-
+    <ul class="list-group" id="feedsList"></ul>
+  </div>
 `;
 
 class FeedsList extends HTMLElement {
@@ -49,8 +50,6 @@ class FeedsList extends HTMLElement {
 
     this.feedsContainerEl = this.shadowRoot.getElementById('feedsContainer');
     this.feedsListEl = this.shadowRoot.getElementById('feedsList');
-
-    this._handleFeedsUpdatedEvent = this._handleFeedsUpdatedEvent.bind(this);
   }
 
   connectedCallback() {
@@ -81,19 +80,15 @@ class FeedsList extends HTMLElement {
     document.removeEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
   }
 
-  _handleFeedsUpdatedEvent(evt) {
-    const exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
-
+  _handleFeedsUpdatedEvent = evt => {
     if (evt.detail.action === 'delete') {
-      exportFeedsEl.open = false;
       this._removeFeed(evt.detail.feed);
     }
 
     if (evt.detail.action === 'add') {
-      exportFeedsEl.open = false;
       this._addFeed(evt.detail.feed);
     }
-  }
+  };
 
   _handleFeedActions(evt) {
     const target = evt.target;
@@ -147,6 +142,7 @@ class FeedsList extends HTMLElement {
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
         <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
       </svg>
+      <span class="visually-hidden">Delete</span>
     `;
 
     const listItem = document.createElement('li');

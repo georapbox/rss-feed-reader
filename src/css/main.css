@@ -22,8 +22,7 @@
   }
 
   .card,
-  .list-group-item,
-  .modal-content {
+  .list-group-item {
     background-color: var(--bs-gray-800);
     color: var(--body-color);
     border-color: var(--bs-gray-700);
@@ -83,4 +82,20 @@
 body {
   background-color: var(--body-bg);
   color: var(--body-color);
+}
+
+dialog {
+  background-color: var(--body-bg);
+  border: 0;
+  padding: 0;
+}
+
+/* Scrollbars */
+.hide-scrollbars {
+  scrollbar-color: transparent transparent;
+  scrollbar-width: none;
+}
+
+.hide-scrollbars::-webkit-scrollbar {
+  display: none;
 }

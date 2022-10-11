@@ -31,31 +31,26 @@ template.innerHTML = /* html */`
     details:not([open]):not(.card details):last-child summary {
       margin-bottom: 1rem;
     }
-
-    dialog,
-    .modal-header,
-    .modal-body {
-      background-color: var(--body-bg);
-    }
   </style>
 
-  <dialog class="w-100 h-100 mw-100 mh-100 p-0 border-0">
+  <dialog class="w-100 h-100 mw-100 mh-100">
     <div class="container">
       <div class="row">
         <div class="col">
-          <div class="modal-header border-0 px-0">
-            <h2 class="modal-title h4"></h2>
-
-            <button type="button" id="closeDialogBtn" class="btn bg-transparent" style="color: inherit;">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+          <div class="modal-header border-0 px-0 justify-content-start">
+            <button type="button" id="closeDialogBtn" class="btn bg-transparent me-2" style="color: var(--primary-color);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
               </svg>
+              <span class="visually-hidden">Back</span>
             </button>
+
+            <h2 class="modal-title h4 text-truncate"></h2>
           </div>
 
           <div id="spinner" class="d-none">
             <div class="d-flex align-items-center justify-content-center gap-2">
-              <div class="spinner-border" style="color: var(--primary-color);" role="status"></div>
+              <div class="spinner-border" style="color: var(--primary-color); border-width: 0.2rem; width: 1.5rem; height: 1.5rem;" role="status"></div>
               <span class="fs-5">Loading...</span>
             </div>
           </div>
@@ -87,11 +82,6 @@ class FeedReader extends HTMLElement {
     this.errorEl = this.shadowRoot.getElementById('error');
     this.closeDialogBtn = this.shadowRoot.getElementById('closeDialogBtn');
 
-    this._onDialogOpen = this._onDialogOpen.bind(this);
-    this._onDialogClose = this._onDialogClose.bind(this);
-    this._onDialogCancel = this._onDialogCancel.bind(this);
-    this._closeDialog = this._closeDialog.bind(this);
-
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
@@ -109,30 +99,30 @@ class FeedReader extends HTMLElement {
     this.closeDialogBtn.removeEventListener('click', this._closeDialog);
   }
 
-  _closeDialog() {
+  _closeDialog = () => {
     if (this._loading) {
       return;
     }
 
     this.dialog.close();
-  }
+  };
 
-  _onDialogCancel(evt) {
+  _onDialogCancel = evt => {
     if (this._loading) {
       evt.preventDefault();
     }
-  }
+  };
 
-  _onDialogClose() {
+  _onDialogClose = () => {
     document.body.classList.remove('overflow-hidden');
     this._resetDialogContent();
-  }
+  };
 
-  _onDialogOpen(evt) {
+  _onDialogOpen = evt => {
     document.body.classList.add('overflow-hidden');
     this.dialog.showModal();
     this._renderFeed(evt.detail.feedUrl);
-  }
+  };
 
   _resetDialogContent() {
     this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());

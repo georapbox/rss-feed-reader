@@ -11,22 +11,32 @@ template.innerHTML = /* html */`
     }
 
     #exportCode {
-      flex: 1;
-      overflow-x: auto;
+      overflow-y: auto;
+      max-width: 500px;
       white-space: nowrap;
+    }
+
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(3px);
     }
   </style>
 
-  <details>
-    <summary class="btn btn-sm btn-primary d-inline-flex align-items-center gap-1" id="exportButton">
-      <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="18" height="18"><title>Download</title><path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/></svg>
-      Export feeds
-    </summary>
+  <dialog class="shadow rounded" part="dialog">
+    <div class="modal-header">
+      <h2 class="modal-title h5">Export feeds</h2>
 
-    <div class="card mt-2">
-      <div class="card-body d-md-flex align-items-center p-2 gap-1">
-        <code id="exportCode" class="d-block"></code>
+      <form method="dialog">
+        <button class="btn bg-transparent" style="color: inherit;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+          </svg>
+        </button>
+      </form>
+    </div>
 
+    <div class="modal-body">
+      <div class="d-flex justify-content-end">
         <clipboard-copy>
           <button class="btn btn-sm btn-default" slot="button">
             <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="18" height="18"><title>Copy</title><rect x="128" y="128" width="336" height="336" rx="57" ry="57" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/><path d="M383.5 128l.5-24a56.16 56.16 0 00-56-56H112a64.19 64.19 0 00-64 64v216a56.16 56.16 0 0056 56h24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
@@ -41,8 +51,22 @@ template.innerHTML = /* html */`
           </button>
         </web-share>
       </div>
+
+      <div class="card mt-2">
+        <div class="card-body">
+          <code id="exportCode" class="d-block hide-scrollbars"></code>
+        </div>
+      </div>
     </div>
-  </details>
+  </dialog>
+
+  <button type="button" id="exportBtn" class="btn btn-sm d-inline-flex align-items-center gap-1" style="color: inherit;">
+    <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="18" height="18">
+      <path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+      <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/>
+    </svg>
+    Export feeds
+  </button>
 `;
 
 class ExportFeeds extends HTMLElement {
@@ -54,63 +78,49 @@ class ExportFeeds extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
+    this.exportBtn = this.shadowRoot.getElementById('exportBtn');
+    this.clipboardCopyEl = this.shadowRoot.querySelector('clipboard-copy');
+    this.dialogEl = this.shadowRoot.querySelector('dialog');
+
     this.shadowRoot.adoptedStyleSheets = styleSheets;
-
-    this._handleTriggerExport = this._handleTriggerExport.bind(this);
-  }
-
-  static get observedAttributes() {
-    return ['open'];
-  }
-
-  get open() {
-    return this.hasAttribute('open');
-  }
-
-  set open(value) {
-    if (value) {
-      this.setAttribute('open', '');
-    } else {
-      this.removeAttribute('open');
-    }
-  }
-
-  attributeChangedCallback(name) {
-    if (name === 'open') {
-      this.shadowRoot.querySelector('details').toggleAttribute('open', this.open);
-    }
   }
 
   connectedCallback() {
-    this.shadowRoot.querySelector('details').addEventListener('toggle', this._handleTriggerExport);
-    this.shadowRoot.querySelector('clipboard-copy').addEventListener('clipboard-copy:success', this._handleCopy);
+    this.exportBtn.addEventListener('click', this._handleTriggerExport);
+    this.clipboardCopyEl.addEventListener('clipboard-copy:success', this._handleCopy);
+    this.dialogEl.addEventListener('click', this._handleDialogClick);
   }
 
   disconnectedCallback() {
-    this.shadowRoot.querySelector('details').removeEventListener('toggle', this._handleTriggerExport);
-    this.shadowRoot.querySelector('clipboard-copy').removeEventListener('clipboard-copy:success', this._handleCopy);
+    this.exportBtn.removeEventListener('click', this._handleTriggerExport);
+    this.clipboardCopyEl.removeEventListener('clipboard-copy:success', this._handleCopy);
+    this.dialogEl.addEventListener('click', this._handleDialogClick);
+    clearTimeout(this._copyTimeout);
   }
 
-  _handleTriggerExport(evt) {
-    this.open = evt.target.open;
+  _handleTriggerExport = () => {
+    const feedsToExport = getFeeds().map(f => f.url).join('~');
+    this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
+    this.shadowRoot.querySelector('clipboard-copy').value = feedsToExport;
+    this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
+    this.dialogEl.showModal();
+  };
 
-    if (this.open) {
-      const feedsToExport = getFeeds().map(f => f.url).join('~');
-      this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
-      this.shadowRoot.querySelector('clipboard-copy').value = feedsToExport;
-      this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
-    }
-  }
-
-  _handleCopy(evt) {
+  _handleCopy = evt => {
     const labelEl = evt.target.querySelector('.label');
 
     labelEl.textContent = 'Copied';
 
-    setTimeout(() => {
+    this._copyTimeout = setTimeout(() => {
       labelEl.textContent = 'Copy';
     }, 1000);
-  }
+  };
+
+  _handleDialogClick = (evt) => {
+    if (evt.target === evt.currentTarget) {
+      this.dialogEl.close();
+    }
+  };
 }
 
 if (!window.customElements.get('export-feeds')) {
