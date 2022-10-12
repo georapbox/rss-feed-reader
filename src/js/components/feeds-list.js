@@ -22,7 +22,7 @@ template.innerHTML = /* html */`
     }
 
     .sort-handler[hidden]~.link {
-      padding-left: 1rem;
+      padding-inline: 1rem;
     }
 
     .delete-button {
@@ -33,11 +33,12 @@ template.innerHTML = /* html */`
 
   <div id="feedsContainer">
     <div class="d-flex justify-content-end mb-2">
-      <button type="button" id="reorderBtn" class="reorder-button btn btn-sm d-flex align-items-center gap-1" style="color: inherit;">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
-          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M96 256h320M96 176h320M96 336h320"/>
+      <button type="button" id="editBtn" class="reorder-button btn btn-sm d-flex align-items-center gap-1" style="color: inherit;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18">
+          <path d="M384 224v184a40 40 0 01-40 40H104a40 40 0 01-40-40V168a40 40 0 0140-40h167.48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+          <path d="M459.94 53.25a16.06 16.06 0 00-23.22-.56L424.35 65a8 8 0 000 11.31l11.34 11.32a8 8 0 0011.34 0l12.06-12c6.1-6.09 6.67-16.01.85-22.38zM399.34 90L218.82 270.2a9 9 0 00-2.31 3.93L208.16 299a3.91 3.91 0 004.86 4.86l24.85-8.35a9 9 0 003.93-2.31L422 112.66a9 9 0 000-12.66l-9.95-10a9 9 0 00-12.71 0z" fill="currentColor"/>
         </svg>
-        Reorder
+        Edit
       </button>
 
       <export-feeds></export-feeds>
@@ -60,7 +61,7 @@ class FeedsList extends HTMLElement {
 
     this.feedsContainerEl = this.shadowRoot.getElementById('feedsContainer');
     this.feedsListEl = this.shadowRoot.getElementById('feedsList');
-    this.reorderBtn = this.shadowRoot.getElementById('reorderBtn');
+    this.editBtn = this.shadowRoot.getElementById('editBtn');
   }
 
   connectedCallback() {
@@ -69,20 +70,20 @@ class FeedsList extends HTMLElement {
     this._toggleFeedsVisibility();
 
     this.feedsListEl.addEventListener('click', this._handleFeedActions);
-    this.reorderBtn.addEventListener('click', this._handleReorder);
+    this.editBtn.addEventListener('click', this._handleEdit);
     document.addEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
   }
 
   disconnectedCallback() {
     this.feedsListEl.removeEventListener('click', this._handleFeedActions);
-    this.reorderBtn.removeEventListener('click', this._handleReorder);
+    this.editBtn.removeEventListener('click', this._handleEdit);
     document.removeEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
   }
 
-  _handleReorder = evt => {
+  _handleEdit = evt => {
     evt.currentTarget.classList.toggle('text-primary');
 
-    this.shadowRoot.querySelectorAll('.sort-handler').forEach(el => {
+    this.shadowRoot.querySelectorAll('.sort-handler, .delete-button').forEach(el => {
       el.hidden = !el.hidden;
     });
 
@@ -159,6 +160,7 @@ class FeedsList extends HTMLElement {
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';
     deleteButton.title = 'Delete feed';
+    deleteButton.hidden = true;
     deleteButton.className = 'delete-button btn btn-link text-danger p-0';
     deleteButton.style.lineHeight = '1';
     deleteButton.innerHTML = /* html */`
@@ -180,6 +182,7 @@ class FeedsList extends HTMLElement {
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M96 256h320M96 176h320M96 336h320"/>
       </svg>
+      <span class="visually-hidden">Reorder</span>
     `;
 
     link.appendChild(linkContent);
