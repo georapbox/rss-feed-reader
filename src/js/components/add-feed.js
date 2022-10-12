@@ -14,7 +14,7 @@ template.innerHTML = /* html */`
     <div class="form-group" style="flex: 1;">
       <input type="text" name="feed-url" class="form-control" placeholder="Enter a feed URL in XML format" autocapitalize="off" autocorrect="off" required>
     </div>
-    <div class="ms-1">
+    <div class="ms-2">
       <input type="submit" value="Add feed" class="btn btn-primary">
     </div>
   </form>

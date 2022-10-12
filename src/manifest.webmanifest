@@ -1,13 +1,18 @@
 {
-  "short_name": "RSS Feed Reader",
+  "short_name": "RSS",
   "name": "RSS Feed Reader",
   "description": "A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)",
   "categories": ["RSS", "Feeds", "News"],
   "screenshots": [
     {
-      "src": "assets/screenshots/screenshot.png",
+      "src": "assets/screenshots/screenshot_light.png",
       "type": "image/png",
-      "sizes": "740x730"
+      "sizes": "1410x2862"
+    },
+    {
+      "src": "assets/screenshots/screenshot_dark.png",
+      "type": "image/png",
+      "sizes": "1410x2862"
     }
   ],
   "icons": [
@@ -28,6 +33,7 @@
     }
   ],
   "start_url": ".",
+  "theme_color": "#212529",
   "background_color": "#000000",
   "display": "standalone"
 }

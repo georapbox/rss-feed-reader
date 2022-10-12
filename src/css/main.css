@@ -1,7 +1,7 @@
 :root {
   --body-bg: var(--bs-light);
   --body-color: var(--bs-dark);
-  --primary-color: var(--bs-primary);
+  --primary-color: #3585fa;
   --focus-ring: rgb(13 110 253 / 25%) 0px 0px 0px 0.25rem;
 }
 
