@@ -22,6 +22,10 @@ template.innerHTML = /* html */`
       cursor: grab;
     }
 
+    .sort-handler[hidden]~.link {
+      padding-left: 1rem;
+    }
+
     .delete-button {
       width: 45px;
       height: var(--list-item-height);
@@ -29,9 +33,16 @@ template.innerHTML = /* html */`
   </style>
 
   <div id="feedsContainer">
-      <div class="d-flex justify-content-end">
-        <export-feeds class="mb-2"></export-feeds>
-      </div>
+    <div class="d-flex justify-content-end mb-2">
+      <button type="button" id="reorderBtn" class="reorder-button btn btn-sm d-flex align-items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
+          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M96 256h320M96 176h320M96 336h320"/>
+        </svg>
+        Reorder
+      </button>
+
+      <export-feeds></export-feeds>
+    </div>
 
     <ul class="list-group" id="feedsList"></ul>
   </div>
@@ -50,6 +61,7 @@ class FeedsList extends HTMLElement {
 
     this.feedsContainerEl = this.shadowRoot.getElementById('feedsContainer');
     this.feedsListEl = this.shadowRoot.getElementById('feedsList');
+    this.reorderBtn = this.shadowRoot.getElementById('reorderBtn');
   }
 
   connectedCallback() {
@@ -58,6 +70,7 @@ class FeedsList extends HTMLElement {
     this._toggleFeedsVisibility();
 
     this.feedsListEl.addEventListener('click', this._handleFeedActions);
+    this.reorderBtn.addEventListener('click', this._handleReorder);
     document.addEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
 
     new Sortable(this.feedsListEl, {
@@ -77,8 +90,17 @@ class FeedsList extends HTMLElement {
 
   disconnectedCallback() {
     this.feedsListEl.removeEventListener('click', this._handleFeedActions);
+    this.reorderBtn.removeEventListener('click', this._handleReorder);
     document.removeEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
   }
+
+  _handleReorder = evt => {
+    evt.currentTarget.classList.toggle('text-primary');
+
+    this.shadowRoot.querySelectorAll('.sort-handler').forEach(el => {
+      el.hidden = !el.hidden;
+    });
+  };
 
   _handleFeedsUpdatedEvent = evt => {
     if (evt.detail.action === 'delete') {
@@ -90,19 +112,19 @@ class FeedsList extends HTMLElement {
     }
   };
 
-  _handleFeedActions(evt) {
+  _handleFeedActions = evt => {
     const target = evt.target;
-    const deleteButton = target.closest('button');
-    const linkEl = target.closest('a');
+    const deleteBtn = target.closest('button.delete-button');
+    const linkEl = target.closest('a.link');
 
-    if (!linkEl && !deleteButton) {
+    if (!linkEl && !deleteBtn) {
       return;
     }
 
     const feedItem = target.closest('li');
     const feedUrl = feedItem.getAttribute('data-feedurl');
 
-    if (deleteButton) {
+    if (deleteBtn) {
       if (window.confirm(`Are you sure you want to delete feed "${feedUrl}"?`)) {
         deleteFeed(feedUrl);
       }
@@ -118,11 +140,11 @@ class FeedsList extends HTMLElement {
         }
       }));
     }
-  }
+  };
 
   _addFeed(feed) {
     const link = document.createElement('a');
-    link.className = 'text-decoration-none d-flex align-items-center h-100';
+    link.className = 'link text-decoration-none d-flex align-items-center h-100';
     link.style.flex = '1';
     link.style.minWidth = 0;
     link.style.color = 'inherit';
@@ -151,10 +173,11 @@ class FeedsList extends HTMLElement {
     listItem.setAttribute('data-feedurl', feed.url);
 
     const sortHandler = document.createElement('div');
-    sortHandler.className = 'sort-handler';
+    sortHandler.hidden = true;
+    sortHandler.className = 'sort-handler text-primary';
     sortHandler.innerHTML = /* html */`
-      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-grip-vertical" viewBox="0 0 16 16">
-        <path d="M7 2a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zM7 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-3 3a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M96 256h320M96 176h320M96 336h320"/>
       </svg>
     `;
 
