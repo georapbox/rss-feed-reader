@@ -147,7 +147,7 @@ class FeedReader extends HTMLElement {
         this.modalTitle.textContent = data.feed.title || feed.url;
 
         data.items.forEach(item => {
-          this.feedsViewer.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(data, item));
+          this.feedsViewer.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(item));
         });
       } catch (error) {
         console.error(error);
@@ -161,20 +161,30 @@ class FeedReader extends HTMLElement {
     }
   }
 
-  _feedsReaderTemplate(data, item) {
+  _feedsReaderTemplate(item) {
+    const { link, title, description, author, pubDate } = item;
+    let formattedDate = '';
+
+    try {
+      formattedDate = new Intl.DateTimeFormat('en-US', {
+        dateStyle: 'medium'
+      }).format(new Date(pubDate));
+    } catch {
+      formattedDate = '-';
+    }
+
     return /* html */`
-      <div class="card mb-4">
+      <div class="card mb-3">
         <div class="card-body">
           <div class="d-block d-md-flex align-items-start flex-wrap">
             <div style="flex: 1;">
-              <a href="${item.link}" target="_blank" rel="noreferrer noopener" class="text-decoration-none">
-                <h5 class="card-title">${item.title}</h5>
+              <a href="${link}" target="_blank" rel="noreferrer noopener">
+                <h5 class="card-title">${title}</h5>
               </a>
 
-              <div style="font-size: 0.9375rem;">
-                <p class="mb-0"><strong>From:</strong> ${data.feed.title}</p>
-                <p class="mb-0"><strong>Author:</strong> ${item.author || '-'}</p>
-                <p><strong>Published:</strong> ${item.pubDate}</p>
+              <div class="mb-2">
+                <p class="mb-0"><strong>Author:</strong> ${author || '-'}</p>
+                <p class="mb-0"><strong>Published:</strong> ${formattedDate}</p>
               </div>
             </div>
           </div>
@@ -182,7 +192,7 @@ class FeedReader extends HTMLElement {
           <details>
             <summary>Article</summary>
             <div class="feed-description-viewer">
-              ${item.description}
+              ${description}
             </div>
           </details>
         </div>
