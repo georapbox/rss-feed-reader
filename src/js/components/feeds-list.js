@@ -1,4 +1,3 @@
-// import Sortable from 'sortablejs';
 import Sortable from 'sortablejs/modular/sortable.core.esm.js';
 import { styleSheets } from '../helpers/styles';
 import { getFeeds, setFeeds, deleteFeed } from '../helpers/storage.js';
@@ -72,20 +71,6 @@ class FeedsList extends HTMLElement {
     this.feedsListEl.addEventListener('click', this._handleFeedActions);
     this.reorderBtn.addEventListener('click', this._handleReorder);
     document.addEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
-
-    new Sortable(this.feedsListEl, {
-      animation: 150,
-      handle: '.sort-handler',
-      onEnd: evt => {
-        const feeds = Array.prototype.map.call(evt.to.querySelectorAll('li'), (el) => {
-          return {
-            url: el.getAttribute('data-feedurl')
-          };
-        });
-
-        setFeeds(feeds);
-      }
-    });
   }
 
   disconnectedCallback() {
@@ -100,6 +85,22 @@ class FeedsList extends HTMLElement {
     this.shadowRoot.querySelectorAll('.sort-handler').forEach(el => {
       el.hidden = !el.hidden;
     });
+
+    if (!this._sortable) {
+      this._sortable = new Sortable(this.feedsListEl, {
+        animation: 150,
+        handle: '.sort-handler',
+        onEnd: evt => {
+          const feeds = Array.prototype.map.call(evt.to.querySelectorAll('li'), (el) => {
+            return {
+              url: el.getAttribute('data-feedurl')
+            };
+          });
+
+          setFeeds(feeds);
+        }
+      });
+    }
   };
 
   _handleFeedsUpdatedEvent = evt => {

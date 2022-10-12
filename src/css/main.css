@@ -90,6 +90,10 @@ dialog {
   padding: 0;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 /* Scrollbars */
 .hide-scrollbars {
   scrollbar-color: transparent transparent;
