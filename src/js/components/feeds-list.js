@@ -34,7 +34,7 @@ template.innerHTML = /* html */`
 
   <div id="feedsContainer">
     <div class="d-flex justify-content-end mb-2">
-      <button type="button" id="reorderBtn" class="reorder-button btn btn-sm d-flex align-items-center gap-1">
+      <button type="button" id="reorderBtn" class="reorder-button btn btn-sm d-flex align-items-center gap-1" style="color: inherit;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
           <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M96 256h320M96 176h320M96 336h320"/>
         </svg>
