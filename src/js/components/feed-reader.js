@@ -20,10 +20,6 @@ template.innerHTML = /* html */`
       height: auto;
     }
 
-    summary {
-      padding-top: 0.5rem;
-    }
-
     details[open] summary {
       padding-bottom: 0.5rem;
     }
@@ -36,9 +32,9 @@ template.innerHTML = /* html */`
   <dialog class="w-100 h-100 mw-100 mh-100">
     <div class="container">
       <div class="row">
-        <div class="col">
+        <div class="col-xl-10 offset-xl-1">
           <div class="modal-header border-0 px-0 justify-content-start">
-            <button type="button" id="closeDialogBtn" class="btn bg-transparent me-2" style="color: var(--primary-color);">
+            <button type="button" id="closeDialogBtn" class="btn btn-default text-primary me-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
               </svg>

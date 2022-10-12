@@ -27,7 +27,7 @@ template.innerHTML = /* html */`
       <h2 class="modal-title h5">Export feeds</h2>
 
       <form method="dialog">
-        <button class="btn bg-transparent" style="color: inherit;">
+        <button class="btn btn-default">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
             <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
           </svg>
@@ -60,7 +60,7 @@ template.innerHTML = /* html */`
     </div>
   </dialog>
 
-  <button type="button" id="exportBtn" class="btn btn-sm d-inline-flex align-items-center gap-1" style="color: inherit;">
+  <button type="button" id="exportBtn" class="btn btn-sm btn-default d-inline-flex align-items-center gap-1">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18">
       <path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
       <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/>
