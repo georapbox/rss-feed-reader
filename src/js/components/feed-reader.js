@@ -7,6 +7,12 @@ const template = document.createElement('template');
 
 let controller;
 
+const renderModalTitleSkeleton = () => {
+  return /* html */`
+      <skeleton-placeholder style="--color: var(--skeleton-color); max-width: 250px; height: 26px;"></skeleton-placeholder>
+    `;
+};
+
 template.innerHTML = /* html */`
   <style>
     :host {
@@ -46,7 +52,9 @@ template.innerHTML = /* html */`
               </button>
             </form>
 
-            <h2 class="modal-title h4 text-truncate"></h2>
+            <h2 class="modal-title h4 text-truncate d-block" style="flex: 1;">
+              ${renderModalTitleSkeleton()}
+            </h2>
           </div>
 
           <div id="spinner" class="d-none">
@@ -117,7 +125,7 @@ class FeedReader extends HTMLElement {
 
   _resetDialogContent() {
     this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
-    this.modalTitle.textContent = '';
+    this.modalTitle.innerHTML = renderModalTitleSkeleton();
     this.spinnerEl.classList.add('d-none');
     this.errorEl.classList.add('d-none');
   }
