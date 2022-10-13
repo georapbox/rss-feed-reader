@@ -1,3 +1,4 @@
+import '@georapbox/skeleton-placeholder-element/dist/skeleton-placeholder-defined.min.js';
 import { styleSheets } from '../helpers/styles';
 import { getFeeds } from '../helpers/storage.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
@@ -49,10 +50,20 @@ template.innerHTML = /* html */`
           </div>
 
           <div id="spinner" class="d-none">
-            <div class="d-flex align-items-center justify-content-center gap-2">
-              <div class="spinner-border" style="color: var(--primary-color); border-width: 0.2rem; width: 1.5rem; height: 1.5rem;" role="status"></div>
-              <span class="fs-5">Loading...</span>
-            </div>
+            ${
+              Array.from({ length: 5 }).map(() => {
+                return /* html */`
+                  <skeleton-placeholder class="mb-3" style="--color: var(--skeleton-color);">
+                    <div class="p-3">
+                      <skeleton-placeholder class="mb-2" style="--color: var(--skeleton-color); max-width: 500px; height: 26px; filter: brightness(80%);"></skeleton-placeholder>
+                      <skeleton-placeholder class="mb-2" style="--color: var(--skeleton-color); max-width: 250px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
+                      <skeleton-placeholder class="mb-2" style="--color: var(--skeleton-color); max-width: 250px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
+                      <skeleton-placeholder class="mb-0" style="--color: var(--skeleton-color); max-width: 100px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
+                    </div>
+                  </skeleton-placeholder>
+                `;
+              }).join('')
+            }
           </div>
 
           <div id="error" class="alert alert-danger d-none">Error fetching feed.</div>

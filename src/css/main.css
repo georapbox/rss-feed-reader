@@ -3,6 +3,7 @@
   --body-color: var(--bs-dark);
   --primary-color: #3585fa;
   --focus-ring: rgb(13 110 253 / 25%) 0px 0px 0px 0.25rem;
+  --skeleton-color: var(--bs-gray-300);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -11,6 +12,7 @@
     --body-color: var(--bs-gray-100);
     --primary-color: var(--bs-info);
     --focus-ring: rgb(13 202 240 / 50%) 0px 0px 0px 0.2rem;
+    --skeleton-color: var(--bs-gray-600);
   }
 
   .card,
