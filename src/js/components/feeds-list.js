@@ -65,22 +65,22 @@ class FeedsList extends HTMLElement {
   }
 
   connectedCallback() {
-    getFeeds().forEach((feed => this._addFeed(feed)));
+    getFeeds().forEach((feed => this.addFeed(feed)));
 
-    this._toggleFeedsVisibility();
+    this.toggleFeedsVisibility();
 
-    this.feedsListEl.addEventListener('click', this._handleFeedActions);
-    this.editBtn.addEventListener('click', this._handleEdit);
-    document.addEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
+    this.feedsListEl.addEventListener('click', this.onActionsClick);
+    this.editBtn.addEventListener('click', this.onEditRequest);
+    document.addEventListener('feeds-updated', this.onFeedsUpdateSuccess);
   }
 
   disconnectedCallback() {
-    this.feedsListEl.removeEventListener('click', this._handleFeedActions);
-    this.editBtn.removeEventListener('click', this._handleEdit);
-    document.removeEventListener('feeds-updated', this._handleFeedsUpdatedEvent);
+    this.feedsListEl.removeEventListener('click', this.onActionsClick);
+    this.editBtn.removeEventListener('click', this.onEditRequest);
+    document.removeEventListener('feeds-updated', this.onFeedsUpdateSuccess);
   }
 
-  _handleEdit = evt => {
+  onEditRequest = evt => {
     evt.currentTarget.classList.toggle('text-primary');
 
     this.shadowRoot.querySelectorAll('.sort-handler, .delete-button').forEach(el => {
@@ -104,17 +104,17 @@ class FeedsList extends HTMLElement {
     }
   };
 
-  _handleFeedsUpdatedEvent = evt => {
+  onFeedsUpdateSuccess = evt => {
     if (evt.detail.action === 'delete') {
-      this._removeFeed(evt.detail.feed);
+      this.removeFeed(evt.detail.feed);
     }
 
     if (evt.detail.action === 'add') {
-      this._addFeed(evt.detail.feed);
+      this.addFeed(evt.detail.feed);
     }
   };
 
-  _handleFeedActions = evt => {
+  onActionsClick = evt => {
     const target = evt.target;
     const deleteBtn = target.closest('button.delete-button');
     const linkEl = target.closest('a.link');
@@ -135,16 +135,17 @@ class FeedsList extends HTMLElement {
     if (linkEl) {
       evt.preventDefault();
 
-      document.dispatchEvent(new CustomEvent('display-feed', {
-        bubbles: true,
-        detail: {
-          feedUrl: linkEl.getAttribute('data-url')
-        }
-      }));
+      const feedUrl = linkEl.getAttribute('data-url');
+
+      document.querySelector('feed-reader').feedUrl = feedUrl;
+
+      window.history.pushState({
+        feedUrl: evt.detail.feedUrl
+      }, '', `?feed=${encodeURIComponent(feedUrl)}`);
     }
   };
 
-  _addFeed(feed) {
+  addFeed(feed) {
     const link = document.createElement('a');
     link.className = 'link text-decoration-none d-flex align-items-center h-100';
     link.style.flex = '1';
@@ -192,16 +193,16 @@ class FeedsList extends HTMLElement {
 
     this.feedsListEl.appendChild(listItem);
 
-    this._toggleFeedsVisibility();
+    this.toggleFeedsVisibility();
   }
 
-  _removeFeed(feed) {
+  removeFeed(feed) {
     const listItem = this.feedsListEl.querySelector(`[data-feedurl="${feed.url}"]`);
     listItem && listItem.remove();
-    this._toggleFeedsVisibility();
+    this.toggleFeedsVisibility();
   }
 
-  _toggleFeedsVisibility() {
+  toggleFeedsVisibility() {
     const feeds = getFeeds();
     this.feedsContainerEl.classList.toggle('d-none', feeds.length === 0);
   }

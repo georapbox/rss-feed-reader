@@ -1,6 +1,5 @@
 import '@georapbox/skeleton-placeholder-element/dist/skeleton-placeholder-defined.min.js';
 import { styleSheets } from '../helpers/styles';
-import { getFeeds } from '../helpers/storage.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
 
 const template = document.createElement('template');
@@ -101,67 +100,104 @@ class FeedReader extends HTMLElement {
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
+  static get observedAttributes() {
+    return ['feed-url'];
+  }
+
+  attributeChangedCallback(name) {
+    if (name === 'feed-url') {
+      this.feedUrl ? this.openFeed(this.feedUrl) : this.closeFeed();
+    }
+  }
+
   connectedCallback() {
-    document.addEventListener('display-feed', this._onDialogOpen);
-    this.dialogEl.addEventListener('close', this._onDialogClose);
+    this.feedUrl = new URLSearchParams(location.search).get('feed');
+    window.addEventListener('popstate', this.onHistoryPopstate);
+    this.dialogEl.addEventListener('close', this.onFeedClose);
   }
 
   disconnectedCallback() {
-    document.removeEventListener('display-feed', this._onDialogOpen);
-    this.dialogEl.removeEventListener('close', this._onDialogClose);
+    window.removeEventListener('popstate', this.onHistoryPopstate);
+    this.dialogEl.removeEventListener('close', this.onFeedClose);
   }
 
-  _onDialogClose = () => {
-    controller && controller.abort();
-    document.body.classList.remove('overflow-hidden');
-    this._resetDialogContent();
+  get feedUrl() {
+    return this.getAttribute('feed-url');
+  }
+
+  set feedUrl(value) {
+    if (value) {
+      this.setAttribute('feed-url', value);
+    } else {
+      this.removeAttribute('feed-url');
+    }
+  }
+
+  onHistoryPopstate = () => {
+    this.feedUrl = new URLSearchParams(location.search).get('feed') || '';
   };
 
-  _onDialogOpen = evt => {
+  openFeed(feedUrl) {
     document.body.classList.add('overflow-hidden');
     this.dialogEl.showModal();
-    this._renderFeed(evt.detail.feedUrl);
+    this.renderFeed(feedUrl);
+  }
+
+  closeFeed() {
+    this.dialogEl.close();
+  }
+
+  onFeedClose = () => {
+    controller && controller.abort();
+    document.body.classList.remove('overflow-hidden');
+    this.resetDialogContent();
+
+    if (this.feedUrl) {
+      // TODO Check if this makes any sense at all :)
+      if (window.history.length > 2) {
+        history.back();
+      } else {
+        window.history.replaceState(null, '', '/');
+      }
+    }
+
+    this.feedUrl = '';
   };
 
-  _resetDialogContent() {
+  resetDialogContent() {
     this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
     this.modalTitle.innerHTML = renderModalTitleSkeleton();
     this.spinnerEl.classList.add('d-none');
     this.errorEl.classList.add('d-none');
   }
 
-  async _renderFeed(feedUrl) {
-    const feeds = getFeeds();
-    const feed = feeds.find(item => item.url === feedUrl);
+  async renderFeed(feedUrl) {
+    this.spinnerEl.classList.remove('d-none');
 
-    if (feed) {
-      this.spinnerEl.classList.remove('d-none');
+    controller = new AbortController();
 
-      controller = new AbortController();
+    try {
+      const data = await fetchFeed(feedUrl, {
+        signal: controller.signal
+      });
 
-      try {
-        const data = await fetchFeed(feed.url, {
-          signal: controller.signal
-        });
+      this.modalTitle.textContent = data.feed.title || feedUrl;
 
-        this.modalTitle.textContent = data.feed.title || feed.url;
-
-        data.items.forEach(item => {
-          this.feedsViewer.insertAdjacentHTML('beforeend', this._feedsReaderTemplate(item));
-        });
-      } catch (error) {
-        if (error.name !== 'AbortError') {
-          console.error(error);
-          this.modalTitle.textContent = '';
-          this.errorEl.classList.remove('d-none');
-        }
-      } finally {
-        this.spinnerEl.classList.add('d-none');
+      data.items.forEach(item => {
+        this.feedsViewer.insertAdjacentHTML('beforeend', this.feedsReaderTemplate(item));
+      });
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error(error);
+        this.modalTitle.textContent = '';
+        this.errorEl.classList.remove('d-none');
       }
+    } finally {
+      this.spinnerEl.classList.add('d-none');
     }
   }
 
-  _feedsReaderTemplate(item) {
+  feedsReaderTemplate(item) {
     const { link, title, description, author, pubDate } = item;
     let formattedDate = '';
 

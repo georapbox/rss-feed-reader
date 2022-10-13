@@ -37,14 +37,14 @@ class AddFeed extends HTMLElement {
   }
 
   connectedCallback() {
-    this.formEl.addEventListener('submit', this._handleFormSubmission);
+    this.formEl.addEventListener('submit', this.onFormSubmission);
   }
 
   disconnectedCallback() {
-    this.formEl.addEventListener('submit', this._handleFormSubmission);
+    this.formEl.addEventListener('submit', this.onFormSubmission);
   }
 
-  _handleFormSubmission(evt) {
+  onFormSubmission(evt) {
     evt.preventDefault();
 
     const input = evt.target['feed-url'];
