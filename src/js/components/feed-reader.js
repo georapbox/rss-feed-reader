@@ -134,7 +134,7 @@ class FeedReader extends HTMLElement {
   }
 
   onHistoryPopstate = () => {
-    this.feedUrl = new URLSearchParams(location.search).get('feed') || '';
+    this.feedUrl = new URLSearchParams(location.search).get('feed');
   };
 
   openFeed(feedUrl) {
