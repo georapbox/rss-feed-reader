@@ -8,7 +8,7 @@ let controller;
 
 const renderModalTitleSkeleton = () => {
   return /* html */`
-      <skeleton-placeholder style="--color: var(--skeleton-color); max-width: 250px; height: 26px;"></skeleton-placeholder>
+      <skeleton-placeholder style="--color: var(--skeleton-color); height: 26px;"></skeleton-placeholder>
     `;
 };
 
@@ -41,19 +41,19 @@ template.innerHTML = /* html */`
     <div class="container">
       <div class="row">
         <div class="col-xl-10 offset-xl-1">
-          <div class="modal-header border-0 px-0 justify-content-start">
-            <form method="dialog">
-              <button type="submit" class="btn btn-default text-primary me-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
-                </svg>
-                <span class="visually-hidden">Back</span>
-              </button>
-            </form>
-
-            <h2 class="modal-title h4 text-truncate d-block" style="flex: 1;">
+          <div class="modal-header border-0 px-0">
+            <h2 class="modal-title h5 d-block" style="flex: 1;">
               ${renderModalTitleSkeleton()}
             </h2>
+
+            <form method="dialog">
+              <button type="submit" class="btn btn-default text-primary ms-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+                </svg>
+                <span class="visually-hidden">Close</span>
+              </button>
+            </form>
           </div>
 
           <div id="spinner" class="d-none">
@@ -111,13 +111,10 @@ class FeedReader extends HTMLElement {
   }
 
   connectedCallback() {
-    this.feedUrl = new URLSearchParams(location.search).get('feed');
-    window.addEventListener('popstate', this.onHistoryPopstate);
     this.dialogEl.addEventListener('close', this.onFeedClose);
   }
 
   disconnectedCallback() {
-    window.removeEventListener('popstate', this.onHistoryPopstate);
     this.dialogEl.removeEventListener('close', this.onFeedClose);
   }
 
@@ -133,10 +130,6 @@ class FeedReader extends HTMLElement {
     }
   }
 
-  onHistoryPopstate = () => {
-    this.feedUrl = new URLSearchParams(location.search).get('feed');
-  };
-
   openFeed(feedUrl) {
     document.body.classList.add('overflow-hidden');
     this.dialogEl.showModal();
@@ -151,15 +144,6 @@ class FeedReader extends HTMLElement {
     controller && controller.abort();
     document.body.classList.remove('overflow-hidden');
     this.resetDialogContent();
-
-    if (this.feedUrl) {
-      if (window.history.length > 2) {
-        history.back();
-      } else {
-        window.history.replaceState(null, '', window.location.pathname);
-      }
-    }
-
     this.feedUrl = null;
   };
 

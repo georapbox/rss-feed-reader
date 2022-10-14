@@ -134,12 +134,7 @@ class FeedsList extends HTMLElement {
 
     if (linkEl) {
       evt.preventDefault();
-
-      const feedUrl = linkEl.getAttribute('data-url');
-
       document.querySelector('feed-reader').feedUrl = feedUrl;
-
-      window.history.pushState(null, '', `?feed=${encodeURIComponent(feedUrl)}`);
     }
   };
 
@@ -150,7 +145,6 @@ class FeedsList extends HTMLElement {
     link.style.minWidth = 0;
     link.style.color = 'inherit';
     link.href = feed.url;
-    link.setAttribute('data-url', feed.url);
 
     const linkContent = document.createElement('div');
     linkContent.className = 'text-truncate';
