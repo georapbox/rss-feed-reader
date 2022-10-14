@@ -8,8 +8,8 @@ let controller;
 
 const renderModalTitleSkeleton = () => {
   return /* html */`
-      <skeleton-placeholder style="--color: var(--skeleton-color); height: 26px;"></skeleton-placeholder>
-    `;
+    <skeleton-placeholder style="--color: var(--skeleton-color); height: 26px;"></skeleton-placeholder>
+  `;
 };
 
 template.innerHTML = /* html */`

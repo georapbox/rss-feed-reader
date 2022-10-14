@@ -6,16 +6,18 @@ const template = document.createElement('template');
 template.innerHTML = /* html */`
   <style>
     :host {
+      --input-height: 42px;
+
       display: block;
     }
   </style>
 
   <form name="addFeedForm" autocomplete="off" class="d-flex">
     <div class="form-group" style="flex: 1;">
-      <input type="text" name="feed-url" class="form-control" placeholder="Enter a feed URL in XML format" autocapitalize="off" autocorrect="off" required>
+      <input type="text" name="feed-url" class="form-control" style="height: var(--input-height);" placeholder="Enter a feed URL in XML format" autocapitalize="off" autocorrect="off" required>
     </div>
     <div class="ms-2">
-      <input type="submit" value="Add feed" class="btn btn-primary">
+      <input type="submit" value="Add feed" class="btn btn-primary" style="height: var(--input-height);">
     </div>
   </form>
 

@@ -60,14 +60,6 @@ template.innerHTML = /* html */`
       </div>
     </div>
   </dialog>
-
-  <button type="button" id="exportBtn" class="btn btn-sm btn-default d-inline-flex align-items-center gap-1">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18">
-      <path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
-      <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/>
-    </svg>
-    Export
-  </button>
 `;
 
 class ExportFeeds extends HTMLElement {
@@ -79,32 +71,63 @@ class ExportFeeds extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    this.exportBtn = this.shadowRoot.getElementById('exportBtn');
     this.clipboardCopyEl = this.shadowRoot.querySelector('clipboard-copy');
     this.exportDialogEl = this.shadowRoot.querySelector('dialog');
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
+  static get observedAttributes() {
+    return ['open'];
+  }
+
+  attributeChangedCallback(name) {
+    if (name === 'open') {
+      if (this.open) {
+        this.openExportfeedsModal();
+      }
+    }
+  }
+
   connectedCallback() {
-    this.exportBtn.addEventListener('click', this.onExportRequest);
     this.clipboardCopyEl.addEventListener('clipboard-copy:success', this.onCopyClipboardSuccess);
     this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
+    this.exportDialogEl.addEventListener('close', this.onExportDialogClose);
   }
 
   disconnectedCallback() {
-    this.exportBtn.removeEventListener('click', this.onExportRequest);
     this.clipboardCopyEl.removeEventListener('clipboard-copy:success', this.onCopyClipboardSuccess);
     this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
+    this.exportDialogEl.removeEventListener('close', this.onExportDialogClose);
     clearTimeout(this._copyTimeout);
   }
 
-  onExportRequest = () => {
+  get open() {
+    return this.hasAttribute('open');
+  }
+
+  set open(value) {
+    if (value) {
+      this.setAttribute('open', '');
+    } else {
+      this.removeAttribute('open');
+    }
+  }
+
+  openExportfeedsModal() {
     const feedsToExport = getFeeds().map(f => f.url).join('~');
     this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
     this.shadowRoot.querySelector('clipboard-copy').value = feedsToExport;
     this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
     this.exportDialogEl.showModal();
+  }
+
+  closeExportfeedsModal() {
+    this.exportDialogEl.close();
+  }
+
+  onExportDialogClose = () => {
+    this.open = false;
   };
 
   onCopyClipboardSuccess = evt => {
@@ -119,7 +142,7 @@ class ExportFeeds extends HTMLElement {
 
   onExportDialogClick = (evt) => {
     if (evt.target === evt.currentTarget) {
-      this.exportDialogEl.close();
+      this.closeExportfeedsModal();
     }
   };
 }

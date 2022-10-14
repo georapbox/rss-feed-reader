@@ -23,10 +23,15 @@
   }
 
   .form-control,
-  .form-control:focus {
-    background-color: var(--bs-gray-800);
+  .form-control:focus,
+  .input-group-text {
+    background-color: var(--bs-gray-700);
     border-color: #51555c;
     color: var(--body-color);
+  }
+
+  .input-group-text {
+    background-color: var(--bs-gray-800);
   }
 
   .form-control::placeholder {
@@ -40,6 +45,11 @@
   .btn.btn-primary,
   .btn.btn-primary:hover,
   .btn.btn-primary:focus {
+    color: var(--bs-dark);
+  }
+
+  .btn-outline-primary:hover,
+  .btn-outline-primary.active {
     color: var(--bs-dark);
   }
 
@@ -92,6 +102,17 @@ a:hover,
 .btn.btn-primary:hover {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
+}
+
+.btn-outline-primary {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary.active {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color);
 }
 
 .btn:focus,
