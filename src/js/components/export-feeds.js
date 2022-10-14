@@ -80,33 +80,33 @@ class ExportFeeds extends HTMLElement {
 
     this.exportBtn = this.shadowRoot.getElementById('exportBtn');
     this.clipboardCopyEl = this.shadowRoot.querySelector('clipboard-copy');
-    this.dialogEl = this.shadowRoot.querySelector('dialog');
+    this.exportDialogEl = this.shadowRoot.querySelector('dialog');
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
   connectedCallback() {
-    this.exportBtn.addEventListener('click', this._handleTriggerExport);
-    this.clipboardCopyEl.addEventListener('clipboard-copy:success', this._handleCopy);
-    this.dialogEl.addEventListener('click', this._handleDialogClick);
+    this.exportBtn.addEventListener('click', this.onExportRequest);
+    this.clipboardCopyEl.addEventListener('clipboard-copy:success', this.onCopyClipboardSuccess);
+    this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
   }
 
   disconnectedCallback() {
-    this.exportBtn.removeEventListener('click', this._handleTriggerExport);
-    this.clipboardCopyEl.removeEventListener('clipboard-copy:success', this._handleCopy);
-    this.dialogEl.addEventListener('click', this._handleDialogClick);
+    this.exportBtn.removeEventListener('click', this.onExportRequest);
+    this.clipboardCopyEl.removeEventListener('clipboard-copy:success', this.onCopyClipboardSuccess);
+    this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
     clearTimeout(this._copyTimeout);
   }
 
-  _handleTriggerExport = () => {
+  onExportRequest = () => {
     const feedsToExport = getFeeds().map(f => f.url).join('~');
     this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
     this.shadowRoot.querySelector('clipboard-copy').value = feedsToExport;
     this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
-    this.dialogEl.showModal();
+    this.exportDialogEl.showModal();
   };
 
-  _handleCopy = evt => {
+  onCopyClipboardSuccess = evt => {
     const labelEl = evt.target.querySelector('.label');
 
     labelEl.textContent = 'Copied';
@@ -116,9 +116,9 @@ class ExportFeeds extends HTMLElement {
     }, 1000);
   };
 
-  _handleDialogClick = (evt) => {
+  onExportDialogClick = (evt) => {
     if (evt.target === evt.currentTarget) {
-      this.dialogEl.close();
+      this.exportDialogEl.close();
     }
   };
 }
