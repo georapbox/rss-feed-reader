@@ -98,7 +98,7 @@ class FeedsList extends HTMLElement {
     this.feedsListEl.addEventListener('click', this.onActionsClick);
     this.editBtn.addEventListener('click', this.onEditRequest);
     this.exportBtn.addEventListener('click', this.onExportRequest);
-    this.searchInput.addEventListener('input', evt => this.searchFeeds(evt.target.value));
+    this.searchInput.addEventListener('input', this.onSearchInputDebounced);
     document.addEventListener('feeds-updated', this.onFeedsUpdateSuccess);
 
     new Sortable(this.feedsListEl, {
