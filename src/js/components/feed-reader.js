@@ -156,7 +156,7 @@ class FeedReader extends HTMLElement {
       if (window.history.length > 2) {
         history.back();
       } else {
-        window.history.replaceState(null, '', '/');
+        window.history.replaceState(null, '', window.location.pathname);
       }
     }
 
