@@ -139,9 +139,7 @@ class FeedsList extends HTMLElement {
 
       document.querySelector('feed-reader').feedUrl = feedUrl;
 
-      window.history.pushState({
-        feedUrl: evt.detail.feedUrl
-      }, '', `?feed=${encodeURIComponent(feedUrl)}`);
+      window.history.pushState(null, '', `?feed=${encodeURIComponent(feedUrl)}`);
     }
   };
 

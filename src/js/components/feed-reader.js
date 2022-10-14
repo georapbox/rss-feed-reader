@@ -153,7 +153,6 @@ class FeedReader extends HTMLElement {
     this.resetDialogContent();
 
     if (this.feedUrl) {
-      // TODO Check if this makes any sense at all :)
       if (window.history.length > 2) {
         history.back();
       } else {
@@ -161,7 +160,7 @@ class FeedReader extends HTMLElement {
       }
     }
 
-    this.feedUrl = '';
+    this.feedUrl = null;
   };
 
   resetDialogContent() {
