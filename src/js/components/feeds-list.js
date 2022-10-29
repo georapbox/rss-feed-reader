@@ -34,18 +34,25 @@ template.innerHTML = /* html */`
 
   <div id="feedsContainer">
     <div class="d-flex mb-3">
-      <div class="input-group me-2">
+      <div class="input-group me-2 position-relative">
         <span class="input-group-text">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
           </svg>
         </span>
 
-        <input type="text" id="searchInput" class="form-control" placeholder="Search feeds..." autocapitalize="off" />
+        <input type="text" id="searchInput" class="form-control rounded-end" placeholder="Search feeds..." autocapitalize="off" autocomplete="off" style="padding-right: 38px;" />
+
+        <button type="button" class="btn btn-default btn-sm h-100 position-absolute top-0 end-0 d-flex align-items-center justify-content-center d-none" id="searchClearBtn" style="width: 38px; z-index: 3;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+          </svg>
+          <span class="visually-hidden">Clear</span>
+        </button>
       </div>
 
       <div class="btn-group">
-        <button type="button" id="editBtn" class="reorder-button btn btn-outline-primary d-flex align-items-center gap-1">
+        <button type="button" id="editBtn" class="reorder-button btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18">
             <path d="M384 224v184a40 40 0 01-40 40H104a40 40 0 01-40-40V168a40 40 0 0140-40h167.48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
             <path d="M459.94 53.25a16.06 16.06 0 00-23.22-.56L424.35 65a8 8 0 000 11.31l11.34 11.32a8 8 0 0011.34 0l12.06-12c6.1-6.09 6.67-16.01.85-22.38zM399.34 90L218.82 270.2a9 9 0 00-2.31 3.93L208.16 299a3.91 3.91 0 004.86 4.86l24.85-8.35a9 9 0 003.93-2.31L422 112.66a9 9 0 000-12.66l-9.95-10a9 9 0 00-12.71 0z" fill="currentColor"/>
@@ -53,7 +60,7 @@ template.innerHTML = /* html */`
           <span class="d-none d-sm-block">Edit</span>
         </button>
 
-        <button type="button" id="exportBtn" class="btn btn-outline-primary d-inline-flex align-items-center gap-1">
+        <button type="button" id="exportBtn" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
             <path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/>
@@ -87,6 +94,7 @@ class FeedsList extends HTMLElement {
     this.editBtn = this.shadowRoot.getElementById('editBtn');
     this.exportBtn = this.shadowRoot.getElementById('exportBtn');
     this.searchInput = this.shadowRoot.getElementById('searchInput');
+    this.searchClearBtn = this.shadowRoot.getElementById('searchClearBtn');
     this.exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
   }
 
@@ -99,6 +107,7 @@ class FeedsList extends HTMLElement {
     this.editBtn.addEventListener('click', this.onEditRequest);
     this.exportBtn.addEventListener('click', this.onExportRequest);
     this.searchInput.addEventListener('input', this.onSearchInputDebounced);
+    this.searchClearBtn.addEventListener('click', this.onSearchClear);
     document.addEventListener('feeds-updated', this.onFeedsUpdateSuccess);
 
     new Sortable(this.feedsListEl, {
@@ -121,6 +130,7 @@ class FeedsList extends HTMLElement {
     this.editBtn.removeEventListener('click', this.onEditRequest);
     this.exportBtn.removeEventListener('click', this.onExportRequest);
     this.searchInput.removeEventListener('input', this.onSearchInputDebounced);
+    this.searchClearBtn.removeEventListener('click', this.onSearchClear);
     document.removeEventListener('feeds-updated', this.onFeedsUpdateSuccess);
   }
 
@@ -139,7 +149,14 @@ class FeedsList extends HTMLElement {
   debounceSearchFeeds = debounce(this.searchFeeds, 250);
 
   onSearchInputDebounced = evt => {
-    return this.debounceSearchFeeds(evt.target.value);
+    const value = evt.target.value;
+    this.searchClearBtn.classList.toggle('d-none', !value);
+    return this.debounceSearchFeeds(value);
+  };
+
+  onSearchClear = () => {
+    this.searchInput.value = '';
+    this.searchInput.dispatchEvent(new Event('input'));
   };
 
   onEditRequest = evt => {
