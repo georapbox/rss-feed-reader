@@ -1,4 +1,4 @@
-import '@georapbox/skeleton-placeholder-element/dist/skeleton-placeholder-defined.min.js';
+import '@georapbox/skeleton-placeholder-element/dist/skeleton-placeholder-defined.js';
 import { styleSheets } from '../helpers/styles';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
 
