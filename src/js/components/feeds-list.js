@@ -1,5 +1,5 @@
 import Sortable from 'sortablejs/modular/sortable.core.esm.js';
-import { styleSheets } from '../helpers/styles';
+import { styleSheets } from '../helpers/styles.js';
 import { getFeeds, setFeeds, deleteFeed } from '../helpers/storage.js';
 import { debounce } from '../utils/debounce.js';
 import './export-feeds.js';
@@ -98,8 +98,10 @@ class FeedsList extends HTMLElement {
     this.exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
   }
 
-  connectedCallback() {
-    getFeeds().forEach((feed => this.addFeed(feed)));
+  async connectedCallback() {
+    const { value: feeds = [] } = await getFeeds();
+
+    feeds.forEach((feed => this.addFeed(feed)));
 
     this.toggleFeedsVisibility();
 
@@ -113,14 +115,14 @@ class FeedsList extends HTMLElement {
     new Sortable(this.feedsListEl, {
       animation: 150,
       handle: '.sort-handler',
-      onEnd: evt => {
+      onEnd: async evt => {
         const feeds = Array.prototype.map.call(evt.to.querySelectorAll('li'), (el) => {
           return {
             url: el.getAttribute('data-feedurl')
           };
         });
 
-        setFeeds(feeds);
+        await setFeeds(feeds);
       }
     });
   }
@@ -268,8 +270,8 @@ class FeedsList extends HTMLElement {
     this.toggleFeedsVisibility();
   }
 
-  toggleFeedsVisibility() {
-    const feeds = getFeeds();
+  async toggleFeedsVisibility() {
+    const { value: feeds = [] } = await getFeeds();
     this.feedsContainerEl.classList.toggle('d-none', feeds.length === 0);
   }
 }

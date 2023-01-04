@@ -1,4 +1,4 @@
-import { styleSheets } from '../helpers/styles';
+import { styleSheets } from '../helpers/styles.js';
 
 const template = document.createElement('template');
 

@@ -1,6 +1,6 @@
 import { isWebShareSupported } from '@georapbox/web-share-element/dist/is-web-share-supported.js';
-import { styleSheets } from '../helpers/styles';
-import { getFeeds } from '../helpers/storage';
+import { styleSheets } from '../helpers/styles.js';
+import { getFeeds } from '../helpers/storage.js';
 
 const template = document.createElement('template');
 
@@ -114,8 +114,9 @@ class ExportFeeds extends HTMLElement {
     }
   }
 
-  openExportfeedsModal() {
-    const feedsToExport = getFeeds().map(f => f.url).join('~');
+  async openExportfeedsModal() {
+    const { value: feeds = [] } = await getFeeds();
+    const feedsToExport = feeds.map(f => f.url).join('~');
     this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
     this.shadowRoot.querySelector('clipboard-copy').value = feedsToExport;
     this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
