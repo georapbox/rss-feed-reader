@@ -122,7 +122,7 @@ class FeedsList extends HTMLElement {
           };
         });
 
-        await setFeeds(feeds);
+        await setFeeds(feeds, false);
       }
     });
   }

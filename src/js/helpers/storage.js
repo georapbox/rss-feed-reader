@@ -1,7 +1,7 @@
-import { set, get } from 'idb-keyval';
+import { set, get, del } from 'idb-keyval';
 
 const STORAGE_PREFIX = 'rss-reader/';
-const STORAGE_FEEDS_KEY = 'feeds';
+const STORAGE_FEEDS_KEY = STORAGE_PREFIX + 'feeds';
 
 const getItem = async key => {
   try {
@@ -30,7 +30,7 @@ const setItem = async (key, data) => {
 };
 
 export const getFeeds = async () => {
-  return getItem(STORAGE_PREFIX + STORAGE_FEEDS_KEY);
+  return getItem(STORAGE_FEEDS_KEY);
 };
 
 export const setFeeds = async (feeds, shouldDispatchEvent = true) => {
@@ -38,7 +38,7 @@ export const setFeeds = async (feeds, shouldDispatchEvent = true) => {
     return;
   }
 
-  const { error } = await setItem(STORAGE_PREFIX + STORAGE_FEEDS_KEY, feeds);
+  const { error } = await setItem(STORAGE_FEEDS_KEY, feeds);
 
   if (!error && shouldDispatchEvent) {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
@@ -66,7 +66,7 @@ export const saveFeed = async (feed, shouldDispatchEvent = true) => {
     action = 'add';
   }
 
-  const { error } = await setItem(STORAGE_PREFIX + STORAGE_FEEDS_KEY, feeds);
+  const { error } = await setItem(STORAGE_FEEDS_KEY, feeds);
 
   if (!error && shouldDispatchEvent) {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
@@ -85,9 +85,13 @@ export const deleteFeed = async (feedUrl, shouldDispatchEvent = true) => {
   const { value: feeds = [] } = await getFeeds();
   const filteredFeeds = feeds.filter(f => f.url !== feedUrl);
 
-  const { error } = await setItem(STORAGE_PREFIX + STORAGE_FEEDS_KEY, filteredFeeds);
+  const { error } = await setItem(STORAGE_FEEDS_KEY, filteredFeeds);
 
   if (!error && shouldDispatchEvent) {
+    if (filteredFeeds.length === 0) {
+      await del(STORAGE_FEEDS_KEY);
+    }
+
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
       detail: {
@@ -100,4 +104,18 @@ export const deleteFeed = async (feedUrl, shouldDispatchEvent = true) => {
   }
 
   return { error };
+};
+
+export const migrateLegacyFeeds = async () => {
+  try {
+    const legacyFeeds = JSON.parse(window.localStorage.getItem(STORAGE_FEEDS_KEY));
+
+    if (Array.isArray(legacyFeeds)) {
+      await setFeeds(legacyFeeds, false);
+      window.localStorage.removeItem(STORAGE_FEEDS_KEY);
+      window.location.reload();
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
