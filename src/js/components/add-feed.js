@@ -1,4 +1,4 @@
-import { styleSheets } from '../helpers/styles';
+import { styleSheets } from '../helpers/styles.js';
 import { getFeeds, saveFeed } from '../helpers/storage.js';
 
 const template = document.createElement('template');
@@ -52,8 +52,9 @@ class AddFeed extends HTMLElement {
     const input = evt.target['feed-url'];
     const { value } = input;
 
-    value.split('~').forEach(url => {
-      const urlExists = Boolean(getFeeds().find(feed => feed.url === url));
+    value.split('~').forEach(async url => {
+      const { value: feeds = [] } = await getFeeds();
+      const urlExists = Boolean(feeds.find(feed => feed.url === url));
       let isValidUrl = true;
 
       try {
@@ -63,7 +64,7 @@ class AddFeed extends HTMLElement {
       }
 
       if (!urlExists && isValidUrl) {
-        saveFeed({ url });
+        await saveFeed({ url });
       }
     });
 

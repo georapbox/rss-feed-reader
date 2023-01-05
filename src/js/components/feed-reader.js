@@ -1,5 +1,5 @@
 import '@georapbox/skeleton-placeholder-element/dist/skeleton-placeholder-defined.js';
-import { styleSheets } from '../helpers/styles';
+import { styleSheets } from '../helpers/styles.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
 
 const template = document.createElement('template');

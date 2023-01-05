@@ -1,28 +1,46 @@
-import WebStorage from '@georapbox/web-storage';
+import { set, get, del } from 'idb-keyval';
 
-const FEDDS_URLS_KEY = 'feeds';
+const STORAGE_PREFIX = 'rss-reader/';
+const STORAGE_FEEDS_KEY = STORAGE_PREFIX + 'feeds';
 
-export const storage = WebStorage.createInstance({
-  driver: 'localStorage',
-  keyPrefix: 'rss-reader/'
-});
-
-export const getFeeds = () => {
-  return storage.getItem(FEDDS_URLS_KEY) || [];
+const getItem = async key => {
+  try {
+    return {
+      value: await get(key),
+      error: void 0
+    };
+  } catch (error) {
+    return {
+      value: void 0,
+      error
+    };
+  }
 };
 
-export const setFeeds = (feeds, shouldDispatchEvent = true) => {
+const setItem = async (key, data) => {
+  try {
+    await set(key, data);
+
+    return {
+      error: void 0
+    };
+  } catch (error) {
+    return { error };
+  }
+};
+
+export const getFeeds = async () => {
+  return getItem(STORAGE_FEEDS_KEY);
+};
+
+export const setFeeds = async (feeds, shouldDispatchEvent = true) => {
   if (!Array.isArray(feeds)) {
     return;
   }
 
-  let status = 'done';
+  const { error } = await setItem(STORAGE_FEEDS_KEY, feeds);
 
-  storage.setItem(FEDDS_URLS_KEY, feeds, () => {
-    status = 'error';
-  });
-
-  if (status === 'done' && shouldDispatchEvent) {
+  if (!error && shouldDispatchEvent) {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
       detail: {
@@ -31,10 +49,12 @@ export const setFeeds = (feeds, shouldDispatchEvent = true) => {
       }
     }));
   }
+
+  return { error };
 };
 
-export const saveFeed = (feed, shouldDispatchEvent = true) => {
-  const feeds = getFeeds();
+export const saveFeed = async (feed, shouldDispatchEvent = true) => {
+  const { value: feeds = [] } = await getFeeds();
   const foundFeed = feeds.find(f => f.url === feed.url);
   let action = '';
 
@@ -46,13 +66,9 @@ export const saveFeed = (feed, shouldDispatchEvent = true) => {
     action = 'add';
   }
 
-  let status = 'done';
+  const { error } = await setItem(STORAGE_FEEDS_KEY, feeds);
 
-  storage.setItem(FEDDS_URLS_KEY, feeds, () => {
-    status = 'error';
-  });
-
-  if (status === 'done' && shouldDispatchEvent) {
+  if (!error && shouldDispatchEvent) {
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
       detail: {
@@ -61,18 +77,21 @@ export const saveFeed = (feed, shouldDispatchEvent = true) => {
       }
     }));
   }
+
+  return { error };
 };
 
-export const deleteFeed = (feedUrl, shouldDispatchEvent = true) => {
-  let status = 'done';
-  const feeds = getFeeds();
+export const deleteFeed = async (feedUrl, shouldDispatchEvent = true) => {
+  const { value: feeds = [] } = await getFeeds();
   const filteredFeeds = feeds.filter(f => f.url !== feedUrl);
 
-  storage.setItem(FEDDS_URLS_KEY, filteredFeeds, () => {
-    status = 'error';
-  });
+  const { error } = await setItem(STORAGE_FEEDS_KEY, filteredFeeds);
 
-  if (status === 'done' && shouldDispatchEvent) {
+  if (!error && shouldDispatchEvent) {
+    if (filteredFeeds.length === 0) {
+      await del(STORAGE_FEEDS_KEY);
+    }
+
     document.dispatchEvent(new CustomEvent('feeds-updated', {
       bubbles: true,
       detail: {
@@ -82,5 +101,21 @@ export const deleteFeed = (feedUrl, shouldDispatchEvent = true) => {
         }
       }
     }));
+  }
+
+  return { error };
+};
+
+export const migrateLegacyFeeds = async () => {
+  try {
+    const legacyFeeds = JSON.parse(window.localStorage.getItem(STORAGE_FEEDS_KEY));
+
+    if (Array.isArray(legacyFeeds)) {
+      await setFeeds(legacyFeeds, false);
+      window.localStorage.removeItem(STORAGE_FEEDS_KEY);
+      window.location.reload();
+    }
+  } catch (error) {
+    console.error(error);
   }
 };
