@@ -19,7 +19,12 @@ template.innerHTML = /* html */`
     }
 
     img[src=""] {
-      display: none;
+      display: none !important;
+    }
+
+    .thumbnail {
+      display: block;
+      object-fit: cover;
     }
 
     .feed-description-viewer img,
@@ -181,7 +186,7 @@ class FeedReader extends HTMLElement {
   }
 
   feedsReaderTemplate(item) {
-    const { link, title, description, author, pubDate } = item;
+    const { link, title, description, author, pubDate, thumbnail } = item;
     let formattedDate = '';
 
     try {
@@ -195,21 +200,17 @@ class FeedReader extends HTMLElement {
     return /* html */`
       <div class="card mb-3">
         <div class="card-body">
-          <div class="d-block d-md-flex align-items-start flex-wrap">
-            <div style="flex: 1;">
-              <a href="${link}" target="_blank" rel="noreferrer noopener">
-                <h5 class="card-title">${title}</h5>
-              </a>
-
-              <div class="mb-2">
-                <p class="mb-0"><strong>Author:</strong> ${author || '-'}</p>
-                <p class="mb-0"><strong>Published:</strong> ${formattedDate}</p>
-              </div>
+          <a href="${link}" target="_blank" rel="noreferrer noopener" class="d-flex justify-content-between gap-3 text-decoration-none" style="color: inherit;">
+            <div style="min-width: 0;">
+              <h5 class="card-title h6">${title}</h5>
+              <p class="text-muted text-truncate"><small>${formattedDate} ${author ? `&bull; ${author}` : ''}</small></p>
             </div>
-          </div>
+
+            <img src="${thumbnail}" alt="${title}" width="120" height="70" class="thumbnail rounded" />
+          </a>
 
           <details>
-            <summary>Article</summary>
+            <summary>Read more...</summary>
             <div class="feed-description-viewer">
               ${description}
             </div>
