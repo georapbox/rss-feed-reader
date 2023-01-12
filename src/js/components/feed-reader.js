@@ -206,7 +206,7 @@ class FeedReader extends HTMLElement {
               <p class="text-muted text-truncate"><small>${formattedDate} ${author ? `&bull; ${author}` : ''}</small></p>
             </div>
 
-            <img src="${thumbnail}" alt="${title}" width="120" height="70" class="thumbnail rounded" />
+            <img src="${thumbnail}" alt="${title}" width="120" height="70" class="thumbnail rounded" loading="lazy" />
           </a>
 
           <details>
