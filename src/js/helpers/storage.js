@@ -105,17 +105,3 @@ export const deleteFeed = async (feedUrl, shouldDispatchEvent = true) => {
 
   return { error };
 };
-
-export const migrateLegacyFeeds = async () => {
-  try {
-    const legacyFeeds = JSON.parse(window.localStorage.getItem(STORAGE_FEEDS_KEY));
-
-    if (Array.isArray(legacyFeeds)) {
-      await setFeeds(legacyFeeds, false);
-      window.localStorage.removeItem(STORAGE_FEEDS_KEY);
-      window.location.reload();
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};

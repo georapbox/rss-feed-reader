@@ -6,9 +6,5 @@ import './components/site-header.js';
 import './components/add-feed.js';
 import './components/feeds-list.js';
 import './components/feed-reader.js';
-import { migrateLegacyFeeds } from './helpers/storage.js';
 
 document.adoptedStyleSheets = styleSheets;
-
-// TODO - remove this after a few versions
-migrateLegacyFeeds();
