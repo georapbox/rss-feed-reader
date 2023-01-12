@@ -25,6 +25,15 @@ template.innerHTML = /* html */`
     .thumbnail {
       display: block;
       object-fit: cover;
+      min-width: 90px;
+      width: 90px;
+    }
+
+    @media (min-width: 500px) {
+      .thumbnail {
+        min-width: 120px;
+        width: 120px;
+      }
     }
 
     .feed-description-viewer img,
@@ -63,14 +72,16 @@ template.innerHTML = /* html */`
 
           <div id="spinner" class="d-none">
             ${
-              Array.from({ length: 5 }).map(() => {
+              Array.from({ length: 6 }).map(() => {
                 return /* html */`
                   <skeleton-placeholder class="mb-3" style="--color: var(--skeleton-color);">
-                    <div class="p-3">
-                      <skeleton-placeholder class="mb-2" style="--color: var(--skeleton-color); max-width: 500px; height: 26px; filter: brightness(80%);"></skeleton-placeholder>
-                      <skeleton-placeholder class="mb-2" style="--color: var(--skeleton-color); max-width: 250px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
-                      <skeleton-placeholder class="mb-2" style="--color: var(--skeleton-color); max-width: 250px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
-                      <skeleton-placeholder class="mb-0" style="--color: var(--skeleton-color); max-width: 100px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
+                    <div class="p-3 d-flex justify-content-between gap-3">
+                      <div class="w-100">
+                        <skeleton-placeholder effect="fade" class="mb-2" style="--color: var(--skeleton-color); max-width: 500px; height: 26px; filter: brightness(80%);"></skeleton-placeholder>
+                        <skeleton-placeholder effect="fade" class="mb-2" style="--color: var(--skeleton-color); max-width: 250px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
+                        <skeleton-placeholder effect="fade" class="mb-0" style="--color: var(--skeleton-color); max-width: 120px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
+                      </div>
+                      <skeleton-placeholder effect="fade" class="mb-0" style="--color: var(--skeleton-color); width: 120px; height: 70px; filter: brightness(80%);"></skeleton-placeholder>
                     </div>
                   </skeleton-placeholder>
                 `;
