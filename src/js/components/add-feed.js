@@ -46,13 +46,13 @@ class AddFeed extends HTMLElement {
     this.formEl.addEventListener('submit', this.onFormSubmission);
   }
 
-  onFormSubmission(evt) {
+  async onFormSubmission(evt) {
     evt.preventDefault();
 
     const input = evt.target['feed-url'];
     const { value } = input;
 
-    value.split('~').forEach(async url => {
+    for (const url of value.split('~')) {
       const { value: feeds = [] } = await getFeeds();
       const urlExists = Boolean(feeds.find(feed => feed.url === url));
       let isValidUrl = true;
@@ -66,7 +66,7 @@ class AddFeed extends HTMLElement {
       if (!urlExists && isValidUrl) {
         await saveFeed({ url });
       }
-    });
+    }
 
     input.value = '';
   }
