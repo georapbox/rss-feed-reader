@@ -56,7 +56,7 @@ template.innerHTML = /* html */`
     <div class="container">
       <div class="row">
         <div class="col-xl-10 offset-xl-1">
-          <div class="d-flex justify-content-between py-3" style="gap: 1.5rem;">
+          <div class="d-flex justify-content-between pt-4 pb-3" style="gap: 1.5rem;">
             <h2 class="h5 mb-0" id="feedTitle">
               ${renderModalTitleSkeleton()}
             </h2>
