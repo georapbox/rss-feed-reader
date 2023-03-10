@@ -1,6 +1,7 @@
 import '@georapbox/skeleton-placeholder-element/dist/skeleton-placeholder-defined.js';
 import { styleSheets } from '../helpers/styles.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
+import { getFeeds, saveFeed } from '../helpers/storage.js';
 
 const template = document.createElement('template');
 
@@ -49,6 +50,11 @@ template.innerHTML = /* html */`
     details:not([open]):not(.card details):last-child summary {
       margin-bottom: 1rem;
     }
+
+    .modal-header {
+      align-items: flex-start !important;
+      gap: 1.5rem;
+    }
   </style>
 
   <dialog class="w-100 h-100 mw-100 mh-100">
@@ -61,8 +67,8 @@ template.innerHTML = /* html */`
             </h2>
 
             <form method="dialog">
-              <button type="submit" class="btn btn-default text-primary ms-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+              <button type="submit" class="d-flex align-items-center justify-content-center btn btn-outline-primary p-0" style="width: 36px; height: 36px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
                 </svg>
                 <span class="visually-hidden">Close</span>
@@ -179,6 +185,17 @@ class FeedReader extends HTMLElement {
       const data = await fetchFeed(feedUrl, {
         signal: controller.signal
       });
+
+      const { value: feeds = [] } = await getFeeds();
+      const currentFeed = feeds.find(feed => feed.url === feedUrl);
+
+      // Now that feed's title is available, save it to storage.
+      if (currentFeed && !currentFeed.title) {
+        await saveFeed({
+          url: feedUrl,
+          title: data.feed.title || ''
+        });
+      }
 
       this.modalTitle.textContent = data.feed.title || feedUrl;
 

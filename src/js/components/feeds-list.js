@@ -10,7 +10,7 @@ template.innerHTML = /* html */`
   <style>
     :host {
       display: block;
-      --list-item-height: 50px;
+      --list-item-height: 55px;
     }
 
     .sort-handler {
@@ -29,6 +29,10 @@ template.innerHTML = /* html */`
     .delete-button {
       width: 45px;
       height: var(--list-item-height);
+    }
+
+    .link-content {
+      line-height: 1.2;
     }
   </style>
 
@@ -118,7 +122,8 @@ class FeedsList extends HTMLElement {
       onEnd: async evt => {
         const feeds = Array.prototype.map.call(evt.to.querySelectorAll('li'), (el) => {
           return {
-            url: el.getAttribute('data-feedurl')
+            url: el.getAttribute('data-url'),
+            title: el.getAttribute('data-title') || ''
           };
         });
 
@@ -137,14 +142,17 @@ class FeedsList extends HTMLElement {
   }
 
   searchFeeds = (searchValue = '') => {
-    const feedEls = this.feedsListEl.querySelectorAll(`[data-feedurl]`);
+    const feedEls = this.feedsListEl.querySelectorAll(`[data-url]`);
 
     if (feedEls.length === 0) {
       return;
     }
 
     feedEls.forEach(el => {
-      el.hidden = !el.getAttribute('data-feedurl').includes(searchValue.trim().toLowerCase());
+      const url = (el.getAttribute('data-url') || '').toLowerCase();
+      const title = (el.getAttribute('data-title') || '').toLowerCase();
+      const searchQuery = searchValue.trim().toLowerCase();
+      el.hidden = !(url.includes(searchQuery) || title.includes(searchQuery));
     });
   };
 
@@ -180,12 +188,27 @@ class FeedsList extends HTMLElement {
       this.removeFeed(evt.detail.feed);
     }
 
-    if (evt.detail.action === 'add') {
+    if (evt.detail.action === 'create') {
       this.addFeed(evt.detail.feed);
 
       if (this.searchInput.value) {
         this.searchInput.value = '';
         this.searchFeeds('');
+      }
+    }
+
+    if (evt.detail.action === 'update') {
+      const { url, title } = evt.detail.feed;
+      const feedEl = this.feedsListEl.querySelector(`[data-url="${url}"]`);
+
+      if (feedEl) {
+        const linkContent = feedEl.querySelector('.link-content');
+
+        feedEl.setAttribute('data-title', title || '');
+
+        if (linkContent) {
+          linkContent.innerHTML = title ? `${title}<br><small class="text-muted">${url}</small>` : url;
+        }
       }
     }
   };
@@ -200,7 +223,7 @@ class FeedsList extends HTMLElement {
     }
 
     const feedItem = target.closest('li');
-    const feedUrl = feedItem.getAttribute('data-feedurl');
+    const feedUrl = feedItem.getAttribute('data-url');
 
     if (deleteBtn) {
       if (window.confirm(`Are you sure you want to delete feed "${feedUrl}"?`)) {
@@ -215,16 +238,18 @@ class FeedsList extends HTMLElement {
   };
 
   addFeed(feed) {
+    const { url, title } = feed;
+
     const link = document.createElement('a');
     link.className = 'link text-decoration-none d-flex align-items-center h-100';
     link.style.flex = '1';
     link.style.minWidth = 0;
     link.style.color = 'inherit';
-    link.href = feed.url;
+    link.href = url;
 
     const linkContent = document.createElement('div');
-    linkContent.className = 'text-truncate';
-    linkContent.textContent = feed.url;
+    linkContent.className = 'text-truncate link-content';
+    linkContent.innerHTML = title ? `${title}<br><small class="text-muted">${url}</small>` : url;
 
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';
@@ -242,7 +267,8 @@ class FeedsList extends HTMLElement {
     const listItem = document.createElement('li');
     listItem.className = 'list-group-item p-0 d-flex justify-content-between align-items-center';
     listItem.style.height = 'var(--list-item-height)';
-    listItem.setAttribute('data-feedurl', feed.url);
+    listItem.setAttribute('data-url', url || '');
+    listItem.setAttribute('data-title', title || '');
 
     const sortHandler = document.createElement('div');
     sortHandler.hidden = !this._isEditable;
@@ -265,7 +291,7 @@ class FeedsList extends HTMLElement {
   }
 
   removeFeed(feed) {
-    const listItem = this.feedsListEl.querySelector(`[data-feedurl="${feed.url}"]`);
+    const listItem = this.feedsListEl.querySelector(`[data-url="${feed.url}"]`);
     listItem && listItem.remove();
     this.toggleFeedsVisibility();
   }

@@ -64,7 +64,10 @@ class AddFeed extends HTMLElement {
       }
 
       if (!urlExists && isValidUrl) {
-        await saveFeed({ url });
+        await saveFeed({
+          url,
+          title: '' // Title is not available at this point; it will be fetched later.
+        });
       }
     }
 

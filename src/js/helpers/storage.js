@@ -60,10 +60,11 @@ export const saveFeed = async (feed, shouldDispatchEvent = true) => {
 
   if (foundFeed) {
     foundFeed.url = feed.url;
-    action = 'edit';
+    foundFeed.title = feed.title;
+    action = 'update';
   } else {
     feeds.push(feed);
-    action = 'add';
+    action = 'create';
   }
 
   const { error } = await setItem(STORAGE_FEEDS_KEY, feeds);
