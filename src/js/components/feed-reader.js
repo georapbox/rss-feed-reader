@@ -50,19 +50,14 @@ template.innerHTML = /* html */`
     details:not([open]):not(.card details):last-child summary {
       margin-bottom: 1rem;
     }
-
-    .modal-header {
-      align-items: flex-start !important;
-      gap: 1.5rem;
-    }
   </style>
 
   <dialog class="w-100 h-100 mw-100 mh-100">
     <div class="container">
       <div class="row">
         <div class="col-xl-10 offset-xl-1">
-          <div class="modal-header border-0 px-0">
-            <h2 class="modal-title h5 d-block" style="flex: 1;">
+          <div class="d-flex justify-content-between py-3" style="gap: 1.5rem;">
+            <h2 class="h5 mb-0" id="feedTitle">
               ${renderModalTitleSkeleton()}
             </h2>
 
@@ -115,7 +110,7 @@ class FeedReader extends HTMLElement {
 
     this.spinnerEl = this.shadowRoot.getElementById('spinner');
     this.dialogEl = this.shadowRoot.querySelector('dialog');
-    this.modalTitle = this.dialogEl.querySelector('.modal-title');
+    this.modalTitle = this.dialogEl.querySelector('#feedTitle');
     this.feedsViewer = this.shadowRoot.getElementById('feedsViewer');
     this.errorEl = this.shadowRoot.getElementById('error');
 

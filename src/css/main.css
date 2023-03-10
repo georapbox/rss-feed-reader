@@ -38,10 +38,6 @@
     color: rgba(173, 181, 189, 0.8);
   }
 
-  .modal-header {
-    border-color: var(--bs-gray-700);
-  }
-
   .btn.btn-primary,
   .btn.btn-primary:hover,
   .btn.btn-primary:focus {
