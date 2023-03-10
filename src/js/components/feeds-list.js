@@ -10,7 +10,7 @@ template.innerHTML = /* html */`
   <style>
     :host {
       display: block;
-      --list-item-height: 58px;
+      --list-item-height: 64px;
     }
 
     .sort-handler {
