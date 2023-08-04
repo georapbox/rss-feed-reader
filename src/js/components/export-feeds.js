@@ -20,6 +20,30 @@ template.innerHTML = /* html */`
       background-color: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(3px);
     }
+
+    clipboard-copy::part(button) {
+      background-color: transparent;
+      border: 0;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      transition: color 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s, border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    }
+
+    clipboard-copy::part(button):focus {
+      outline: 0;
+      box-shadow: rgba(13,110,253,.25) 0px 0px 0px 0.25rem;
+    }
+
+    clipboard-copy span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.25rem;
+    }
   </style>
 
   <dialog class="shadow rounded" part="dialog">
@@ -38,15 +62,26 @@ template.innerHTML = /* html */`
 
     <div class="p-3">
       <div class="d-flex justify-content-end">
-        <clipboard-copy>
-          <button class="btn btn-sm btn-default" slot="button">
-            <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="18" height="18"><title>Copy</title><rect x="128" y="128" width="336" height="336" rx="57" ry="57" fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="32"/><path d="M383.5 128l.5-24a56.16 56.16 0 00-56-56H112a64.19 64.19 0 00-64 64v216a56.16 56.16 0 0056 56h24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/></svg>
-            <span class="label">Copy</span>
-          </button>
+        <clipboard-copy feedback-duration="1500">
+          <span slot="copy">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+              <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+              <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+            </svg>
+            Copy
+          </span>
+          <span slot="success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+              <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+              <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+            </svg>
+            Copied
+          </span>
         </clipboard-copy>
 
         <web-share class="${!isWebShareSupported() ? 'd-none' : ''}">
-          <button class="btn btn-sm btn-default" slot="button">
+          <button slot="button" class="btn btn-sm btn-default d-flex align-items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="18" height="18"><title>Share Social</title><circle cx="128" cy="256" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="384" cy="112" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="384" cy="400" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M169.83 279.53l172.34 96.94M342.17 135.53l-172.34 96.94"/></svg>
             <span class="label">Share</span>
           </button>
@@ -90,13 +125,11 @@ class ExportFeeds extends HTMLElement {
   }
 
   connectedCallback() {
-    this.clipboardCopyEl.addEventListener('clipboard-copy:success', this.onCopyClipboardSuccess);
     this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
     this.exportDialogEl.addEventListener('close', this.onExportDialogClose);
   }
 
   disconnectedCallback() {
-    this.clipboardCopyEl.removeEventListener('clipboard-copy:success', this.onCopyClipboardSuccess);
     this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
     this.exportDialogEl.removeEventListener('close', this.onExportDialogClose);
     clearTimeout(this._copyTimeout);
@@ -118,7 +151,7 @@ class ExportFeeds extends HTMLElement {
     const { value: feeds = [] } = await getFeeds();
     const feedsToExport = feeds.map(f => f.url).join('~');
     this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
-    this.shadowRoot.querySelector('clipboard-copy').value = feedsToExport;
+    this.clipboardCopyEl.value = feedsToExport;
     this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
     this.exportDialogEl.showModal();
   }
@@ -129,16 +162,6 @@ class ExportFeeds extends HTMLElement {
 
   onExportDialogClose = () => {
     this.open = false;
-  };
-
-  onCopyClipboardSuccess = evt => {
-    const labelEl = evt.target.querySelector('.label');
-
-    labelEl.textContent = 'Copied';
-
-    this._copyTimeout = setTimeout(() => {
-      labelEl.textContent = 'Copy';
-    }, 1000);
   };
 
   onExportDialogClick = (evt) => {
