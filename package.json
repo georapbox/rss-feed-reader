@@ -10,8 +10,7 @@
     "start": "parcel",
     "build:parcel": "parcel build --dist-dir=docs --public-url=./",
     "build": "npm-run-all clean build:parcel",
-    "postbuild": "npm run generateSW",
-    "webhint": "hint src/"
+    "postbuild": "npm run generateSW"
   },
   "repository": {
     "type": "git",
@@ -30,23 +29,22 @@
   },
   "homepage": "https://github.com/georapbox/rss-feed-reader#readme",
   "devDependencies": {
-    "@parcel/packager-raw-url": "~2.8.3",
-    "@parcel/transformer-webmanifest": "~2.8.3",
-    "eslint": "~8.35.0",
-    "hint": "~7.1.3",
+    "@parcel/packager-raw-url": "~2.9.3",
+    "@parcel/transformer-webmanifest": "~2.9.3",
+    "eslint": "~8.46.0",
     "npm-run-all": "~4.1.5",
-    "parcel": "~2.8.3",
+    "parcel": "~2.9.3",
     "process": "~0.11.10",
-    "workbox-cli": "~6.5.4"
+    "workbox-cli": "~7.0.0"
   },
   "dependencies": {
-    "@georapbox/clipboard-copy-element": "~2.0.0",
+    "@georapbox/clipboard-copy-element": "~3.0.0",
     "@georapbox/skeleton-placeholder-element": "~2.0.0",
     "@georapbox/web-share-element": "~3.0.0",
     "@georapbox/web-storage": "~2.1.0",
-    "bootstrap": "~5.2.3",
+    "bootstrap": "~5.3.1",
     "construct-style-sheets-polyfill": "~3.1.0",
-    "idb-keyval": "~6.2.0",
+    "idb-keyval": "~6.2.1",
     "sortablejs": "~1.15.0"
   },
   "browserslist": "> 0.5%, last 2 versions, not dead"
