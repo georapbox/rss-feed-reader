@@ -26,9 +26,11 @@ A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)
 
 <img src="src/assets/screenshots/screenshot_light.png" alt="Screenshot light" width="251" height="509"><img src="src/assets/screenshots/screenshot_dark.png" alt="Screenshot dark" width="251" height="509">
 
-## RSS feeds collection
+## Helpful links
 
-Here's a great [collection of RSS feeds](https://github.com/simevidas/web-dev-feeds) for web developers by [@simevidas](https://github.com/simevidas).
+- [RSS feeds collection](https://github.com/simevidas/web-dev-feeds) for web developers by [@simevidas](https://github.com/simevidas).
+- [Get RSS Feed URL](https://addons.mozilla.org/en-US/firefox/addon/get-rss-feed-url/) Firefox addon
+- [Get RSS Feed URL](https://chrome.google.com/webstore/detail/get-rss-feed-url/kfghpdldaipanmkhfpdcjglncmilendn) Chrome extension
 
 ## License
 
