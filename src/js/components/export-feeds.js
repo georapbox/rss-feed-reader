@@ -16,9 +16,42 @@ template.innerHTML = /* html */`
       white-space: nowrap;
     }
 
+    dialog,
     dialog::backdrop {
-      background-color: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(3px);
+      transition: transform 0.2s, opacity 0.2s, display 0.2s allow-discrete, overlay 0.2s allow-discrete;
+    }
+
+    dialog::backdrop {
+      background-color: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+    }
+
+    dialog[open]::backdrop {
+      opacity: 1;
+    }
+
+    /* IS-OPEN STATE */
+    dialog[open] {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* EXIT STATE */
+    dialog {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+
+    /* 0. BEFORE-OPEN STATE */
+    @starting-style {
+      dialog[open] {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+
+      dialog[open]::backdrop {
+        opacity: 0;
+      }
     }
 
     clipboard-copy::part(button) {
