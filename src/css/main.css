@@ -45,7 +45,10 @@
   }
 
   .btn-outline-primary:hover,
-  .btn-outline-primary.active {
+  .btn-outline-primary.active,
+  .btn-outline-primary:focus-visible,
+  :not(.btn-check)+.btn-outline-primary:active,
+  .btn-outline-primary:first-child:active {
     color: var(--bs-dark);
   }
 
@@ -110,7 +113,10 @@ a:hover,
 }
 
 .btn-outline-primary:hover,
-.btn-outline-primary.active {
+.btn-outline-primary.active,
+.btn-outline-primary:focus-visible,
+:not(.btn-check)+.btn-outline-primary:active,
+.btn-outline-primary:first-child:active {
   border-color: var(--primary-color);
   background-color: var(--primary-color);
 }
