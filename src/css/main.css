@@ -6,65 +6,6 @@
   --skeleton-color: var(--bs-gray-300);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --body-bg: var(--bs-dark);
-    --body-color: var(--bs-gray-100);
-    --primary-color: var(--bs-info);
-    --focus-ring: rgb(13 202 240 / 50%) 0px 0px 0px 0.2rem;
-    --skeleton-color: var(--bs-gray-600);
-  }
-
-  .card,
-  .list-group-item {
-    background-color: var(--bs-gray-800);
-    color: var(--body-color);
-    border-color: var(--bs-gray-700);
-  }
-
-  .form-control,
-  .form-control:focus,
-  .input-group-text {
-    background-color: var(--bs-gray-700);
-    border-color: #51555c;
-    color: var(--body-color);
-  }
-
-  .input-group-text {
-    background-color: var(--bs-gray-800);
-  }
-
-  .form-control::placeholder {
-    color: rgba(173, 181, 189, 0.8);
-  }
-
-  .btn.btn-primary,
-  .btn.btn-primary:hover,
-  .btn.btn-primary:focus {
-    color: var(--bs-dark);
-  }
-
-  .btn-outline-primary:hover,
-  .btn-outline-primary.active,
-  .btn-outline-primary:focus-visible,
-  :not(.btn-check)+.btn-outline-primary:active,
-  .btn-outline-primary:first-child:active {
-    color: var(--bs-dark);
-  }
-
-  .text-danger {
-    color: #e05260 !important;
-  }
-
-  .text-muted {
-    color: var(--bs-gray-500) !important;
-  }
-
-  code {
-    color: #ff70b7;
-  }
-}
-
 body {
   background-color: var(--body-bg);
   color: var(--body-color);
@@ -72,6 +13,11 @@ body {
 
 [hidden] {
   display: none !important;
+}
+
+code,
+pre code {
+  color: var(--bs-code-color);
 }
 
 dialog {
@@ -138,4 +84,64 @@ a:hover,
 
 .hide-scrollbars::-webkit-scrollbar {
   display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --body-bg: var(--bs-dark);
+    --body-color: var(--bs-gray-100);
+    --primary-color: var(--bs-info);
+    --focus-ring: rgb(13 202 240 / 50%) 0px 0px 0px 0.2rem;
+    --skeleton-color: var(--bs-gray-600);
+  }
+
+  .card,
+  .list-group-item {
+    background-color: var(--bs-gray-800);
+    color: var(--body-color);
+    border-color: var(--bs-gray-700);
+  }
+
+  .form-control,
+  .form-control:focus,
+  .input-group-text {
+    background-color: var(--bs-gray-700);
+    border-color: #51555c;
+    color: var(--body-color);
+  }
+
+  .input-group-text {
+    background-color: var(--bs-gray-800);
+  }
+
+  .form-control::placeholder {
+    color: rgba(173, 181, 189, 0.8);
+  }
+
+  .btn.btn-primary,
+  .btn.btn-primary:hover,
+  .btn.btn-primary:focus {
+    color: var(--bs-dark);
+  }
+
+  .btn-outline-primary:hover,
+  .btn-outline-primary.active,
+  .btn-outline-primary:focus-visible,
+  :not(.btn-check)+.btn-outline-primary:active,
+  .btn-outline-primary:first-child:active {
+    color: var(--bs-dark);
+  }
+
+  .text-danger {
+    color: #e05260 !important;
+  }
+
+  .text-muted {
+    color: var(--bs-gray-500) !important;
+  }
+
+  code,
+  pre code {
+    color: #ff70b7;
+  }
 }

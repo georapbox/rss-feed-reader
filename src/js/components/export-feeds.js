@@ -11,9 +11,11 @@ template.innerHTML = /* html */`
     }
 
     #exportCode {
+      display: block;
       overflow-y: auto;
-      max-width: 500px;
-      white-space: nowrap;
+      max-width: 800px;
+      max-height: 200px;
+      font-size: 0.75rem;
     }
 
     dialog,
@@ -123,14 +125,28 @@ template.innerHTML = /* html */`
 
       <div class="card mt-2">
         <div class="card-body">
-          <code id="exportCode" class="d-block hide-scrollbars"></code>
+          <pre class="m-0"><code id="exportCode"></code></pre>
         </div>
+      </div>
+
+      <div class="d-flex justify-content-center px-3 pt-3">
+        <button type="button" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-1" id="downloadButton">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          Download
+        </button>
       </div>
     </div>
   </dialog>
 `;
 
 class ExportFeeds extends HTMLElement {
+  #clipboardCopyEl;
+  #exportDialogEl;
+  #downloadButton;
+
   constructor() {
     super();
 
@@ -139,8 +155,9 @@ class ExportFeeds extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    this.clipboardCopyEl = this.shadowRoot.querySelector('clipboard-copy');
-    this.exportDialogEl = this.shadowRoot.querySelector('dialog');
+    this.#clipboardCopyEl = this.shadowRoot.querySelector('clipboard-copy');
+    this.#exportDialogEl = this.shadowRoot.querySelector('dialog');
+    this.#downloadButton = this.shadowRoot.getElementById('downloadButton');
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
@@ -150,22 +167,31 @@ class ExportFeeds extends HTMLElement {
   }
 
   attributeChangedCallback(name) {
-    if (name === 'open') {
+    if (name === 'open' && this.open) {
       if (this.open) {
-        this.openExportfeedsModal();
+        this.openDialog(async () => {
+          const feedsToExport = await this.#getFeedsToExport();
+
+          this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
+          this.#clipboardCopyEl.value = feedsToExport;
+          this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
+
+          document.body.style.overflowY = 'hidden';
+        });
       }
     }
   }
 
   connectedCallback() {
-    this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
-    this.exportDialogEl.addEventListener('close', this.onExportDialogClose);
+    this.#exportDialogEl.addEventListener('click', this.#handleDialogClick);
+    this.#exportDialogEl.addEventListener('close', this.#handleDialogClose);
+    this.#downloadButton.addEventListener('click', this.#handleDownloadButtonClick);
   }
 
   disconnectedCallback() {
-    this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
-    this.exportDialogEl.removeEventListener('close', this.onExportDialogClose);
-    clearTimeout(this._copyTimeout);
+    this.#exportDialogEl.addEventListener('click', this.#handleDialogClick);
+    this.#exportDialogEl.removeEventListener('close', this.#handleDialogClose);
+    this.#downloadButton.removeEventListener('click', this.#handleDownloadButtonClick);
   }
 
   get open() {
@@ -180,27 +206,59 @@ class ExportFeeds extends HTMLElement {
     }
   }
 
-  async openExportfeedsModal() {
-    const { value: feeds = [] } = await getFeeds();
-    const feedsToExport = feeds.map(f => f.url).join('~');
-    this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
-    this.clipboardCopyEl.value = feedsToExport;
-    this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
-    this.exportDialogEl.showModal();
+  async openDialog(callback = () => void 0) {
+    this.#exportDialogEl.showModal();
+    callback();
   }
 
-  closeExportfeedsModal() {
-    this.exportDialogEl.close();
+  #closeDialog() {
+    this.#exportDialogEl.close();
   }
 
-  onExportDialogClose = () => {
+  async #getFeeds() {
+    const { value = [] } = await getFeeds();
+    return value;
+  }
+
+  async #getFeedsToExport() {
+    const feeds = await this.#getFeeds();
+    let feedsToExport = '';
+
+    try {
+      feedsToExport = JSON.stringify(feeds, null, 2);
+    } catch (err) {
+      console.error(err);
+    }
+
+    return feedsToExport;
+  }
+
+  #exportFeeds(feeds) {
+    const data = JSON.stringify(feeds, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `rss-feeds-export.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  #handleDialogClose = () => {
     this.open = false;
+    document.body.style.overflowY = 'auto';
   };
 
-  onExportDialogClick = (evt) => {
+  #handleDialogClick = evt => {
     if (evt.target === evt.currentTarget) {
-      this.closeExportfeedsModal();
+      this.#closeDialog();
     }
+  };
+
+  #handleDownloadButtonClick = async () => {
+    const feeds = await this.#getFeeds();
+    this.#exportFeeds(feeds);
   };
 }
 
