@@ -18,6 +18,30 @@ template.innerHTML = /* html */`
       font-size: 0.75rem;
     }
 
+    clipboard-copy::part(button) {
+      background-color: transparent;
+      border: 0;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      transition: color 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s, border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+    }
+
+    clipboard-copy::part(button):focus {
+      outline: 0;
+      box-shadow: rgba(13,110,253,.25) 0px 0px 0px 0.25rem;
+    }
+
+    clipboard-copy span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
     dialog,
     dialog::backdrop {
       transition: transform 0.2s, opacity 0.2s, display 0.2s allow-discrete, overlay 0.2s allow-discrete;
@@ -55,33 +79,9 @@ template.innerHTML = /* html */`
         opacity: 0;
       }
     }
-
-    clipboard-copy::part(button) {
-      background-color: transparent;
-      border: 0;
-      border-radius: 0.25rem;
-      padding: 0.25rem 0.5rem;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 0.875rem;
-      line-height: 1.5;
-      transition: color 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s, border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
-    }
-
-    clipboard-copy::part(button):focus {
-      outline: 0;
-      box-shadow: rgba(13,110,253,.25) 0px 0px 0px 0.25rem;
-    }
-
-    clipboard-copy span {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.25rem;
-    }
   </style>
 
-  <dialog class="shadow rounded" part="dialog">
+  <dialog class="shadow rounded">
     <div class="d-flex align-items-center justify-content-between px-3 pt-3" style="gap: 1.5rem;">
       <h2 class="h5 m-0">Export feeds</h2>
 

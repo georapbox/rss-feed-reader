@@ -81,6 +81,15 @@ template.innerHTML = /* html */`
 `;
 
 class FeedsList extends HTMLElement {
+  #isEditable;
+  #feedsContainerEl;
+  #feedsListEl;
+  #editBtn;
+  #exportBtn;
+  #searchInput;
+  #searchClearBtn;
+  #exportFeedsEl;
+
   constructor() {
     super();
 
@@ -89,34 +98,34 @@ class FeedsList extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    this._isEditable = false;
+    this.#isEditable = false;
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
 
-    this.feedsContainerEl = this.shadowRoot.getElementById('feedsContainer');
-    this.feedsListEl = this.shadowRoot.getElementById('feedsList');
-    this.editBtn = this.shadowRoot.getElementById('editBtn');
-    this.exportBtn = this.shadowRoot.getElementById('exportBtn');
-    this.searchInput = this.shadowRoot.getElementById('searchInput');
-    this.searchClearBtn = this.shadowRoot.getElementById('searchClearBtn');
-    this.exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
+    this.#feedsContainerEl = this.shadowRoot.getElementById('feedsContainer');
+    this.#feedsListEl = this.shadowRoot.getElementById('feedsList');
+    this.#editBtn = this.shadowRoot.getElementById('editBtn');
+    this.#exportBtn = this.shadowRoot.getElementById('exportBtn');
+    this.#searchInput = this.shadowRoot.getElementById('searchInput');
+    this.#searchClearBtn = this.shadowRoot.getElementById('searchClearBtn');
+    this.#exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
   }
 
   async connectedCallback() {
     const { value: feeds = [] } = await getFeeds();
 
-    feeds.forEach((feed => this.addFeed(feed)));
+    feeds.forEach((feed => this.#addFeed(feed)));
 
-    this.toggleFeedsVisibility();
+    this.#toggleFeedsVisibility();
 
-    this.feedsListEl.addEventListener('click', this.onActionsClick);
-    this.editBtn.addEventListener('click', this.onEditRequest);
-    this.exportBtn.addEventListener('click', this.onExportRequest);
-    this.searchInput.addEventListener('input', this.onSearchInputDebounced);
-    this.searchClearBtn.addEventListener('click', this.onSearchClear);
-    document.addEventListener('feeds-updated', this.onFeedsUpdateSuccess);
+    this.#feedsListEl.addEventListener('click', this.#handleActionsClick);
+    this.#editBtn.addEventListener('click', this.#handleEditRequest);
+    this.#exportBtn.addEventListener('click', this.#handleExportRequest);
+    this.#searchInput.addEventListener('input', this.#handleSearchInputDebounced);
+    this.#searchClearBtn.addEventListener('click', this.#handleSearchClear);
+    document.addEventListener('feeds-updated', this.#handleFeedsUpdateSuccess);
 
-    new Sortable(this.feedsListEl, {
+    new Sortable(this.#feedsListEl, {
       animation: 150,
       handle: '.sort-handler',
       onEnd: async evt => {
@@ -133,16 +142,16 @@ class FeedsList extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.feedsListEl.removeEventListener('click', this.onActionsClick);
-    this.editBtn.removeEventListener('click', this.onEditRequest);
-    this.exportBtn.removeEventListener('click', this.onExportRequest);
-    this.searchInput.removeEventListener('input', this.onSearchInputDebounced);
-    this.searchClearBtn.removeEventListener('click', this.onSearchClear);
-    document.removeEventListener('feeds-updated', this.onFeedsUpdateSuccess);
+    this.#feedsListEl.removeEventListener('click', this.#handleActionsClick);
+    this.#editBtn.removeEventListener('click', this.#handleEditRequest);
+    this.#exportBtn.removeEventListener('click', this.#handleExportRequest);
+    this.#searchInput.removeEventListener('input', this.#handleSearchInputDebounced);
+    this.#searchClearBtn.removeEventListener('click', this.#handleSearchClear);
+    document.removeEventListener('feeds-updated', this.#handleFeedsUpdateSuccess);
   }
 
-  searchFeeds = (searchValue = '') => {
-    const feedEls = this.feedsListEl.querySelectorAll(`[data-url]`);
+  #searchFeeds = (searchValue = '') => {
+    const feedEls = this.#feedsListEl.querySelectorAll(`[data-url]`);
 
     if (feedEls.length === 0) {
       return;
@@ -156,21 +165,21 @@ class FeedsList extends HTMLElement {
     });
   };
 
-  debounceSearchFeeds = debounce(this.searchFeeds, 250);
+  #debounceSearchFeeds = debounce(this.#searchFeeds, 250);
 
-  onSearchInputDebounced = evt => {
+  #handleSearchInputDebounced = evt => {
     const value = evt.target.value;
-    this.searchClearBtn.classList.toggle('d-none', !value);
-    return this.debounceSearchFeeds(value);
+    this.#searchClearBtn.classList.toggle('d-none', !value);
+    return this.#debounceSearchFeeds(value);
   };
 
-  onSearchClear = () => {
-    this.searchInput.value = '';
-    this.searchInput.dispatchEvent(new Event('input'));
+  #handleSearchClear = () => {
+    this.#searchInput.value = '';
+    this.#searchInput.dispatchEvent(new Event('input'));
   };
 
-  onEditRequest = evt => {
-    this._isEditable = !this._isEditable;
+  #handleEditRequest = evt => {
+    this.#isEditable = !this.#isEditable;
 
     evt.currentTarget.classList.toggle('active');
 
@@ -179,27 +188,27 @@ class FeedsList extends HTMLElement {
     });
   };
 
-  onExportRequest = () => {
-    this.exportFeedsEl.open = true;
+  #handleExportRequest = () => {
+    this.#exportFeedsEl.open = true;
   };
 
-  onFeedsUpdateSuccess = evt => {
+  #handleFeedsUpdateSuccess = evt => {
     if (evt.detail.action === 'delete') {
-      this.removeFeed(evt.detail.feed);
+      this.#removeFeed(evt.detail.feed);
     }
 
     if (evt.detail.action === 'create') {
-      this.addFeed(evt.detail.feed);
+      this.#addFeed(evt.detail.feed);
 
-      if (this.searchInput.value) {
-        this.searchInput.value = '';
-        this.searchFeeds('');
+      if (this.#searchInput.value) {
+        this.#searchInput.value = '';
+        this.#searchFeeds('');
       }
     }
 
     if (evt.detail.action === 'update') {
       const { url, title } = evt.detail.feed;
-      const feedEl = this.feedsListEl.querySelector(`[data-url="${url}"]`);
+      const feedEl = this.#feedsListEl.querySelector(`[data-url="${url}"]`);
 
       if (feedEl) {
         const linkContent = feedEl.querySelector('.link-content');
@@ -213,7 +222,7 @@ class FeedsList extends HTMLElement {
     }
   };
 
-  onActionsClick = evt => {
+  #handleActionsClick = evt => {
     const target = evt.target;
     const deleteBtn = target.closest('button.delete-button');
     const linkEl = target.closest('a.link');
@@ -237,7 +246,7 @@ class FeedsList extends HTMLElement {
     }
   };
 
-  addFeed(feed) {
+  #addFeed(feed) {
     const { url, title } = feed;
 
     const link = document.createElement('a');
@@ -254,7 +263,7 @@ class FeedsList extends HTMLElement {
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';
     deleteButton.title = 'Delete feed';
-    deleteButton.hidden = !this._isEditable;
+    deleteButton.hidden = !this.#isEditable;
     deleteButton.className = 'delete-button btn btn-default text-danger p-0';
     deleteButton.style.lineHeight = '1';
     deleteButton.innerHTML = /* html */`
@@ -271,7 +280,7 @@ class FeedsList extends HTMLElement {
     listItem.setAttribute('data-title', title || '');
 
     const sortHandler = document.createElement('div');
-    sortHandler.hidden = !this._isEditable;
+    sortHandler.hidden = !this.#isEditable;
     sortHandler.className = 'sort-handler text-primary';
     sortHandler.innerHTML = /* html */`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
@@ -285,20 +294,20 @@ class FeedsList extends HTMLElement {
     listItem.appendChild(link);
     listItem.appendChild(deleteButton);
 
-    this.feedsListEl.appendChild(listItem);
+    this.#feedsListEl.appendChild(listItem);
 
-    this.toggleFeedsVisibility();
+    this.#toggleFeedsVisibility();
   }
 
-  removeFeed(feed) {
-    const listItem = this.feedsListEl.querySelector(`[data-url="${feed.url}"]`);
+  #removeFeed(feed) {
+    const listItem = this.#feedsListEl.querySelector(`[data-url="${feed.url}"]`);
     listItem && listItem.remove();
-    this.toggleFeedsVisibility();
+    this.#toggleFeedsVisibility();
   }
 
-  async toggleFeedsVisibility() {
+  async #toggleFeedsVisibility() {
     const { value: feeds = [] } = await getFeeds();
-    this.feedsContainerEl.classList.toggle('d-none', feeds.length === 0);
+    this.#feedsContainerEl.classList.toggle('d-none', feeds.length === 0);
   }
 }
 

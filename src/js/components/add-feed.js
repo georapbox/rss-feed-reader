@@ -1,5 +1,6 @@
 import { styleSheets } from '../helpers/styles.js';
 import { getFeeds, saveFeed } from '../helpers/storage.js';
+import { canParseURL } from '../utils/canParseURL.js';
 
 const template = document.createElement('template');
 
@@ -23,6 +24,8 @@ template.innerHTML = /* html */`
 `;
 
 class AddFeed extends HTMLElement {
+  #formEl;
+
   constructor() {
     super();
 
@@ -33,15 +36,15 @@ class AddFeed extends HTMLElement {
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
 
-    this.formEl = this.shadowRoot.querySelector('form[name="addFeedForm"]');
+    this.#formEl = this.shadowRoot.querySelector('form[name="addFeedForm"]');
   }
 
   connectedCallback() {
-    this.formEl.addEventListener('submit', this.#handleFormSubmission);
+    this.#formEl.addEventListener('submit', this.#handleFormSubmission);
   }
 
   disconnectedCallback() {
-    this.formEl.addEventListener('submit', this.#handleFormSubmission);
+    this.#formEl.addEventListener('submit', this.#handleFormSubmission);
   }
 
   async #handleFormSubmission(evt) {
@@ -49,18 +52,11 @@ class AddFeed extends HTMLElement {
 
     const input = evt.target['feed-url'];
     const url = input.value.trim();
-    console.log(url);
     const { value: feeds = [] } = await getFeeds();
     const urlExists = Boolean(feeds.find(feed => feed.url === url));
-    let isValidUrl = true;
+    const isValidURL = canParseURL(url);
 
-    try {
-      new URL(url);
-    } catch {
-      isValidUrl = false;
-    }
-
-    if (!urlExists && isValidUrl) {
+    if (!urlExists && isValidURL) {
       await saveFeed({
         url,
         title: '' // Title is not available at this point; it will be fetched later.
