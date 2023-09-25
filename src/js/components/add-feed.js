@@ -14,14 +14,12 @@ template.innerHTML = /* html */`
 
   <form name="addFeedForm" autocomplete="off" class="d-flex">
     <div class="form-group" style="flex: 1;">
-      <input type="text" name="feed-url" class="form-control" style="height: var(--input-height);" placeholder="Enter a feed URL in XML format" autocapitalize="off" autocorrect="off" required>
+      <input type="url" name="feed-url" class="form-control" style="height: var(--input-height);" placeholder="Enter a feed URL in XML format" autocapitalize="off" autocorrect="off" required>
     </div>
     <div class="ms-2">
       <input type="submit" value="Add feed" class="btn btn-primary" style="height: var(--input-height);">
     </div>
   </form>
-
-  <em style="font-size: 0.75rem;">Add multiple URLs separated with tilde (~).</em>
 `;
 
 class AddFeed extends HTMLElement {
@@ -39,36 +37,34 @@ class AddFeed extends HTMLElement {
   }
 
   connectedCallback() {
-    this.formEl.addEventListener('submit', this.onFormSubmission);
+    this.formEl.addEventListener('submit', this.#handleFormSubmission);
   }
 
   disconnectedCallback() {
-    this.formEl.addEventListener('submit', this.onFormSubmission);
+    this.formEl.addEventListener('submit', this.#handleFormSubmission);
   }
 
-  async onFormSubmission(evt) {
+  async #handleFormSubmission(evt) {
     evt.preventDefault();
 
     const input = evt.target['feed-url'];
-    const { value } = input;
+    const url = input.value.trim();
+    console.log(url);
+    const { value: feeds = [] } = await getFeeds();
+    const urlExists = Boolean(feeds.find(feed => feed.url === url));
+    let isValidUrl = true;
 
-    for (const url of value.split('~')) {
-      const { value: feeds = [] } = await getFeeds();
-      const urlExists = Boolean(feeds.find(feed => feed.url === url));
-      let isValidUrl = true;
+    try {
+      new URL(url);
+    } catch {
+      isValidUrl = false;
+    }
 
-      try {
-        new URL(url);
-      } catch {
-        isValidUrl = false;
-      }
-
-      if (!urlExists && isValidUrl) {
-        await saveFeed({
-          url,
-          title: '' // Title is not available at this point; it will be fetched later.
-        });
-      }
+    if (!urlExists && isValidUrl) {
+      await saveFeed({
+        url,
+        title: '' // Title is not available at this point; it will be fetched later.
+      });
     }
 
     input.value = '';
