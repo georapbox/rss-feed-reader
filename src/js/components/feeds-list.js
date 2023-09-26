@@ -2,6 +2,7 @@ import Sortable from 'sortablejs/modular/sortable.core.esm.js';
 import { styleSheets } from '../helpers/styles.js';
 import { getFeeds, setFeeds, deleteFeed } from '../helpers/storage.js';
 import { debounce } from '../utils/debounce.js';
+import './import-feeds.js';
 import './export-feeds.js';
 
 const template = document.createElement('template');
@@ -34,9 +35,14 @@ template.innerHTML = /* html */`
     .link-content {
       line-height: 1.2;
     }
+
+    #noFeedsDisclaimer {
+      max-width: 550px;
+      margin: 0 auto;
+    }
   </style>
 
-  <div id="feedsContainer">
+  <div id="feedsContainer" class="d-none">
     <div class="d-flex mb-3">
       <div class="input-group me-2 position-relative">
         <span class="input-group-text">
@@ -56,7 +62,7 @@ template.innerHTML = /* html */`
       </div>
 
       <div class="btn-group">
-        <button type="button" id="editBtn" class="reorder-button btn btn-outline-primary btn-sm d-flex align-items-center gap-1">
+        <button type="button" id="editBtn" class="reorder-button btn btn-outline-primary btn-sm d-flex align-items-center gap-1" title="Edit feeds">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="18" height="18">
             <path d="M384 224v184a40 40 0 01-40 40H104a40 40 0 01-40-40V168a40 40 0 0140-40h167.48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
             <path d="M459.94 53.25a16.06 16.06 0 00-23.22-.56L424.35 65a8 8 0 000 11.31l11.34 11.32a8 8 0 0011.34 0l12.06-12c6.1-6.09 6.67-16.01.85-22.38zM399.34 90L218.82 270.2a9 9 0 00-2.31 3.93L208.16 299a3.91 3.91 0 004.86 4.86l24.85-8.35a9 9 0 003.93-2.31L422 112.66a9 9 0 000-12.66l-9.95-10a9 9 0 00-12.71 0z" fill="currentColor"/>
@@ -64,8 +70,16 @@ template.innerHTML = /* html */`
           <span class="d-none d-sm-block">Edit</span>
         </button>
 
-        <button type="button" id="exportBtn" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20">
+        <button type="button" id="importBtn" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1" title="Import feeds">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512" width="20" height="20" style="transform: rotate(180deg);">
+            <path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/>
+          </svg>
+          <span class="d-none d-sm-block">Import</span>
+        </button>
+
+        <button type="button" id="exportBtn" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-1" title="Export feeds">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512" width="20" height="20">
             <path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/>
           </svg>
@@ -74,10 +88,28 @@ template.innerHTML = /* html */`
       </div>
     </div>
 
-    <export-feeds></export-feeds>
-
     <ul class="list-group" id="feedsList"></ul>
   </div>
+
+  <div id="noFeedsDisclaimer" class="text-center d-none">
+    <p>
+      There are no feeds to display. Add a feed by entering a feed URL in the input above or by importing feeds using the button below.
+    </p>
+
+    <p>
+      <button type="button" id="importTrigger" class="btn btn-outline-primary d-inline-flex align-items-center justify-content-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512" width="18" height="18" style="transform: rotate(180deg);">
+          <path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
+          <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/>
+        </svg>
+        Import feeds
+      </button>
+    </p>
+  </div>
+
+  <modal-dialog id="importDialog" header-title="Import feeds"></modal-dialog>
+
+  <modal-dialog id="exportDialog" header-title="Export feeds"></modal-dialog>
 `;
 
 class FeedsList extends HTMLElement {
@@ -85,10 +117,14 @@ class FeedsList extends HTMLElement {
   #feedsContainerEl;
   #feedsListEl;
   #editBtn;
+  #importBtn;
   #exportBtn;
   #searchInput;
   #searchClearBtn;
-  #exportFeedsEl;
+  #importDialog;
+  #exportDialog;
+  #importTrigger;
+  #noFeedsDisclaimerEl;
 
   constructor() {
     super();
@@ -105,10 +141,14 @@ class FeedsList extends HTMLElement {
     this.#feedsContainerEl = this.shadowRoot.getElementById('feedsContainer');
     this.#feedsListEl = this.shadowRoot.getElementById('feedsList');
     this.#editBtn = this.shadowRoot.getElementById('editBtn');
+    this.#importBtn = this.shadowRoot.getElementById('importBtn');
     this.#exportBtn = this.shadowRoot.getElementById('exportBtn');
     this.#searchInput = this.shadowRoot.getElementById('searchInput');
     this.#searchClearBtn = this.shadowRoot.getElementById('searchClearBtn');
-    this.#exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
+    this.#importDialog = this.shadowRoot.getElementById('importDialog');
+    this.#exportDialog = this.shadowRoot.getElementById('exportDialog');
+    this.#importTrigger = this.shadowRoot.getElementById('importTrigger');
+    this.#noFeedsDisclaimerEl = this.shadowRoot.getElementById('noFeedsDisclaimer');
   }
 
   async connectedCallback() {
@@ -120,9 +160,16 @@ class FeedsList extends HTMLElement {
 
     this.#feedsListEl.addEventListener('click', this.#handleActionsClick);
     this.#editBtn.addEventListener('click', this.#handleEditRequest);
+    this.#importBtn.addEventListener('click', this.#handleImportRequest);
     this.#exportBtn.addEventListener('click', this.#handleExportRequest);
     this.#searchInput.addEventListener('input', this.#handleSearchInputDebounced);
     this.#searchClearBtn.addEventListener('click', this.#handleSearchClear);
+    this.#importDialog.addEventListener('modal-dialog-open', this.#handleImportDialogOpen);
+    this.#importDialog.addEventListener('modal-dialog-close', this.#handleImportDialogClose);
+    this.#exportDialog.addEventListener('modal-dialog-open', this.#handleExportDialogOpen);
+    this.#exportDialog.addEventListener('modal-dialog-close', this.#handleExportDialogClose);
+    this.#importTrigger.addEventListener('click', this.#handleImportRequest);
+    this.addEventListener('feeds-imported', this.#handleFeedsImported);
     document.addEventListener('feeds-updated', this.#handleFeedsUpdateSuccess);
 
     new Sortable(this.#feedsListEl, {
@@ -144,9 +191,16 @@ class FeedsList extends HTMLElement {
   disconnectedCallback() {
     this.#feedsListEl.removeEventListener('click', this.#handleActionsClick);
     this.#editBtn.removeEventListener('click', this.#handleEditRequest);
+    this.#importBtn.removeEventListener('click', this.#handleImportRequest);
     this.#exportBtn.removeEventListener('click', this.#handleExportRequest);
     this.#searchInput.removeEventListener('input', this.#handleSearchInputDebounced);
     this.#searchClearBtn.removeEventListener('click', this.#handleSearchClear);
+    this.#importDialog.removeEventListener('modal-dialog-open', this.#handleImportDialogOpen);
+    this.#importDialog.removeEventListener('modal-dialog-close', this.#handleImportDialogClose);
+    this.#exportDialog.removeEventListener('modal-dialog-open', this.#handleExportDialogOpen);
+    this.#exportDialog.removeEventListener('modal-dialog-close', this.#handleExportDialogClose);
+    this.#importTrigger.removeEventListener('click', this.#handleImportRequest);
+    this.removeEventListener('feeds-imported', this.#handleFeedsImported);
     document.removeEventListener('feeds-updated', this.#handleFeedsUpdateSuccess);
   }
 
@@ -188,8 +242,36 @@ class FeedsList extends HTMLElement {
     });
   };
 
+  #handleImportRequest = () => {
+    this.#importDialog.open = true;
+  };
+
   #handleExportRequest = () => {
-    this.#exportFeedsEl.open = true;
+    this.#exportDialog.open = true;
+  };
+
+  #handleImportDialogOpen = evt => {
+    const el = document.createElement('import-feeds');
+    evt.detail.dialog.appendChild(el);
+  };
+
+  #handleImportDialogClose = evt => {
+    const el = evt.detail.dialog.querySelector('import-feeds');
+    setTimeout(() => el && el.remove(), 500);
+  };
+
+  #handleExportDialogOpen = evt => {
+    const el = document.createElement('export-feeds');
+    evt.detail.dialog.appendChild(el);
+  };
+
+  #handleExportDialogClose = evt => {
+    const el = evt.detail.dialog.querySelector('export-feeds');
+    setTimeout(() => el && el.remove(), 500);
+  };
+
+  #handleFeedsImported = () => {
+    this.#importDialog.open = false;
   };
 
   #handleFeedsUpdateSuccess = evt => {
@@ -308,6 +390,7 @@ class FeedsList extends HTMLElement {
   async #toggleFeedsVisibility() {
     const { value: feeds = [] } = await getFeeds();
     this.#feedsContainerEl.classList.toggle('d-none', feeds.length === 0);
+    this.#noFeedsDisclaimerEl.classList.toggle('d-none', feeds.length > 0);
   }
 }
 
