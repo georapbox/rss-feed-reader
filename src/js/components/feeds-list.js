@@ -97,7 +97,7 @@ template.innerHTML = /* html */`
     </p>
 
     <p>
-      <button type="button" id="importTrigger" class="btn btn-outline-primary d-inline-flex align-items-center justify-content-center gap-1">
+      <button type="button" id="importAltBtn" class="btn btn-outline-primary d-inline-flex align-items-center justify-content-center gap-1">
         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 512 512" width="18" height="18" style="transform: rotate(180deg);">
           <path d="M336 176h40a40 40 0 0140 40v208a40 40 0 01-40 40H136a40 40 0 01-40-40V216a40 40 0 0140-40h40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
           <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M176 272l80 80 80-80M256 48v288"/>
@@ -118,12 +118,12 @@ class FeedsList extends HTMLElement {
   #feedsListEl;
   #editBtn;
   #importBtn;
+  #importAltBtn;
   #exportBtn;
   #searchInput;
   #searchClearBtn;
   #importDialog;
   #exportDialog;
-  #importTrigger;
   #noFeedsDisclaimerEl;
 
   constructor() {
@@ -142,12 +142,12 @@ class FeedsList extends HTMLElement {
     this.#feedsListEl = this.shadowRoot.getElementById('feedsList');
     this.#editBtn = this.shadowRoot.getElementById('editBtn');
     this.#importBtn = this.shadowRoot.getElementById('importBtn');
+    this.#importAltBtn = this.shadowRoot.getElementById('importAltBtn');
     this.#exportBtn = this.shadowRoot.getElementById('exportBtn');
     this.#searchInput = this.shadowRoot.getElementById('searchInput');
     this.#searchClearBtn = this.shadowRoot.getElementById('searchClearBtn');
     this.#importDialog = this.shadowRoot.getElementById('importDialog');
     this.#exportDialog = this.shadowRoot.getElementById('exportDialog');
-    this.#importTrigger = this.shadowRoot.getElementById('importTrigger');
     this.#noFeedsDisclaimerEl = this.shadowRoot.getElementById('noFeedsDisclaimer');
   }
 
@@ -160,6 +160,7 @@ class FeedsList extends HTMLElement {
 
     this.#feedsListEl.addEventListener('click', this.#handleActionsClick);
     this.#editBtn.addEventListener('click', this.#handleEditRequest);
+    this.#importAltBtn.addEventListener('click', this.#handleImportRequest);
     this.#importBtn.addEventListener('click', this.#handleImportRequest);
     this.#exportBtn.addEventListener('click', this.#handleExportRequest);
     this.#searchInput.addEventListener('input', this.#handleSearchInputDebounced);
@@ -168,7 +169,6 @@ class FeedsList extends HTMLElement {
     this.#importDialog.addEventListener('modal-dialog-close', this.#handleImportDialogClose);
     this.#exportDialog.addEventListener('modal-dialog-open', this.#handleExportDialogOpen);
     this.#exportDialog.addEventListener('modal-dialog-close', this.#handleExportDialogClose);
-    this.#importTrigger.addEventListener('click', this.#handleImportRequest);
     this.addEventListener('feeds-imported', this.#handleFeedsImported);
     document.addEventListener('feeds-updated', this.#handleFeedsUpdateSuccess);
 
@@ -192,6 +192,7 @@ class FeedsList extends HTMLElement {
     this.#feedsListEl.removeEventListener('click', this.#handleActionsClick);
     this.#editBtn.removeEventListener('click', this.#handleEditRequest);
     this.#importBtn.removeEventListener('click', this.#handleImportRequest);
+    this.#importAltBtn.removeEventListener('click', this.#handleImportRequest);
     this.#exportBtn.removeEventListener('click', this.#handleExportRequest);
     this.#searchInput.removeEventListener('input', this.#handleSearchInputDebounced);
     this.#searchClearBtn.removeEventListener('click', this.#handleSearchClear);
@@ -199,7 +200,6 @@ class FeedsList extends HTMLElement {
     this.#importDialog.removeEventListener('modal-dialog-close', this.#handleImportDialogClose);
     this.#exportDialog.removeEventListener('modal-dialog-open', this.#handleExportDialogOpen);
     this.#exportDialog.removeEventListener('modal-dialog-close', this.#handleExportDialogClose);
-    this.#importTrigger.removeEventListener('click', this.#handleImportRequest);
     this.removeEventListener('feeds-imported', this.#handleFeedsImported);
     document.removeEventListener('feeds-updated', this.#handleFeedsUpdateSuccess);
   }

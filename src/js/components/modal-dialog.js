@@ -136,6 +136,18 @@ class ModalDialog extends HTMLElement {
     this.setAttribute('header-title', value);
   }
 
+  get staticBackDrop() {
+    return this.hasAttribute('static-backdrop');
+  }
+
+  set staticBackDrop(value) {
+    if (value) {
+      this.setAttribute('static-backdrop', '');
+    } else {
+      this.removeAttribute('static-backdrop');
+    }
+  }
+
   async #openDialog() {
     this.#dialogEl.showModal();
     document.body.classList.add('overflow-y-hidden');
@@ -167,7 +179,7 @@ class ModalDialog extends HTMLElement {
   };
 
   #handleDialogClick = evt => {
-    if (evt.target === evt.currentTarget) {
+    if (evt.target === evt.currentTarget && !this.staticBackDrop) {
       this.#closeDialog();
     }
   };
