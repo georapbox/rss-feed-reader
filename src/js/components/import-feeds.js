@@ -61,7 +61,7 @@ template.innerHTML = /* html */`
     }
   </style>
 
-  <a-tab-group>
+  <a-tab-group no-scroll-controls>
     <a-tab slot="tab" role="heading">From file</a-tab>
     <a-tab-panel slot="panel">
       <div class="px-3">
