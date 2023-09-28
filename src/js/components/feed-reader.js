@@ -100,6 +100,12 @@ template.innerHTML = /* html */`
 `;
 
 class FeedReader extends HTMLElement {
+  #spinnerEl;
+  #dialogEl;
+  #modalTitle;
+  #feedsViewer;
+  #errorEl;
+
   constructor() {
     super();
 
@@ -108,11 +114,11 @@ class FeedReader extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    this.spinnerEl = this.shadowRoot.getElementById('spinner');
-    this.dialogEl = this.shadowRoot.querySelector('dialog');
-    this.modalTitle = this.dialogEl.querySelector('#feedTitle');
-    this.feedsViewer = this.shadowRoot.getElementById('feedsViewer');
-    this.errorEl = this.shadowRoot.getElementById('error');
+    this.#spinnerEl = this.shadowRoot.getElementById('spinner');
+    this.#dialogEl = this.shadowRoot.querySelector('dialog');
+    this.#modalTitle = this.#dialogEl.querySelector('#feedTitle');
+    this.#feedsViewer = this.shadowRoot.getElementById('feedsViewer');
+    this.#errorEl = this.shadowRoot.getElementById('error');
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
@@ -123,16 +129,16 @@ class FeedReader extends HTMLElement {
 
   attributeChangedCallback(name) {
     if (name === 'feed-url') {
-      this.feedUrl ? this.openFeed(this.feedUrl) : this.closeFeed();
+      this.feedUrl ? this.#openFeed(this.feedUrl) : this.#closeFeed();
     }
   }
 
   connectedCallback() {
-    this.dialogEl.addEventListener('close', this.onFeedClose);
+    this.#dialogEl.addEventListener('close', this.#handleFeedClose);
   }
 
   disconnectedCallback() {
-    this.dialogEl.removeEventListener('close', this.onFeedClose);
+    this.#dialogEl.removeEventListener('close', this.#handleFeedClose);
   }
 
   get feedUrl() {
@@ -147,32 +153,32 @@ class FeedReader extends HTMLElement {
     }
   }
 
-  openFeed(feedUrl) {
+  #openFeed(feedUrl) {
     document.body.classList.add('overflow-hidden');
-    this.dialogEl.showModal();
-    this.renderFeed(feedUrl);
+    this.#dialogEl.showModal();
+    this.#renderFeed(feedUrl);
   }
 
-  closeFeed() {
-    this.dialogEl.close();
+  #closeFeed() {
+    this.#dialogEl.close();
   }
 
-  onFeedClose = () => {
+  #handleFeedClose = () => {
     controller && controller.abort();
     document.body.classList.remove('overflow-hidden');
-    this.resetDialogContent();
+    this.#resetDialogContent();
     this.feedUrl = null;
   };
 
-  resetDialogContent() {
-    this.feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
-    this.modalTitle.innerHTML = renderModalTitleSkeleton();
-    this.spinnerEl.classList.add('d-none');
-    this.errorEl.classList.add('d-none');
+  #resetDialogContent() {
+    this.#feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
+    this.#modalTitle.innerHTML = renderModalTitleSkeleton();
+    this.#spinnerEl.classList.add('d-none');
+    this.#errorEl.classList.add('d-none');
   }
 
-  async renderFeed(feedUrl) {
-    this.spinnerEl.classList.remove('d-none');
+  async #renderFeed(feedUrl) {
+    this.#spinnerEl.classList.remove('d-none');
 
     controller = new AbortController();
 
@@ -192,23 +198,23 @@ class FeedReader extends HTMLElement {
         });
       }
 
-      this.modalTitle.textContent = data.feed.title || feedUrl;
+      this.#modalTitle.textContent = data.feed.title || feedUrl;
 
       data.items.forEach(item => {
-        this.feedsViewer.insertAdjacentHTML('beforeend', this.feedsReaderTemplate(item));
+        this.#feedsViewer.insertAdjacentHTML('beforeend', this.#feedsReaderTemplate(item));
       });
     } catch (error) {
       if (error.name !== 'AbortError') {
         console.error(error);
-        this.modalTitle.textContent = '';
-        this.errorEl.classList.remove('d-none');
+        this.#modalTitle.textContent = '';
+        this.#errorEl.classList.remove('d-none');
       }
     } finally {
-      this.spinnerEl.classList.add('d-none');
+      this.#spinnerEl.classList.add('d-none');
     }
   }
 
-  feedsReaderTemplate(item) {
+  #feedsReaderTemplate(item) {
     const { link, title, description, author, pubDate, thumbnail } = item;
     let formattedDate = '';
 

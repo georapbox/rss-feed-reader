@@ -8,50 +8,14 @@ template.innerHTML = /* html */`
   <style>
     :host {
       display: block;
+      max-width: 500px;
     }
 
     #exportCode {
+      display: block;
       overflow-y: auto;
-      max-width: 500px;
-      white-space: nowrap;
-    }
-
-    dialog,
-    dialog::backdrop {
-      transition: transform 0.2s, opacity 0.2s, display 0.2s allow-discrete, overlay 0.2s allow-discrete;
-    }
-
-    dialog::backdrop {
-      background-color: rgba(0, 0, 0, 0.5);
-      opacity: 0;
-    }
-
-    dialog[open]::backdrop {
-      opacity: 1;
-    }
-
-    /* IS-OPEN STATE */
-    dialog[open] {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    /* EXIT STATE */
-    dialog {
-      transform: translateY(-50px);
-      opacity: 0;
-    }
-
-    /* 0. BEFORE-OPEN STATE */
-    @starting-style {
-      dialog[open] {
-        transform: translateY(20px);
-        opacity: 0;
-      }
-
-      dialog[open]::backdrop {
-        opacity: 0;
-      }
+      max-height: 200px;
+      font-size: 0.75rem;
     }
 
     clipboard-copy::part(button) {
@@ -79,58 +43,57 @@ template.innerHTML = /* html */`
     }
   </style>
 
-  <dialog class="shadow rounded" part="dialog">
-    <div class="d-flex align-items-center justify-content-between px-3 pt-3" style="gap: 1.5rem;">
-      <h2 class="h5 m-0">Export feeds</h2>
-
-      <form method="dialog">
-        <button type="submit" class="d-flex align-items-center justify-content-center btn btn-outline-primary p-0" style="width: 36px; height: 36px;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+  <div class="p-3">
+    <div class="d-flex justify-content-end">
+      <clipboard-copy feedback-duration="1500">
+        <span slot="copy">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
+            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
           </svg>
-          <span class="visually-hidden">Close</span>
+          Copy
+        </span>
+        <span slot="success">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
+            <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+            <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+          </svg>
+          Copied
+        </span>
+      </clipboard-copy>
+
+      <web-share class="${!isWebShareSupported() ? 'd-none' : ''}">
+        <button slot="button" class="btn btn-sm btn-default d-flex align-items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="18" height="18"><title>Share Social</title><circle cx="128" cy="256" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="384" cy="112" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="384" cy="400" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M169.83 279.53l172.34 96.94M342.17 135.53l-172.34 96.94"/></svg>
+          <span class="label">Share</span>
         </button>
-      </form>
+      </web-share>
     </div>
 
-    <div class="p-3">
-      <div class="d-flex justify-content-end">
-        <clipboard-copy feedback-duration="1500">
-          <span slot="copy">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16">
-              <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-              <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-            </svg>
-            Copy
-          </span>
-          <span slot="success">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-check" viewBox="0 0 16 16">
-              <path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"/>
-              <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-              <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-            </svg>
-            Copied
-          </span>
-        </clipboard-copy>
-
-        <web-share class="${!isWebShareSupported() ? 'd-none' : ''}">
-          <button slot="button" class="btn btn-sm btn-default d-flex align-items-center gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="ionicon" viewBox="0 0 512 512" width="18" height="18"><title>Share Social</title><circle cx="128" cy="256" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="384" cy="112" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><circle cx="384" cy="400" r="48" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M169.83 279.53l172.34 96.94M342.17 135.53l-172.34 96.94"/></svg>
-            <span class="label">Share</span>
-          </button>
-        </web-share>
-      </div>
-
-      <div class="card mt-2">
-        <div class="card-body">
-          <code id="exportCode" class="d-block hide-scrollbars"></code>
-        </div>
+    <div class="card mt-2 mb-3">
+      <div class="card-body">
+        <pre class="m-0"><code id="exportCode"></code></pre>
       </div>
     </div>
-  </dialog>
+
+    <button type="button" class="btn btn-primary d-inline-flex align-items-center justify-content-center gap-1 w-100" id="downloadButton">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+      </svg>
+      Download
+    </button>
+  </div>
 `;
 
 class ExportFeeds extends HTMLElement {
+  #feeds;
+  #exportCodeEl;
+  #clipboardCopyEl;
+  #webShareEl;
+  #downloadButton;
+
   constructor() {
     super();
 
@@ -139,68 +102,70 @@ class ExportFeeds extends HTMLElement {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    this.clipboardCopyEl = this.shadowRoot.querySelector('clipboard-copy');
-    this.exportDialogEl = this.shadowRoot.querySelector('dialog');
+    this.#exportCodeEl = this.shadowRoot.getElementById('exportCode');
+    this.#clipboardCopyEl = this.shadowRoot.querySelector('clipboard-copy');
+    this.#webShareEl = this.shadowRoot.querySelector('web-share');
+    this.#downloadButton = this.shadowRoot.getElementById('downloadButton');
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
   static get observedAttributes() {
-    return ['open'];
+    return ['feeds'];
   }
 
-  attributeChangedCallback(name) {
-    if (name === 'open') {
-      if (this.open) {
-        this.openExportfeedsModal();
-      }
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'feeds' && oldValue !== newValue && this.feeds) {
+      const feedsToExport = this.#getFeedsToExportString();
+      this.#exportCodeEl.innerHTML = feedsToExport;
+      this.#clipboardCopyEl.value = feedsToExport;
+      this.#webShareEl.shareText = feedsToExport;
     }
   }
 
   connectedCallback() {
-    this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
-    this.exportDialogEl.addEventListener('close', this.onExportDialogClose);
+    this.#downloadButton.addEventListener('click', this.#handleDownloadButtonClick);
   }
 
   disconnectedCallback() {
-    this.exportDialogEl.addEventListener('click', this.onExportDialogClick);
-    this.exportDialogEl.removeEventListener('close', this.onExportDialogClose);
-    clearTimeout(this._copyTimeout);
+    this.#downloadButton.removeEventListener('click', this.#handleDownloadButtonClick);
   }
 
-  get open() {
-    return this.hasAttribute('open');
+  get feeds() {
+    return this.getAttribute('feeds');
   }
 
-  set open(value) {
-    if (value) {
-      this.setAttribute('open', '');
-    } else {
-      this.removeAttribute('open');
+  set feeds(value) {
+    this.setAttribute('feeds', value);
+  }
+
+  #getFeedsToExportString() {
+    let feedsToExport = '';
+
+    try {
+      feedsToExport = JSON.stringify(JSON.parse(this.feeds), null, 2);
+    } catch (err) {
+      console.error(err);
     }
+
+    return feedsToExport;
   }
 
-  async openExportfeedsModal() {
+  #exportFeeds(feeds) {
+    const data = JSON.stringify(feeds, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `rss-feeds-export.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  #handleDownloadButtonClick = async () => {
     const { value: feeds = [] } = await getFeeds();
-    const feedsToExport = feeds.map(f => f.url).join('~');
-    this.shadowRoot.getElementById('exportCode').innerHTML = feedsToExport;
-    this.clipboardCopyEl.value = feedsToExport;
-    this.shadowRoot.querySelector('web-share').shareText = feedsToExport;
-    this.exportDialogEl.showModal();
-  }
-
-  closeExportfeedsModal() {
-    this.exportDialogEl.close();
-  }
-
-  onExportDialogClose = () => {
-    this.open = false;
-  };
-
-  onExportDialogClick = (evt) => {
-    if (evt.target === evt.currentTarget) {
-      this.closeExportfeedsModal();
-    }
+    this.#exportFeeds(feeds);
   };
 }
 
