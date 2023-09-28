@@ -1,5 +1,6 @@
 import { styleSheets } from '../helpers/styles.js';
 
+const MODAL_STATIC_ANIMATION_DURATION = 300;
 const template = document.createElement('template');
 
 template.innerHTML = /* html */`
@@ -56,6 +57,18 @@ template.innerHTML = /* html */`
         opacity: 0;
       }
     }
+
+    .modal-static {
+      animation-name: modal-static;
+      animation-duration: ${MODAL_STATIC_ANIMATION_DURATION}ms;
+      animation-timing-function: cubic-bezier(0.2, 0, 0.38, 0.9);
+    }
+
+    @keyframes modal-static {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
   </style>
 
   <dialog class="shadow rounded" part="dialog">
@@ -78,6 +91,7 @@ template.innerHTML = /* html */`
 
 class ModalDialog extends HTMLElement {
   #dialogEl;
+  #modalStaticAnimationTimeout;
 
   constructor() {
     super();
@@ -112,6 +126,7 @@ class ModalDialog extends HTMLElement {
   }
 
   disconnectedCallback() {
+    this.#modalStaticAnimationTimeout && clearTimeout(this.#modalStaticAnimationTimeout);
     this.#dialogEl.addEventListener('click', this.#handleDialogClick);
     this.#dialogEl.removeEventListener('close', this.#handleDialogClose);
   }
@@ -179,6 +194,20 @@ class ModalDialog extends HTMLElement {
   };
 
   #handleDialogClick = evt => {
+    if (evt.target === evt.currentTarget && this.staticBackDrop) {
+      if (this.#modalStaticAnimationTimeout) {
+        return;
+      }
+
+      this.#dialogEl.classList.add('modal-static');
+
+      this.#modalStaticAnimationTimeout = setTimeout(() => {
+        this.#dialogEl.classList.remove('modal-static');
+        clearTimeout(this.#modalStaticAnimationTimeout);
+        this.#modalStaticAnimationTimeout = null;
+      }, MODAL_STATIC_ANIMATION_DURATION);
+    }
+
     if (evt.target === evt.currentTarget && !this.staticBackDrop) {
       this.#closeDialog();
     }
