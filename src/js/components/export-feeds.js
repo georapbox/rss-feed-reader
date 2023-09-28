@@ -88,6 +88,7 @@ template.innerHTML = /* html */`
 `;
 
 class ExportFeeds extends HTMLElement {
+  #feeds;
   #exportCodeEl;
   #clipboardCopyEl;
   #webShareEl;
@@ -109,13 +110,20 @@ class ExportFeeds extends HTMLElement {
     this.shadowRoot.adoptedStyleSheets = styleSheets;
   }
 
-  async connectedCallback() {
-    const feedsToExport = await this.#getFeedsToExport();
+  static get observedAttributes() {
+    return ['feeds'];
+  }
 
-    this.#exportCodeEl.innerHTML = feedsToExport;
-    this.#clipboardCopyEl.value = feedsToExport;
-    this.#webShareEl.shareText = feedsToExport;
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'feeds' && oldValue !== newValue && this.feeds) {
+      const feedsToExport = this.#getFeedsToExportString();
+      this.#exportCodeEl.innerHTML = feedsToExport;
+      this.#clipboardCopyEl.value = feedsToExport;
+      this.#webShareEl.shareText = feedsToExport;
+    }
+  }
 
+  connectedCallback() {
     this.#downloadButton.addEventListener('click', this.#handleDownloadButtonClick);
   }
 
@@ -123,17 +131,19 @@ class ExportFeeds extends HTMLElement {
     this.#downloadButton.removeEventListener('click', this.#handleDownloadButtonClick);
   }
 
-  async #getFeeds() {
-    const { value = [] } = await getFeeds();
-    return value;
+  get feeds() {
+    return this.getAttribute('feeds');
   }
 
-  async #getFeedsToExport() {
-    const feeds = await this.#getFeeds();
+  set feeds(value) {
+    this.setAttribute('feeds', value);
+  }
+
+  #getFeedsToExportString() {
     let feedsToExport = '';
 
     try {
-      feedsToExport = JSON.stringify(feeds, null, 2);
+      feedsToExport = JSON.stringify(JSON.parse(this.feeds), null, 2);
     } catch (err) {
       console.error(err);
     }
@@ -154,7 +164,7 @@ class ExportFeeds extends HTMLElement {
   }
 
   #handleDownloadButtonClick = async () => {
-    const feeds = await this.#getFeeds();
+    const { value: feeds = [] } = await getFeeds();
     this.#exportFeeds(feeds);
   };
 }

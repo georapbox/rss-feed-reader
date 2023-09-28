@@ -107,9 +107,13 @@ template.innerHTML = /* html */`
     </p>
   </div>
 
-  <modal-dialog id="importDialog" header-title="Import feeds"></modal-dialog>
+  <modal-dialog id="importDialog" header-title="Import feeds" static-backdrop>
+    <import-feeds></import-feeds>
+  </modal-dialog>
 
-  <modal-dialog id="exportDialog" header-title="Export feeds"></modal-dialog>
+  <modal-dialog id="exportDialog" header-title="Export feeds">
+    <export-feeds></export-feeds>
+  </modal-dialog>
 `;
 
 class FeedsList extends HTMLElement {
@@ -124,6 +128,8 @@ class FeedsList extends HTMLElement {
   #searchClearBtn;
   #importDialog;
   #exportDialog;
+  #importFeedsEl;
+  #exportFeedsEl;
   #noFeedsDisclaimerEl;
 
   constructor() {
@@ -148,6 +154,8 @@ class FeedsList extends HTMLElement {
     this.#searchClearBtn = this.shadowRoot.getElementById('searchClearBtn');
     this.#importDialog = this.shadowRoot.getElementById('importDialog');
     this.#exportDialog = this.shadowRoot.getElementById('exportDialog');
+    this.#importFeedsEl = this.shadowRoot.querySelector('import-feeds');
+    this.#exportFeedsEl = this.shadowRoot.querySelector('export-feeds');
     this.#noFeedsDisclaimerEl = this.shadowRoot.getElementById('noFeedsDisclaimer');
   }
 
@@ -166,7 +174,6 @@ class FeedsList extends HTMLElement {
     this.#searchInput.addEventListener('input', this.#handleSearchInputDebounced);
     this.#searchClearBtn.addEventListener('click', this.#handleSearchClear);
     this.#importDialog.addEventListener('modal-dialog-open', this.#handleImportDialogOpen);
-    this.#importDialog.addEventListener('modal-dialog-close', this.#handleImportDialogClose);
     this.#exportDialog.addEventListener('modal-dialog-open', this.#handleExportDialogOpen);
     this.#exportDialog.addEventListener('modal-dialog-close', this.#handleExportDialogClose);
     this.addEventListener('feeds-imported', this.#handleFeedsImported);
@@ -197,7 +204,6 @@ class FeedsList extends HTMLElement {
     this.#searchInput.removeEventListener('input', this.#handleSearchInputDebounced);
     this.#searchClearBtn.removeEventListener('click', this.#handleSearchClear);
     this.#importDialog.removeEventListener('modal-dialog-open', this.#handleImportDialogOpen);
-    this.#importDialog.removeEventListener('modal-dialog-close', this.#handleImportDialogClose);
     this.#exportDialog.removeEventListener('modal-dialog-open', this.#handleExportDialogOpen);
     this.#exportDialog.removeEventListener('modal-dialog-close', this.#handleExportDialogClose);
     this.removeEventListener('feeds-imported', this.#handleFeedsImported);
@@ -250,24 +256,22 @@ class FeedsList extends HTMLElement {
     this.#exportDialog.open = true;
   };
 
-  #handleImportDialogOpen = evt => {
-    const el = document.createElement('import-feeds');
-    evt.detail.dialog.appendChild(el);
+  #handleImportDialogOpen = () => {
+    try {
+      this.#importFeedsEl.shadowRoot.querySelector('a-tab-group').selectTabByIndex(0);
+      this.#importFeedsEl.shadowRoot.querySelector('textarea').value = '';
+    } catch {
+      // Fail silently
+    }
   };
 
-  #handleImportDialogClose = evt => {
-    const el = evt.detail.dialog.querySelector('import-feeds');
-    setTimeout(() => el && el.remove(), 500);
+  #handleExportDialogOpen = async () => {
+    const { value: feeds = [] } = await getFeeds();
+    this.#exportFeedsEl.setAttribute('feeds', JSON.stringify(feeds));
   };
 
-  #handleExportDialogOpen = evt => {
-    const el = document.createElement('export-feeds');
-    evt.detail.dialog.appendChild(el);
-  };
-
-  #handleExportDialogClose = evt => {
-    const el = evt.detail.dialog.querySelector('export-feeds');
-    setTimeout(() => el && el.remove(), 500);
+  #handleExportDialogClose = () => {
+    this.#exportFeedsEl.removeAttribute('feeds');
   };
 
   #handleFeedsImported = () => {

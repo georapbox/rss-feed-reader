@@ -26,7 +26,7 @@ template.innerHTML = /* html */`
     }
 
     a-tab-group {
-      margin-top: 1rem;
+      padding-top: 1rem;
     }
 
     a-tab-group::part(tabs) {
@@ -61,7 +61,6 @@ template.innerHTML = /* html */`
     }
   </style>
 
-
   <a-tab-group>
     <a-tab slot="tab" role="heading">From file</a-tab>
     <a-tab-panel slot="panel">
@@ -74,10 +73,10 @@ template.innerHTML = /* html */`
       </div>
     </a-tab-panel>
 
-    <a-tab slot="tab" role="heading">From input</a-tab>
+    <a-tab slot="tab" role="heading">From text</a-tab>
     <a-tab-panel slot="panel">
       <form name="import-form" class="px-3">
-        <textarea class="form-control mb-3" id="import-data" name="import-data" cols="42" placeholder="Paste raw data here" required></textarea>
+        <textarea class="form-control mb-3" id="import-data" name="import-data" cols="42" placeholder="Enter the JSON data to import" required></textarea>
         <button type="submit" class="btn btn-primary w-100">Submit</button>
       </form>
     </a-tab-panel>
