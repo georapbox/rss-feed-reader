@@ -20,11 +20,6 @@ template.innerHTML = /* html */`
       display: block;
     }
 
-    dialog,
-    dialog::backdrop {
-      transition: transform 0.2s, opacity 0.2s, display 0.2s allow-discrete, overlay 0.2s allow-discrete;
-    }
-
     dialog::backdrop {
       background-color: rgba(0, 0, 0, 0.7);
       opacity: 0;
@@ -34,34 +29,41 @@ template.innerHTML = /* html */`
       opacity: 1;
     }
 
-    /* IS-OPEN STATE */
-    dialog[open] {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    @media (prefers-reduced-motion: no-preference) {
+      dialog,
+      dialog::backdrop {
+        transition: transform 0.2s, opacity 0.2s, display 0.2s allow-discrete, overlay 0.2s allow-discrete;
+      }
 
-    /* EXIT STATE */
-    dialog {
-      transform: translateY(-50px);
-      opacity: 0;
-    }
-
-    /* 0. BEFORE-OPEN STATE */
-    @starting-style {
+      /* IS-OPEN STATE */
       dialog[open] {
-        transform: translateY(20px);
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      /* EXIT STATE */
+      dialog {
+        transform: translateY(-50px);
         opacity: 0;
       }
 
-      dialog[open]::backdrop {
-        opacity: 0;
-      }
-    }
+      /* 0. BEFORE-OPEN STATE */
+      @starting-style {
+        dialog[open] {
+          transform: translateY(20px);
+          opacity: 0;
+        }
 
-    .modal-static {
-      animation-name: modal-static;
-      animation-duration: ${MODAL_STATIC_ANIMATION_DURATION}ms;
-      animation-timing-function: cubic-bezier(0.2, 0, 0.38, 0.9);
+        dialog[open]::backdrop {
+          opacity: 0;
+        }
+      }
+
+      .modal-static {
+        animation-name: modal-static;
+        animation-duration: ${MODAL_STATIC_ANIMATION_DURATION}ms;
+        animation-timing-function: cubic-bezier(0.2, 0, 0.38, 0.9);
+      }
     }
 
     @keyframes modal-static {
