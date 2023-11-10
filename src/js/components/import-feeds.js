@@ -25,8 +25,10 @@ template.innerHTML = /* html */`
       }
     }
 
-    a-tab-group {
-      padding-top: 1rem;
+    a-tab:focus-visible {
+      outline: 0;
+      transition: box-shadow 0.15s ease-in-out;
+      box-shadow: rgb(13 110 253 / 25%) inset 0px 0px 0px 0.25rem;
     }
 
     a-tab-group::part(tabs) {

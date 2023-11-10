@@ -40,6 +40,10 @@ template.innerHTML = /* html */`
       max-width: 550px;
       margin: 0 auto;
     }
+
+    #importDialog {
+      --me-body-spacing: 0;
+    }
   </style>
 
   <div id="feedsContainer" class="d-none">
@@ -107,13 +111,15 @@ template.innerHTML = /* html */`
     </p>
   </div>
 
-  <modal-dialog id="importDialog" header-title="Import feeds" static-backdrop>
+  <modal-element id="importDialog" static-backdrop>
+    <h2 slot="header" class="h5 m-0">Import feeds</h2>
     <import-feeds></import-feeds>
-  </modal-dialog>
+  </modal-element>
 
-  <modal-dialog id="exportDialog" header-title="Export feeds">
+  <modal-element id="exportDialog">
+    <h2 slot="header" class="h5 m-0">Export feeds</h2>
     <export-feeds></export-feeds>
-  </modal-dialog>
+  </modal-element>
 `;
 
 class FeedsList extends HTMLElement {
@@ -173,9 +179,9 @@ class FeedsList extends HTMLElement {
     this.#exportBtn.addEventListener('click', this.#handleExportRequest);
     this.#searchInput.addEventListener('input', this.#handleSearchInputDebounced);
     this.#searchClearBtn.addEventListener('click', this.#handleSearchClear);
-    this.#importDialog.addEventListener('modal-dialog-open', this.#handleImportDialogOpen);
-    this.#exportDialog.addEventListener('modal-dialog-open', this.#handleExportDialogOpen);
-    this.#exportDialog.addEventListener('modal-dialog-close', this.#handleExportDialogClose);
+    this.#importDialog.addEventListener('me-open', this.#handleImportDialogOpen);
+    this.#exportDialog.addEventListener('me-open', this.#handleExportDialogOpen);
+    this.#exportDialog.addEventListener('me-close', this.#handleExportDialogClose);
     this.addEventListener('feeds-imported', this.#handleFeedsImported);
     document.addEventListener('feeds-updated', this.#handleFeedsUpdateSuccess);
 
@@ -203,9 +209,9 @@ class FeedsList extends HTMLElement {
     this.#exportBtn.removeEventListener('click', this.#handleExportRequest);
     this.#searchInput.removeEventListener('input', this.#handleSearchInputDebounced);
     this.#searchClearBtn.removeEventListener('click', this.#handleSearchClear);
-    this.#importDialog.removeEventListener('modal-dialog-open', this.#handleImportDialogOpen);
-    this.#exportDialog.removeEventListener('modal-dialog-open', this.#handleExportDialogOpen);
-    this.#exportDialog.removeEventListener('modal-dialog-close', this.#handleExportDialogClose);
+    this.#importDialog.removeEventListener('me-open', this.#handleImportDialogOpen);
+    this.#exportDialog.removeEventListener('me-open', this.#handleExportDialogOpen);
+    this.#exportDialog.removeEventListener('me-close', this.#handleExportDialogClose);
     this.removeEventListener('feeds-imported', this.#handleFeedsImported);
     document.removeEventListener('feeds-updated', this.#handleFeedsUpdateSuccess);
   }
