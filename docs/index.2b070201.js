@@ -385,6 +385,7 @@
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
+      width: 100%;
     }
 
     .dialog__header {
@@ -924,4 +925,4 @@
         </div>
       </div>
     `}}window.customElements.get("feed-reader")||window.customElements.define("feed-reader",oL),document.adoptedStyleSheets=em}();
-//# sourceMappingURL=index.3c0a5fd2.js.map
+//# sourceMappingURL=index.2b070201.js.map

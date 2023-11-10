@@ -385,6 +385,7 @@ let e;function t(e){return e&&e.__esModule?e.default:e}var o,i="undefined"!=type
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
+      width: 100%;
     }
 
     .dialog__header {
@@ -924,4 +925,4 @@ let e;function t(e){return e&&e.__esModule?e.default:e}var o,i="undefined"!=type
         </div>
       </div>
     `}}window.customElements.get("feed-reader")||window.customElements.define("feed-reader",oL),document.adoptedStyleSheets=em;
-//# sourceMappingURL=index.621a8446.js.map
+//# sourceMappingURL=index.1e96bc38.js.map
