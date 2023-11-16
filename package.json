@@ -42,7 +42,6 @@
     "@georapbox/clipboard-copy-element": "~3.0.0",
     "@georapbox/files-dropzone-element": "~1.1.1",
     "@georapbox/modal-element": "~1.2.0",
-    "@georapbox/skeleton-placeholder-element": "~2.0.0",
     "@georapbox/web-share-element": "~3.0.0",
     "@georapbox/web-storage": "~2.1.0",
     "bootstrap": "~5.3.1",

@@ -1,17 +1,10 @@
-import '@georapbox/skeleton-placeholder-element/dist/skeleton-placeholder-defined.js';
 import { styleSheets } from '../helpers/styles.js';
 import { fetchFeed } from '../helpers/fetch-feeds.js';
 import { getFeeds, saveFeed } from '../helpers/storage.js';
 
-const template = document.createElement('template');
-
 let controller;
 
-const renderModalTitleSkeleton = () => {
-  return /* html */`
-    <skeleton-placeholder style="--color: var(--skeleton-color); height: 26px;"></skeleton-placeholder>
-  `;
-};
+const template = document.createElement('template');
 
 template.innerHTML = /* html */`
   <style>
@@ -55,9 +48,36 @@ template.innerHTML = /* html */`
       margin-bottom: 1rem;
     }
 
+    #spinner,
+    #error {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      height: 100%;
+      padding: 1rem;
+      text-align: center;
+      color: var(--body-color);
+    }
+
     #feedsReaderModal {
       --me-border-radius: 0;
       --body-max-width: 1200px;
+    }
+
+    @supports (color: rgb(from white r g b)) {
+      #feedsReaderModal {
+        --me-background-color: rgb(from var(--body-bg) r g b / 0.75);
+      }
+    }
+
+    #feedsReaderModal::part(base) {
+      backdrop-filter: blur(4px);
     }
 
     #feedsReaderModal::part(header) {
@@ -73,18 +93,18 @@ template.innerHTML = /* html */`
     }
 
     #feedsReaderModal .modal-body {
+      position: relative;
       max-width: var(--body-max-width);
       margin: 0 auto;
+      min-height: 100%;
     }
 
-    #feedsViewer,
-    #spinner {
+    #feedsViewer {
       padding: 0 1rem;
     }
 
     @media screen and (max-width: 1200px) {
-      #feedsViewer,
-      #spinner {
+      #feedsViewer {
         padding: 0;
       }
     }
@@ -98,30 +118,21 @@ template.innerHTML = /* html */`
 
   <modal-element fullscreen no-animations static-backdrop id="feedsReaderModal">
     <h2 slot="header" id="feedTitle" class="h5 mb-0 text-truncate">
-      ${renderModalTitleSkeleton()}
+
     </h2>
 
     <div class="modal-body">
       <div id="spinner" class="d-none">
-        ${
-          Array.from({ length: 6 }).map(() => {
-            return /* html */`
-              <skeleton-placeholder class="mb-3" style="--color: var(--skeleton-color);">
-                <div class="p-3 d-flex justify-content-between gap-3">
-                  <div class="w-100">
-                    <skeleton-placeholder effect="fade" class="mb-2" style="--color: var(--skeleton-color); max-width: 500px; height: 26px; filter: brightness(80%);"></skeleton-placeholder>
-                    <skeleton-placeholder effect="fade" class="mb-2" style="--color: var(--skeleton-color); max-width: 250px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
-                    <skeleton-placeholder effect="fade" class="mb-0" style="--color: var(--skeleton-color); max-width: 120px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
-                  </div>
-                  <skeleton-placeholder effect="fade" class="mb-0" style="--color: var(--skeleton-color); width: 120px; height: 70px; filter: brightness(80%);"></skeleton-placeholder>
-                </div>
-              </skeleton-placeholder>
-            `;
-          }).join('')
-        }
+        <span class="spinner-border" aria-hidden="true"></span>
+        <span role="status">Please wait...</span>
       </div>
 
-      <div id="error" class="alert alert-danger d-none">Error fetching feed.</div>
+      <div id="error" class="d-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" viewBox="0 0 16 16">
+          <path d="m9.97 4.88.953 3.811C10.159 8.878 9.14 9 8 9c-1.14 0-2.158-.122-2.923-.309L6.03 4.88C6.635 4.957 7.3 5 8 5s1.365-.043 1.97-.12zm-.245-.978L8.97.88C8.718-.13 7.282-.13 7.03.88L6.275 3.9C6.8 3.965 7.382 4 8 4c.618 0 1.2-.036 1.725-.098zm4.396 8.613a.5.5 0 0 1 .037.96l-6 2a.5.5 0 0 1-.316 0l-6-2a.5.5 0 0 1 .037-.96l2.391-.598.565-2.257c.862.212 1.964.339 3.165.339s2.303-.127 3.165-.339l.565 2.257 2.391.598z"/>
+        </svg>
+        There was an error while fetching the feed.
+      </div>
 
       <div id="feedsViewer"></div>
     </div>
@@ -199,7 +210,7 @@ class FeedReader extends HTMLElement {
 
   #resetDialogContent() {
     this.#feedsViewer.querySelectorAll('.card').forEach(el => el.remove());
-    this.#modalTitle.innerHTML = renderModalTitleSkeleton();
+    this.#modalTitle.innerHTML = '';
     this.#spinnerEl.classList.add('d-none');
     this.#errorEl.classList.add('d-none');
   }
