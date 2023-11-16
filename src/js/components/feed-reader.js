@@ -43,60 +43,89 @@ template.innerHTML = /* html */`
       height: auto;
     }
 
+    details summary {
+      transition: margin 0.1s ease-out;
+    }
+
     details[open] summary {
-      padding-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
     }
 
     details:not([open]):not(.card details):last-child summary {
       margin-bottom: 1rem;
     }
+
+    #feedsReaderModal {
+      --me-border-radius: 0;
+      --body-max-width: 1200px;
+    }
+
+    #feedsReaderModal::part(header) {
+      gap: 1rem;
+      width: 100%;
+      max-width: var(--body-max-width);
+      margin: 0 auto;
+      justify-content: space-between;
+    }
+
+    #feedsReaderModal::part(title) {
+      min-width: 0;
+    }
+
+    #feedsReaderModal .modal-body {
+      max-width: var(--body-max-width);
+      margin: 0 auto;
+    }
+
+    #feedsViewer,
+    #spinner {
+      padding: 0 1rem;
+    }
+
+    @media screen and (max-width: 1200px) {
+      #feedsViewer,
+      #spinner {
+        padding: 0;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #feedsReaderModal::part(header) {
+        border-color: var(--bs-gray-700);
+      }
+    }
   </style>
 
-  <dialog class="w-100 h-100 mw-100 mh-100">
-    <div class="container">
-      <div class="row">
-        <div class="col-xl-10 offset-xl-1">
-          <div class="d-flex justify-content-between pt-4 pb-3" style="gap: 1.5rem;">
-            <h2 id="feedTitle" class="h5 mb-0" style="flex: 1;">
-              ${renderModalTitleSkeleton()}
-            </h2>
+  <modal-element fullscreen no-animations static-backdrop id="feedsReaderModal">
+    <h2 slot="header" id="feedTitle" class="h5 mb-0 text-truncate">
+      ${renderModalTitleSkeleton()}
+    </h2>
 
-            <form method="dialog">
-              <button type="submit" class="d-flex align-items-center justify-content-center btn btn-outline-primary p-0" style="width: 36px; height: 36px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
-                </svg>
-                <span class="visually-hidden">Close</span>
-              </button>
-            </form>
-          </div>
-
-          <div id="spinner" class="d-none">
-            ${
-              Array.from({ length: 6 }).map(() => {
-                return /* html */`
-                  <skeleton-placeholder class="mb-3" style="--color: var(--skeleton-color);">
-                    <div class="p-3 d-flex justify-content-between gap-3">
-                      <div class="w-100">
-                        <skeleton-placeholder effect="fade" class="mb-2" style="--color: var(--skeleton-color); max-width: 500px; height: 26px; filter: brightness(80%);"></skeleton-placeholder>
-                        <skeleton-placeholder effect="fade" class="mb-2" style="--color: var(--skeleton-color); max-width: 250px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
-                        <skeleton-placeholder effect="fade" class="mb-0" style="--color: var(--skeleton-color); max-width: 120px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
-                      </div>
-                      <skeleton-placeholder effect="fade" class="mb-0" style="--color: var(--skeleton-color); width: 120px; height: 70px; filter: brightness(80%);"></skeleton-placeholder>
-                    </div>
-                  </skeleton-placeholder>
-                `;
-              }).join('')
-            }
-          </div>
-
-          <div id="error" class="alert alert-danger d-none">Error fetching feed.</div>
-
-          <div id="feedsViewer"></div>
-        </div>
+    <div class="modal-body">
+      <div id="spinner" class="d-none">
+        ${
+          Array.from({ length: 6 }).map(() => {
+            return /* html */`
+              <skeleton-placeholder class="mb-3" style="--color: var(--skeleton-color);">
+                <div class="p-3 d-flex justify-content-between gap-3">
+                  <div class="w-100">
+                    <skeleton-placeholder effect="fade" class="mb-2" style="--color: var(--skeleton-color); max-width: 500px; height: 26px; filter: brightness(80%);"></skeleton-placeholder>
+                    <skeleton-placeholder effect="fade" class="mb-2" style="--color: var(--skeleton-color); max-width: 250px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
+                    <skeleton-placeholder effect="fade" class="mb-0" style="--color: var(--skeleton-color); max-width: 120px; height: 21px; filter: brightness(80%);"></skeleton-placeholder>
+                  </div>
+                  <skeleton-placeholder effect="fade" class="mb-0" style="--color: var(--skeleton-color); width: 120px; height: 70px; filter: brightness(80%);"></skeleton-placeholder>
+                </div>
+              </skeleton-placeholder>
+            `;
+          }).join('')
+        }
       </div>
+
+      <div id="error" class="alert alert-danger d-none">Error fetching feed.</div>
+
+      <div id="feedsViewer"></div>
     </div>
-  </dialog>
+  </modal-element>
 `;
 
 class FeedReader extends HTMLElement {
@@ -115,7 +144,7 @@ class FeedReader extends HTMLElement {
     }
 
     this.#spinnerEl = this.shadowRoot.getElementById('spinner');
-    this.#dialogEl = this.shadowRoot.querySelector('dialog');
+    this.#dialogEl = this.shadowRoot.querySelector('modal-element');
     this.#modalTitle = this.#dialogEl.querySelector('#feedTitle');
     this.#feedsViewer = this.shadowRoot.getElementById('feedsViewer');
     this.#errorEl = this.shadowRoot.getElementById('error');
@@ -134,11 +163,11 @@ class FeedReader extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#dialogEl.addEventListener('close', this.#handleFeedClose);
+    this.#dialogEl.addEventListener('me-close', this.#handleFeedClose);
   }
 
   disconnectedCallback() {
-    this.#dialogEl.removeEventListener('close', this.#handleFeedClose);
+    this.#dialogEl.removeEventListener('me-close', this.#handleFeedClose);
   }
 
   get feedUrl() {
@@ -154,18 +183,16 @@ class FeedReader extends HTMLElement {
   }
 
   #openFeed(feedUrl) {
-    document.body.classList.add('overflow-hidden');
-    this.#dialogEl.showModal();
+    this.#dialogEl.open = true;
     this.#renderFeed(feedUrl);
   }
 
   #closeFeed() {
-    this.#dialogEl.close();
+    this.#dialogEl.open = false;
   }
 
   #handleFeedClose = () => {
     controller && controller.abort();
-    document.body.classList.remove('overflow-hidden');
     this.#resetDialogContent();
     this.feedUrl = null;
   };
