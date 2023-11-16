@@ -179,6 +179,12 @@ modal-element::part(close):focus-visible {
   box-shadow: var(--focus-ring);
 }
 
+@media screen and (max-width: 768px) {
+  modal-element :is(h1, h2, h3, h4, h5, h6)[slot="header"] {
+    font-size: 1.125rem;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   modal-element {
     --me-background-color: var(--bs-dark);

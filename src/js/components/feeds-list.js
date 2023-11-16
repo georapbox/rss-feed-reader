@@ -14,6 +14,16 @@ template.innerHTML = /* html */`
       --list-item-height: 64px;
     }
 
+    .actions-container {
+      display: flex;
+      position: sticky;
+      top: 0;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem 0;
+      z-index: 1;
+      background-color: var(--body-bg);
+    }
+
     .sort-handler {
       display: flex;
       justify-content: center;
@@ -38,7 +48,7 @@ template.innerHTML = /* html */`
 
     #noFeedsDisclaimer {
       max-width: 550px;
-      margin: 0 auto;
+      margin: 2rem auto 0 auto;
     }
 
     #importDialog {
@@ -47,7 +57,7 @@ template.innerHTML = /* html */`
   </style>
 
   <div id="feedsContainer" class="d-none">
-    <div class="d-flex mb-3">
+    <div class="actions-container">
       <div class="input-group me-2 position-relative">
         <span class="input-group-text">
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
