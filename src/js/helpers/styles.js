@@ -1,5 +1,5 @@
-import bootstrapStyleSheet from 'url:bootstrap/dist/css/bootstrap.css';
-import mainStyleSheet from 'url:../../../src/css/main.css';
+import * as bootstrapStyleSheet from 'url:bootstrap/dist/css/bootstrap.css';
+import * as mainStyleSheet from 'url:../../../src/css/main.css';
 
 const styleURLs = [bootstrapStyleSheet, mainStyleSheet];
 
