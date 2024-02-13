@@ -10,3 +10,5 @@ import './components/feeds-list.js';
 import './components/feed-reader.js';
 
 document.adoptedStyleSheets = styleSheets;
+document.addEventListener('me-open', () => document.body.classList.add('overflow-hidden'));
+document.addEventListener('me-close', () => document.body.classList.remove('overflow-hidden'));
