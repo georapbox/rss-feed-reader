@@ -121,7 +121,7 @@ template.innerHTML = /* html */`
     </p>
   </div>
 
-  <modal-element id="importDialog" static-backdrop>
+  <modal-element id="importDialog">
     <h2 slot="header" class="h5 m-0">Import feeds</h2>
     <import-feeds></import-feeds>
   </modal-element>
