@@ -2,46 +2,49 @@ import { isWebShareSupported } from '@georapbox/web-share-element/dist/is-web-sh
 import { styleSheets } from '../helpers/styles.js';
 import { getFeeds } from '../helpers/storage.js';
 
+const styles = /* css */`
+  :host {
+    display: block;
+    max-width: 500px;
+  }
+
+  #exportCode {
+    display: block;
+    overflow-y: auto;
+    max-height: 200px;
+    font-size: 0.75rem;
+  }
+
+  clipboard-copy::part(button) {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    color: currentColor;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    transition: color 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s, border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  }
+
+  clipboard-copy::part(button):focus {
+    outline: 0;
+    box-shadow: rgba(13,110,253,.25) 0px 0px 0px 0.25rem;
+  }
+
+  clipboard-copy span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+  }
+`;
+
 const template = document.createElement('template');
 
 template.innerHTML = /* html */`
-  <style>
-    :host {
-      display: block;
-      max-width: 500px;
-    }
-
-    #exportCode {
-      display: block;
-      overflow-y: auto;
-      max-height: 200px;
-      font-size: 0.75rem;
-    }
-
-    clipboard-copy::part(button) {
-      background-color: transparent;
-      border: 0;
-      border-radius: 0.25rem;
-      padding: 0.25rem 0.5rem;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 0.875rem;
-      line-height: 1.5;
-      transition: color 0.15s ease-in-out 0s, background-color 0.15s ease-in-out 0s, border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
-    }
-
-    clipboard-copy::part(button):focus {
-      outline: 0;
-      box-shadow: rgba(13,110,253,.25) 0px 0px 0px 0.25rem;
-    }
-
-    clipboard-copy span {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.25rem;
-    }
-  </style>
+  <style>${styles}</style>
 
   <div class="d-flex justify-content-end">
     <clipboard-copy feedback-duration="1500">

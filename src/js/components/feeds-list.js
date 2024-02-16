@@ -5,56 +5,58 @@ import { debounce } from '../utils/debounce.js';
 import './import-feeds.js';
 import './export-feeds.js';
 
+const styles = /* css */`
+  :host {
+    display: block;
+    --list-item-height: 64px;
+  }
+
+  .actions-container {
+    display: flex;
+    position: sticky;
+    top: 0;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0;
+    z-index: 1;
+    background-color: var(--body-bg);
+  }
+
+  .sort-handler {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: var(--list-item-height);
+    cursor: grab;
+  }
+
+  .sort-handler[hidden]~.link {
+    padding-inline: 1rem;
+  }
+
+  .delete-button {
+    width: 45px;
+    height: var(--list-item-height);
+  }
+
+  .link-content {
+    line-height: 1.2;
+  }
+
+  #noFeedsDisclaimer {
+    max-width: 550px;
+    margin: 2rem auto 0 auto;
+  }
+
+  #importDialog {
+    --me-body-spacing: 0;
+  }
+`;
+
 const template = document.createElement('template');
 
 template.innerHTML = /* html */`
-  <style>
-    :host {
-      display: block;
-      --list-item-height: 64px;
-    }
-
-    .actions-container {
-      display: flex;
-      position: sticky;
-      top: 0;
-      margin-bottom: 0.5rem;
-      padding: 0.5rem 0;
-      z-index: 1;
-      background-color: var(--body-bg);
-    }
-
-    .sort-handler {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 45px;
-      height: var(--list-item-height);
-      cursor: grab;
-    }
-
-    .sort-handler[hidden]~.link {
-      padding-inline: 1rem;
-    }
-
-    .delete-button {
-      width: 45px;
-      height: var(--list-item-height);
-    }
-
-    .link-content {
-      line-height: 1.2;
-    }
-
-    #noFeedsDisclaimer {
-      max-width: 550px;
-      margin: 2rem auto 0 auto;
-    }
-
-    #importDialog {
-      --me-body-spacing: 0;
-    }
-  </style>
+  <style>${styles}</style>
 
   <div id="feedsContainer" class="d-none">
     <div class="actions-container">

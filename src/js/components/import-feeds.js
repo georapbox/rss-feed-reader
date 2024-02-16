@@ -2,66 +2,68 @@ import { styleSheets } from '../helpers/styles.js';
 import { getFeeds, saveFeed } from '../helpers/storage.js';
 import { canParseURL } from '../utils/canParseURL.js';
 
+const styles = /* css */`
+  :host {
+    display: block;
+    max-width: 500px;
+  }
+
+  files-dropzone {
+    --dropzone-border-color: var(--bs-gray-500);
+    --dropzone-border-color-dragover: var(--primary-color);
+    --dropzone-body-color: var(--body-color);
+    --dropzone-background-color: var(--bs-gray-100);
+    --dropzone-background-color-dragover: var(--bs-gray-200);
+
+    @media (prefers-color-scheme: dark) {
+      --dropzone-border-color: var(--bs-gray-600);
+      --dropzone-background-color: var(--bs-gray-800);
+      --dropzone-background-color-dragover: var(--bs-gray-700);
+    }
+  }
+
+  a-tab:focus-visible {
+    outline: 0;
+    transition: box-shadow 0.15s ease-in-out;
+    box-shadow: rgb(13 110 253 / 25%) inset 0px 0px 0px 0.25rem;
+  }
+
+  a-tab-group::part(tabs) {
+    display: flex;
+    padding: 0;
+  }
+
+  a-tab-group a-tab {
+    flex: 1;
+    text-align: center;
+    border-bottom: 3px solid transparent;
+  }
+
+  a-tab-group a-tab::part(base) {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  a-tab-group a-tab[selected] {
+    border-color: var(--primary-color);
+  }
+
+  a-tab-group a-tab[selected]::part(base) {
+    color: var(--body-color);
+  }
+
+  textarea {
+    min-height: 93px !important;
+  }
+`;
+
 const template = document.createElement('template');
 
 template.innerHTML = /* html */`
-  <style>
-    :host {
-      display: block;
-      max-width: 500px;
-    }
-
-    files-dropzone {
-      --dropzone-border-color: var(--bs-gray-500);
-      --dropzone-border-color-dragover: var(--primary-color);
-      --dropzone-body-color: var(--body-color);
-      --dropzone-background-color: var(--bs-gray-100);
-      --dropzone-background-color-dragover: var(--bs-gray-200);
-
-      @media (prefers-color-scheme: dark) {
-        --dropzone-border-color: var(--bs-gray-600);
-        --dropzone-background-color: var(--bs-gray-800);
-        --dropzone-background-color-dragover: var(--bs-gray-700);
-      }
-    }
-
-    a-tab:focus-visible {
-      outline: 0;
-      transition: box-shadow 0.15s ease-in-out;
-      box-shadow: rgb(13 110 253 / 25%) inset 0px 0px 0px 0.25rem;
-    }
-
-    a-tab-group::part(tabs) {
-      display: flex;
-      padding: 0;
-    }
-
-    a-tab-group a-tab {
-      flex: 1;
-      text-align: center;
-      border-bottom: 3px solid transparent;
-    }
-
-    a-tab-group a-tab::part(base) {
-      display: inline-flex;
-      justify-content: center;
-      width: 100%;
-      box-sizing: border-box;
-      text-align: center;
-    }
-
-    a-tab-group a-tab[selected] {
-      border-color: var(--primary-color);
-    }
-
-    a-tab-group a-tab[selected]::part(base) {
-      color: var(--body-color);
-    }
-
-    textarea {
-      min-height: 93px !important;
-    }
-  </style>
+  <style>${styles}</style>
 
   <a-tab-group no-scroll-controls>
     <a-tab slot="tab" role="heading">From file</a-tab>

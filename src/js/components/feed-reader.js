@@ -4,117 +4,119 @@ import { getFeeds, saveFeed } from '../helpers/storage.js';
 
 let controller;
 
+const styles = /* css */`
+  :host {
+    display: block;
+  }
+
+  img[src=""] {
+    display: none !important;
+  }
+
+  .thumbnail {
+    display: block;
+    object-fit: cover;
+    min-width: 90px;
+    width: 90px;
+  }
+
+  @media (min-width: 500px) {
+    .thumbnail {
+      min-width: 120px;
+      width: 120px;
+    }
+  }
+
+  .feed-description-viewer img,
+  .feed-description-viewer video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  details summary {
+    transition: margin 0.1s ease-out;
+  }
+
+  details[open] summary {
+    margin-bottom: 0.75rem;
+  }
+
+  details:not([open]):not(.card details):last-child summary {
+    margin-bottom: 1rem;
+  }
+
+  #spinner,
+  #error {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+    text-align: center;
+    color: var(--body-color);
+  }
+
+  #feedsReaderModal {
+    --me-border-radius: 0;
+    --body-max-width: 1200px;
+  }
+
+  @supports (color: rgb(from white r g b)) {
+    #feedsReaderModal {
+      --me-background-color: rgb(from var(--body-bg) r g b / 0.75);
+    }
+  }
+
+  #feedsReaderModal::part(base) {
+    backdrop-filter: blur(4px);
+  }
+
+  #feedsReaderModal::part(header) {
+    gap: 1rem;
+    width: 100%;
+    max-width: var(--body-max-width);
+    margin: 0 auto;
+    justify-content: space-between;
+  }
+
+  #feedsReaderModal::part(title) {
+    min-width: 0;
+  }
+
+  #feedsReaderModal .modal-body {
+    position: relative;
+    max-width: var(--body-max-width);
+    margin: 0 auto;
+    min-height: 100%;
+  }
+
+  #feedsViewer {
+    padding: 0 1rem;
+  }
+
+  @media screen and (max-width: 1200px) {
+    #feedsViewer {
+      padding: 0;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #feedsReaderModal::part(header) {
+      border-color: var(--bs-gray-700);
+    }
+  }
+`;
+
 const template = document.createElement('template');
 
 template.innerHTML = /* html */`
-  <style>
-    :host {
-      display: block;
-    }
-
-    img[src=""] {
-      display: none !important;
-    }
-
-    .thumbnail {
-      display: block;
-      object-fit: cover;
-      min-width: 90px;
-      width: 90px;
-    }
-
-    @media (min-width: 500px) {
-      .thumbnail {
-        min-width: 120px;
-        width: 120px;
-      }
-    }
-
-    .feed-description-viewer img,
-    .feed-description-viewer video {
-      max-width: 100%;
-      height: auto;
-    }
-
-    details summary {
-      transition: margin 0.1s ease-out;
-    }
-
-    details[open] summary {
-      margin-bottom: 0.75rem;
-    }
-
-    details:not([open]):not(.card details):last-child summary {
-      margin-bottom: 1rem;
-    }
-
-    #spinner,
-    #error {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      width: 100%;
-      height: 100%;
-      padding: 1rem;
-      text-align: center;
-      color: var(--body-color);
-    }
-
-    #feedsReaderModal {
-      --me-border-radius: 0;
-      --body-max-width: 1200px;
-    }
-
-    @supports (color: rgb(from white r g b)) {
-      #feedsReaderModal {
-        --me-background-color: rgb(from var(--body-bg) r g b / 0.75);
-      }
-    }
-
-    #feedsReaderModal::part(base) {
-      backdrop-filter: blur(4px);
-    }
-
-    #feedsReaderModal::part(header) {
-      gap: 1rem;
-      width: 100%;
-      max-width: var(--body-max-width);
-      margin: 0 auto;
-      justify-content: space-between;
-    }
-
-    #feedsReaderModal::part(title) {
-      min-width: 0;
-    }
-
-    #feedsReaderModal .modal-body {
-      position: relative;
-      max-width: var(--body-max-width);
-      margin: 0 auto;
-      min-height: 100%;
-    }
-
-    #feedsViewer {
-      padding: 0 1rem;
-    }
-
-    @media screen and (max-width: 1200px) {
-      #feedsViewer {
-        padding: 0;
-      }
-    }
-
-    @media (prefers-color-scheme: dark) {
-      #feedsReaderModal::part(header) {
-        border-color: var(--bs-gray-700);
-      }
-    }
-  </style>
+  <style>${styles}</style>
 
   <modal-element fullscreen no-animations static-backdrop id="feedsReaderModal">
     <h2 slot="header" id="feedTitle" class="h5 mb-0 text-truncate">

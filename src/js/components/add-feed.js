@@ -2,16 +2,17 @@ import { styleSheets } from '../helpers/styles.js';
 import { getFeeds, saveFeed } from '../helpers/storage.js';
 import { canParseURL } from '../utils/canParseURL.js';
 
+const styles = /* css */`
+  :host {
+    --input-height: 42px;
+    display: block;
+  }
+`;
+
 const template = document.createElement('template');
 
 template.innerHTML = /* html */`
-  <style>
-    :host {
-      --input-height: 42px;
-
-      display: block;
-    }
-  </style>
+  <style>${styles}</style>
 
   <form name="addFeedForm" autocomplete="off" class="d-flex">
     <div class="form-group" style="flex: 1;">

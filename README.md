@@ -26,6 +26,59 @@ A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)
 
 <img src="src/assets/screenshots/screenshot_light.png" alt="Screenshot light" width="251" height="509"><img src="src/assets/screenshots/screenshot_dark.png" alt="Screenshot dark" width="251" height="509">
 
+## Development
+
+Below are the instructions for setting up the development environment.
+
+### Prerequisites
+
+- Node.js (v20.x.x)
+- npm (v10.x.x)
+
+### Installation
+
+Clone the repository to your local machine:
+
+```bash
+git clone git@github.com:georapbox/rss-feed-reader.git
+```
+
+Navigate to the project's directory and install the dependencies:
+
+```bash
+npm install
+```
+
+### Running the application
+
+To run the application in development mode, run the following command:
+
+```bash
+npm start -- --open
+```
+
+This will start the development server and open the application in your default web browser.
+
+### Building the application for production
+
+To build the application for production, run the following command:
+
+```bash
+npm run build
+```
+
+This will create a `dist` directory containing the production build of the application.
+
+### Deployment
+
+To deploy the application, run the following command:
+
+```bash
+npm run deploy
+```
+
+This will build the application first and then deploy it to GitHub Pages in the `gh-pages` branch.
+
 ## Helpful links
 
 - [RSS feeds collection](https://github.com/simevidas/web-dev-feeds) for web developers by [@simevidas](https://github.com/simevidas).
