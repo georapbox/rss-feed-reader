@@ -88,8 +88,8 @@ template.innerHTML = /* html */`
 `;
 
 class ImportFeeds extends HTMLElement {
-  #dropzoneEl;
-  #importForm;
+  #dropzoneEl = null;
+  #importForm = null;
 
   constructor() {
     super();

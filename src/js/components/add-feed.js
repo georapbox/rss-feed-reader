@@ -25,7 +25,7 @@ template.innerHTML = /* html */`
 `;
 
 class AddFeed extends HTMLElement {
-  #formEl;
+  #formEl = null;
 
   constructor() {
     super();

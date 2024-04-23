@@ -1,6 +1,6 @@
 import { isWebShareSupported } from '@georapbox/web-share-element/dist/is-web-share-supported.js';
 import { styleSheets } from '../helpers/styles.js';
-import { getFeeds } from '../helpers/storage.js';
+import { stringifyJSON } from '../utils/stringify-json.js';
 
 const styles = /* css */`
   :host {
@@ -89,11 +89,11 @@ template.innerHTML = /* html */`
 `;
 
 class ExportFeeds extends HTMLElement {
-  #feeds;
-  #exportCodeEl;
-  #clipboardCopyEl;
-  #webShareEl;
-  #downloadButton;
+  #feeds = [];
+  #exportCodeEl = null;
+  #clipboardCopyEl = null;
+  #webShareEl = null;
+  #downloadButton = null;
 
   constructor() {
     super();
@@ -112,13 +112,13 @@ class ExportFeeds extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['feeds'];
+    return ['visible'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'feeds' && oldValue !== newValue && this.feeds) {
-      const feedsToExport = this.#getFeedsToExportString();
-      this.#exportCodeEl.innerHTML = feedsToExport;
+    if (name === 'visible' && oldValue !== newValue) {
+      const feedsToExport = stringifyJSON(this.feeds, 2);
+      this.#exportCodeEl.textContent = feedsToExport;
       this.#clipboardCopyEl.value = feedsToExport;
       this.#webShareEl.shareText = feedsToExport;
     }
@@ -133,27 +133,23 @@ class ExportFeeds extends HTMLElement {
   }
 
   get feeds() {
-    return this.getAttribute('feeds');
+    return this.#feeds;
   }
 
   set feeds(value) {
-    this.setAttribute('feeds', value);
+    this.#feeds = value || [];
   }
 
-  #getFeedsToExportString() {
-    let feedsToExport = '';
+  get visible() {
+    return this.hasAttribute('visible');
+  }
 
-    try {
-      feedsToExport = JSON.stringify(JSON.parse(this.feeds), null, 2);
-    } catch (err) {
-      console.error(err);
-    }
-
-    return feedsToExport;
+  set visible(value) {
+    this.toggleAttribute('visible', !!value);
   }
 
   #exportFeeds(feeds) {
-    const data = JSON.stringify(feeds, null, 2);
+    const data = stringifyJSON(feeds, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -164,9 +160,8 @@ class ExportFeeds extends HTMLElement {
     URL.revokeObjectURL(url);
   }
 
-  #handleDownloadButtonClick = async () => {
-    const { value: feeds = [] } = await getFeeds();
-    this.#exportFeeds(feeds);
+  #handleDownloadButtonClick = () => {
+    this.#exportFeeds(this.feeds);
   };
 }
 

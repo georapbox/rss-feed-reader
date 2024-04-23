@@ -142,11 +142,11 @@ template.innerHTML = /* html */`
 `;
 
 class FeedReader extends HTMLElement {
-  #spinnerEl;
-  #dialogEl;
-  #modalTitle;
-  #feedsViewer;
-  #errorEl;
+  #spinnerEl = null;
+  #dialogEl = null;
+  #modalTitle = null;
+  #feedsViewer = null;
+  #errorEl = null;
 
   constructor() {
     super();

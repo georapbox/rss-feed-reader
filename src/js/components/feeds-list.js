@@ -135,20 +135,20 @@ template.innerHTML = /* html */`
 `;
 
 class FeedsList extends HTMLElement {
-  #isEditable;
-  #feedsContainerEl;
-  #feedsListEl;
-  #editBtn;
-  #importBtn;
-  #importAltBtn;
-  #exportBtn;
-  #searchInput;
-  #searchClearBtn;
-  #importDialog;
-  #exportDialog;
-  #importFeedsEl;
-  #exportFeedsEl;
-  #noFeedsDisclaimerEl;
+  #isEditable = false;
+  #feedsContainerEl = null;
+  #feedsListEl = null;
+  #editBtn = null;
+  #importBtn = null;
+  #importAltBtn = null;
+  #exportBtn = null;
+  #searchInput = null;
+  #searchClearBtn = null;
+  #importDialog = null;
+  #exportDialog = null;
+  #importFeedsEl = null;
+  #exportFeedsEl = null;
+  #noFeedsDisclaimerEl = null;
 
   constructor() {
     super();
@@ -157,8 +157,6 @@ class FeedsList extends HTMLElement {
       this.attachShadow({ mode: 'open' });
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
-
-    this.#isEditable = false;
 
     this.shadowRoot.adoptedStyleSheets = styleSheets;
 
@@ -285,11 +283,12 @@ class FeedsList extends HTMLElement {
 
   #handleExportDialogOpen = async () => {
     const { value: feeds = [] } = await getFeeds();
-    this.#exportFeedsEl.setAttribute('feeds', JSON.stringify(feeds));
+    this.#exportFeedsEl.feeds = feeds;
+    this.#exportFeedsEl.setAttribute('visible', '');
   };
 
   #handleExportDialogClose = () => {
-    this.#exportFeedsEl.removeAttribute('feeds');
+    this.#exportFeedsEl.removeAttribute('visible');
   };
 
   #handleFeedsImported = () => {
