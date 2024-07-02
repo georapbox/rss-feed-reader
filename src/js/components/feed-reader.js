@@ -4,7 +4,7 @@ import { getFeeds, saveFeed } from '../helpers/storage.js';
 
 let controller;
 
-const styles = /* css */`
+const styles = /* css */ `
   :host {
     display: block;
   }
@@ -115,7 +115,7 @@ const styles = /* css */`
 
 const template = document.createElement('template');
 
-template.innerHTML = /* html */`
+template.innerHTML = /* html */ `
   <style>${styles}</style>
 
   <modal-element fullscreen no-animations static-backdrop id="feedsReaderModal">
@@ -266,7 +266,7 @@ class FeedReader extends HTMLElement {
       formattedDate = '-';
     }
 
-    return /* html */`
+    return /* html */ `
       <div class="card mb-3">
         <div class="card-body">
           <a href="${link}" target="_blank" rel="noreferrer noopener" class="d-flex justify-content-between gap-3 text-decoration-none" style="color: inherit;">

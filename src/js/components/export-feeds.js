@@ -2,7 +2,7 @@ import { isWebShareSupported } from '@georapbox/web-share-element/dist/is-web-sh
 import { styleSheets } from '../helpers/styles.js';
 import { stringifyJSON } from '../utils/stringify-json.js';
 
-const styles = /* css */`
+const styles = /* css */ `
   :host {
     display: block;
     max-width: 500px;
@@ -43,7 +43,7 @@ const styles = /* css */`
 
 const template = document.createElement('template');
 
-template.innerHTML = /* html */`
+template.innerHTML = /* html */ `
   <style>${styles}</style>
 
   <div class="d-flex justify-content-end">

@@ -2,7 +2,7 @@ import { styleSheets } from '../helpers/styles.js';
 import { getFeeds, saveFeed } from '../helpers/storage.js';
 import { canParseURL } from '../utils/canParseURL.js';
 
-const styles = /* css */`
+const styles = /* css */ `
   :host {
     display: block;
     max-width: 500px;
@@ -62,7 +62,7 @@ const styles = /* css */`
 
 const template = document.createElement('template');
 
-template.innerHTML = /* html */`
+template.innerHTML = /* html */ `
   <style>${styles}</style>
 
   <a-tab-group no-scroll-controls>
@@ -106,12 +106,18 @@ class ImportFeeds extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#dropzoneEl.addEventListener('files-dropzone-drop-accepted', this.#handleFilesDropzoneDropAccepted);
+    this.#dropzoneEl.addEventListener(
+      'files-dropzone-drop-accepted',
+      this.#handleFilesDropzoneDropAccepted
+    );
     this.#importForm.addEventListener('submit', this.#handleImportFormSubmit);
   }
 
   disconnectedCallback() {
-    this.#dropzoneEl.removeEventListener('files-dropzone-drop-accepted', this.#handleFilesDropzoneDropAccepted);
+    this.#dropzoneEl.removeEventListener(
+      'files-dropzone-drop-accepted',
+      this.#handleFilesDropzoneDropAccepted
+    );
     this.#importForm.removeEventListener('submit', this.#handleImportFormSubmit);
   }
 
@@ -145,22 +151,24 @@ class ImportFeeds extends HTMLElement {
       }
     }
 
-    this.dispatchEvent(new Event('feeds-imported', {
-      bubbles: true,
-      composed: true
-    }));
+    this.dispatchEvent(
+      new Event('feeds-imported', {
+        bubbles: true,
+        composed: true
+      })
+    );
   }
 
-  #handleFileReaderLoad = async (evt) => {
+  #handleFileReaderLoad = async evt => {
     try {
       const { result } = evt.target;
       this.#importFeeds(JSON.parse(result));
-    } catch (err) {
+    } catch {
       alert('The file is not valid.');
     }
   };
 
-  #handleImportFormSubmit = async (evt) => {
+  #handleImportFormSubmit = async evt => {
     evt.preventDefault();
 
     const formData = new FormData(evt.target);
@@ -168,7 +176,7 @@ class ImportFeeds extends HTMLElement {
 
     try {
       this.#importFeeds(JSON.parse(data));
-    } catch (err) {
+    } catch {
       alert('The data is not valid.');
     }
   };

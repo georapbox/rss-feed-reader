@@ -41,13 +41,15 @@ export const setFeeds = async (feeds, shouldDispatchEvent = true) => {
   const { error } = await setItem(STORAGE_FEEDS_KEY, feeds);
 
   if (!error && shouldDispatchEvent) {
-    document.dispatchEvent(new CustomEvent('feeds-updated', {
-      bubbles: true,
-      detail: {
-        action: 'set',
-        feeds
-      }
-    }));
+    document.dispatchEvent(
+      new CustomEvent('feeds-updated', {
+        bubbles: true,
+        detail: {
+          action: 'set',
+          feeds
+        }
+      })
+    );
   }
 
   return { error };
@@ -70,13 +72,15 @@ export const saveFeed = async (feed, shouldDispatchEvent = true) => {
   const { error } = await setItem(STORAGE_FEEDS_KEY, feeds);
 
   if (!error && shouldDispatchEvent) {
-    document.dispatchEvent(new CustomEvent('feeds-updated', {
-      bubbles: true,
-      detail: {
-        action,
-        feed
-      }
-    }));
+    document.dispatchEvent(
+      new CustomEvent('feeds-updated', {
+        bubbles: true,
+        detail: {
+          action,
+          feed
+        }
+      })
+    );
   }
 
   return { error };
@@ -93,15 +97,17 @@ export const deleteFeed = async (feedUrl, shouldDispatchEvent = true) => {
       await del(STORAGE_FEEDS_KEY);
     }
 
-    document.dispatchEvent(new CustomEvent('feeds-updated', {
-      bubbles: true,
-      detail: {
-        action: 'delete',
-        feed: {
-          url: feedUrl
+    document.dispatchEvent(
+      new CustomEvent('feeds-updated', {
+        bubbles: true,
+        detail: {
+          action: 'delete',
+          feed: {
+            url: feedUrl
+          }
         }
-      }
-    }));
+      })
+    );
   }
 
   return { error };

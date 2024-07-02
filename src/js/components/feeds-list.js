@@ -5,7 +5,7 @@ import { debounce } from '../utils/debounce.js';
 import './import-feeds.js';
 import './export-feeds.js';
 
-const styles = /* css */`
+const styles = /* css */ `
   :host {
     display: block;
     --list-item-height: 64px;
@@ -55,7 +55,7 @@ const styles = /* css */`
 
 const template = document.createElement('template');
 
-template.innerHTML = /* html */`
+template.innerHTML = /* html */ `
   <style>${styles}</style>
 
   <div id="feedsContainer" class="d-none">
@@ -178,7 +178,7 @@ class FeedsList extends HTMLElement {
   async connectedCallback() {
     const { value: feeds = [] } = await getFeeds();
 
-    feeds.forEach((feed => this.#addFeed(feed)));
+    feeds.forEach(feed => this.#addFeed(feed));
 
     this.#toggleFeedsVisibility();
 
@@ -199,7 +199,7 @@ class FeedsList extends HTMLElement {
       animation: 150,
       handle: '.sort-handler',
       onEnd: async evt => {
-        const feeds = Array.prototype.map.call(evt.to.querySelectorAll('li'), (el) => {
+        const feeds = Array.prototype.map.call(evt.to.querySelectorAll('li'), el => {
           return {
             url: el.getAttribute('data-url'),
             title: el.getAttribute('data-title') || ''
@@ -319,7 +319,9 @@ class FeedsList extends HTMLElement {
         feedEl.setAttribute('data-title', title || '');
 
         if (linkContent) {
-          linkContent.innerHTML = title ? `${title}<br><small class="text-muted">${url}</small>` : url;
+          linkContent.innerHTML = title
+            ? `${title}<br><small class="text-muted">${url}</small>`
+            : url;
         }
       }
     }
@@ -369,7 +371,7 @@ class FeedsList extends HTMLElement {
     deleteButton.className = 'delete-button btn btn-default text-danger p-0';
     deleteButton.style.lineHeight = '1';
     deleteButton.setAttribute('aria-label', 'Delete feed');
-    deleteButton.innerHTML = /* html */`
+    deleteButton.innerHTML = /* html */ `
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16" aria-hidden="true">
         <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z"/>
       </svg>
@@ -385,7 +387,7 @@ class FeedsList extends HTMLElement {
     sortHandler.hidden = !this.#isEditable;
     sortHandler.className = 'sort-handler text-primary';
     sortHandler.setAttribute('aria-label', 'Reorder feed');
-    sortHandler.innerHTML = /* html */`
+    sortHandler.innerHTML = /* html */ `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" aria-hidden="true">
         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M96 256h320M96 176h320M96 336h320"/>
       </svg>
