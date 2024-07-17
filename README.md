@@ -1,30 +1,28 @@
-<p align="center">
-  <a href="https://github.com/georapbox/rss-feed-reader">
-    <img src="src/assets/app-icons/favicon-192.png" width="140" height="140" alt="RSS Feed Reader">
-  </a>
-</p>
+# RSS Feed Reader
 
-<h1 align="center">RSS Feed Reader</h1>
+A Progressive Web App (PWA) for reading RSS feeds.
 
-A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)
+## About
 
-[Demo](https://georapbox.github.io/rss-feed-reader/)
+RSS Feed Reader is a web application that allows you to read RSS feeds in a clean and simple interface. It is built using Web components and is a Progressive Web App (PWA) which means it can be installed on your device and used offline.
+
+## Live demo
+
+👉 [RSS Feed Reader](https://georapbox.github.io/rss-feed-reader/)
 
 ## Features
 
+Some of the key features of the application include:
 - Add one or many RSS feeds in XML format.
 - Enable/disable feeds per will.
 - Export/share feeds URLs to use in other devices (all data is saved on device).
 
-## Technologies used
-
-- [RSS 2 JSON API](https://rss2json.com/) (used to convert feeds from XML to JSON format)
-- Custom Elements aka Web components
-- Progressive Web App (PWA)
-
 ## Screenshots
 
-<img src="src/assets/screenshots/screenshot_light.png" alt="Screenshot light" width="251" height="509"><img src="src/assets/screenshots/screenshot_dark.png" alt="Screenshot dark" width="251" height="509">
+The following screenshots show the application in action:
+
+![Screenshot light](screenshots/screenshot-light.png)
+![Screenshot dark](screenshots/screenshot-dark.png)
 
 ## Development
 
@@ -39,13 +37,13 @@ Below are the instructions for setting up the development environment.
 
 Clone the repository to your local machine:
 
-```bash
+```sh
 git clone git@github.com:georapbox/rss-feed-reader.git
 ```
 
 Navigate to the project's directory and install the dependencies:
 
-```bash
+```sh
 npm install
 ```
 
@@ -53,7 +51,7 @@ npm install
 
 To run the application in development mode, run the following command:
 
-```bash
+```sh
 npm start -- --open
 ```
 
@@ -63,7 +61,7 @@ This will start the development server and open the application in your default 
 
 To build the application for production, run the following command:
 
-```bash
+```sh
 npm run build
 ```
 
@@ -73,7 +71,7 @@ This will create a `dist` directory containing the production build of the appli
 
 To deploy the application, run the following command:
 
-```bash
+```sh
 npm run deploy
 ```
 
@@ -87,4 +85,4 @@ This will build the application first and then deploy it to GitHub Pages in the 
 
 ## License
 
-[The MIT License (MIT)](https://georapbox.mit-license.org/@2022)
+[The MIT License (MIT)](https://github.com/georapbox/rss-feed-reader/blob/main/LICENSE)

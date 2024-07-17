@@ -34,16 +34,16 @@
   "devDependencies": {
     "@parcel/packager-raw-url": "~2.12.0",
     "@parcel/transformer-webmanifest": "~2.12.0",
-    "@eslint/js": "~9.6.0",
-    "eslint": "~9.6.0",
-    "globals": "~15.7.0",
+    "@eslint/js": "~9.7.0",
+    "eslint": "~9.7.0",
+    "globals": "~15.8.0",
     "gh-pages": "~6.1.1",
     "npm-run-all": "~4.1.5",
     "parcel": "~2.12.0",
     "process": "~0.11.10",
-    "rimraf": "~5.0.7",
+    "rimraf": "~6.0.1",
     "workbox-cli": "~7.1.0",
-    "prettier": "~3.3.2"
+    "prettier": "~3.3.3"
   },
   "dependencies": {
     "@georapbox/a-tab-group": "~2.3.0",

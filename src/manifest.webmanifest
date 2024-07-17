@@ -2,15 +2,19 @@
   "short_name": "RSS",
   "name": "RSS Feed Reader",
   "description": "A simple RSS Feed Reader based on web technologies (HTML, CSS, JavaScript)",
-  "categories": ["RSS", "Feeds", "News"],
+  "categories": [
+    "RSS",
+    "Feeds",
+    "News"
+  ],
   "screenshots": [
     {
-      "src": "assets/screenshots/screenshot_light.png",
+      "src": "assets/screenshots/screenshot-light.png",
       "type": "image/png",
       "sizes": "1410x2862"
     },
     {
-      "src": "assets/screenshots/screenshot_dark.png",
+      "src": "assets/screenshots/screenshot-dark.png",
       "type": "image/png",
       "sizes": "1410x2862"
     }
