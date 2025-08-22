@@ -14,6 +14,7 @@ const styles = /* css */ `
     --dropzone-body-color: var(--body-color);
     --dropzone-background-color: var(--bs-gray-100);
     --dropzone-background-color-dragover: var(--bs-gray-200);
+    --dropzone-focus-box-shadow: var(--focus-ring);
 
     @media (prefers-color-scheme: dark) {
       --dropzone-border-color: var(--bs-gray-600);
@@ -25,7 +26,7 @@ const styles = /* css */ `
   a-tab:focus-visible {
     outline: 0;
     transition: box-shadow 0.15s ease-in-out;
-    box-shadow: rgb(13 110 253 / 25%) inset 0px 0px 0px 0.25rem;
+    box-shadow: var(--focus-ring) inset;
   }
 
   a-tab-group::part(tabs) {
@@ -68,7 +69,7 @@ template.innerHTML = /* html */ `
   <a-tab-group no-scroll-controls>
     <a-tab slot="tab" role="heading">From file</a-tab>
     <a-tab-panel slot="panel">
-      <div class="px-3">
+      <div class="px-3 my-1">
         <files-dropzone accept="application/json">
           Drag 'n' drop a file, or click to select file to import
           <br />
@@ -79,7 +80,7 @@ template.innerHTML = /* html */ `
 
     <a-tab slot="tab" role="heading">From text</a-tab>
     <a-tab-panel slot="panel">
-      <form name="import-form" class="px-3">
+      <form name="import-form" class="px-3 my-1">
         <textarea class="form-control mb-3" id="import-data" name="import-data" cols="42" placeholder="Enter the JSON data to import" required></textarea>
         <button type="submit" class="btn btn-primary w-100">Submit</button>
       </form>

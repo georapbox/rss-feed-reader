@@ -30,7 +30,7 @@ const styles = /* css */ `
 
   clipboard-copy::part(button):focus {
     outline: 0;
-    box-shadow: rgba(13,110,253,.25) 0px 0px 0px 0.25rem;
+    box-shadow: var(--focus-ring);
   }
 
   clipboard-copy span {
