@@ -384,7 +384,6 @@ class FeedsList extends HTMLElement {
     const copyButton = document.createElement('clipboard-copy');
     copyButton.setAttribute('value', url);
     copyButton.hidden = this.#isEditable;
-    // copyButton.className = 'opacity-75';
     copyButton.innerHTML = /* html */ `
       <span slot="copy" class="opacity-75">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-clipboard" viewBox="0 0 16 16" aria-hidden="true">
