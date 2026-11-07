@@ -63,18 +63,14 @@ const styles = /* css */ `
   }
 
   #feedsReaderModal {
-    --me-border-radius: 0;
+    --modal-border-radius: 0;
     --body-max-width: 1200px;
   }
 
   @supports (color: rgb(from white r g b)) {
     #feedsReaderModal {
-      --me-background-color: rgb(from var(--body-bg) r g b / 0.75);
+      --modal-background-color: rgb(from var(--body-bg) r g b / 0.75);
     }
-  }
-
-  #feedsReaderModal::part(base) {
-    backdrop-filter: blur(4px);
   }
 
   #feedsReaderModal::part(header) {
@@ -118,8 +114,8 @@ const template = document.createElement('template');
 template.innerHTML = /* html */ `
   <style>${styles}</style>
 
-  <modal-element fullscreen no-animations static-backdrop id="feedsReaderModal">
-    <h2 slot="header" id="feedTitle" class="h5 mb-0 text-truncate">
+  <modal-element fullscreen closed-by="closerequest" id="feedsReaderModal">
+    <h2 slot="title" id="feedTitle" class="h5 mb-0 text-truncate">
 
     </h2>
 
@@ -176,11 +172,11 @@ class FeedReader extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#dialogEl.addEventListener('me-close', this.#handleFeedClose);
+    this.#dialogEl.addEventListener('modal-close', this.#handleFeedClose);
   }
 
   disconnectedCallback() {
-    this.#dialogEl.removeEventListener('me-close', this.#handleFeedClose);
+    this.#dialogEl.removeEventListener('modal-close', this.#handleFeedClose);
   }
 
   get feedUrl() {

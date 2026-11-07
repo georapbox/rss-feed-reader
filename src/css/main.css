@@ -151,11 +151,12 @@ modal-element:not(:defined) {
 }
 
 modal-element {
-  --me-width: fit-content;
-  --me-border-radius: var(--bs-border-radius);
-  --me-background-color: var(--body-bg);
-  --me-border-width: 0;
-  --me-box-shadow: var(--bs-box-shadow);
+  --modal-width: fit-content;
+  --modal-border-radius: var(--bs-border-radius);
+  --modal-background-color: var(--body-bg);
+  --modal-border-width: 0;
+  --modal-box-shadow: var(--bs-box-shadow);
+  --modal-backdrop-filter: blur(4px);
 }
 
 modal-element::part(close) {
@@ -180,7 +181,7 @@ modal-element::part(close):focus-visible {
 }
 
 @media screen and (max-width: 768px) {
-  modal-element :is(h1, h2, h3, h4, h5, h6)[slot="header"] {
+  modal-element :is(h1, h2, h3, h4, h5, h6)[slot="title"] {
     font-size: 1.125rem;
   }
 }
