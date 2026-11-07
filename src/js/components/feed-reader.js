@@ -64,7 +64,7 @@ const styles = /* css */ `
 
   #feedsReaderModal {
     --modal-border-radius: 0;
-    --body-max-width: 1200px;
+    --body-max-width: 75rem;
   }
 
   @supports (color: rgb(from white r g b)) {
@@ -114,7 +114,7 @@ const template = document.createElement('template');
 template.innerHTML = /* html */ `
   <style>${styles}</style>
 
-  <modal-element fullscreen closed-by="closerequest" id="feedsReaderModal">
+  <modal-element fullscreen no-animations closed-by="closerequest" id="feedsReaderModal">
     <h2 slot="title" id="feedTitle" class="h5 mb-0 text-truncate">
 
     </h2>
