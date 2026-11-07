@@ -1015,7 +1015,7 @@ let e;function t(e){return new URL(n+(e=s.i?.[e]||e),import.meta.url).toString()
 
   #feedsReaderModal {
     --modal-border-radius: 0;
-    --body-max-width: 1200px;
+    --body-max-width: 75rem;
   }
 
   @supports (color: rgb(from white r g b)) {
@@ -1061,7 +1061,7 @@ let e;function t(e){return new URL(n+(e=s.i?.[e]||e),import.meta.url).toString()
 `,t3=document.createElement("template");t3.innerHTML=`
   <style>${t2}</style>
 
-  <modal-element fullscreen closed-by="closerequest" id="feedsReaderModal">
+  <modal-element fullscreen no-animations closed-by="closerequest" id="feedsReaderModal">
     <h2 slot="title" id="feedTitle" class="h5 mb-0 text-truncate">
 
     </h2>
@@ -1103,4 +1103,4 @@ let e;function t(e){return new URL(n+(e=s.i?.[e]||e),import.meta.url).toString()
         </div>
       </div>
     `}}window.customElements.get("feed-reader")||window.customElements.define("feed-reader",t4),document.adoptedStyleSheets=X;
-//# sourceMappingURL=rss-feed-reader.4d86c783.js.map
+//# sourceMappingURL=rss-feed-reader.ffb744f2.js.map
